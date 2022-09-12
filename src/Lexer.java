@@ -204,7 +204,6 @@ public class Lexer {
             tokenList.add(new Token(Token.Type.NUMBER, valueHolderForToken));
         }
         tokenList.add(new Token(Token.Type.EndOfLine));
-        // tokenList.removeIf(token -> (token.getTokenType().equals(Token.Type.SPACE))); // spaces detected to understand formatting and removed at this point
         return tokenList;
     }
     

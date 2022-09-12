@@ -24,33 +24,40 @@ public class Parser {
 
     public Node Expression()
     {
-        return null;
+        Node HeadNode = Term();
+        
+        return HeadNode;
     }
 
     public Node Term()
     {
-        Token Value = MatchAndRemove(Token.Type.NUMBER);
-        if(Value != null)
-        {
-            if (Value.getValue().contains(".")) {
-                return new FloatNode(Float.parseFloat(Value.getValue()));
-            } else {
-                return new IntegerNode(Integer.parseInt(Value.getValue()));
-            }
-        }
-        return null;
-        
-    
+        Node Term = Factor();
+        return Term;
+
     }
     public Node Factor()
     {
-        return null;
+        Token Value = MatchAndRemove(Token.Type.NUMBER);
+        if(Value != null)
+        {
+            return new IntegerNode(Integer.parseInt(Value.getValue()));
+        }
+        Value = MatchAndRemove(Token.Type.DECIMAL);
+        if(Value != null)
+        {
+            return new FloatNode(Float.parseFloat(Value.getValue()));
+        }
+        else
+        {
+            return null;
+        }
     }
 
 
     public Node parseTokens()
     {
-        return null;
+        Node HeadNode = Expression();
+        return HeadNode;
     }
 
     public List<Token> getTokenList() {
