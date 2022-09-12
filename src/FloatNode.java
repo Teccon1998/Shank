@@ -1,29 +1,21 @@
 public class FloatNode extends Node {
 
-    private double numContainer;
+    private float numContainer;
 
-    FloatNode(String number) {
-        super(Token.Type.DECIMAL, number);
-        this.numContainer = Double.parseDouble(number);
+    public FloatNode(float numContainer)
+    {
+        this.numContainer = numContainer;
     }
 
-    public double getNum() {
+    public float getNumber()
+    {
         return this.numContainer;
     }
 
     @Override
-    public String toString() {
-        return "FloatNode("+this.numContainer+")";
-    }
-
-    @Override
-    public Token.Type getType() {
-        return Token.Type.DECIMAL;
-    }
-
-    @Override
-    public String getValue() {
-        return String.valueOf(numContainer);
+    public String toString()
+    {
+        return "FloatNode(" + numContainer + ")";
     }
 
     

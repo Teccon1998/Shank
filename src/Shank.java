@@ -8,37 +8,32 @@ public class Shank {
     
     public static void main(String[] args) throws IOException
     {
-    String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\311\\Shank\\src\\InputFile.txt";
-        // if(args.length != 1)
-        // {
-        //     System.out.println("Incorrect # of args");
-        // }
+    String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\GitBlame\\311\\Lexer\\src\\InputFile.txt";
+        if(args.length != 1)
+        {
+            System.out.println("Incorrect # of args");
+        }
         Path path = Paths.get(arg);
         try
         {
+            
             List<String> InputList = Files.readAllLines(path);
             Lexer Lexer = new Lexer(InputList);
             
             for(int i = 0; i<InputList.size(); i++)
             {
-                if (i == 4)
-                {
-                    String temp = "neigh";
-                }
-                try
-                {
 
+                try {
                     System.out.println(Lexer.lex(InputList.get(i)));
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                     System.out.println("Failed to Lex on InputFile line: " + i); // Iteration location for debugging
                     e.printStackTrace();
-                }   
+                }
             }
-            IntegerNode node = new IntegerNode("12");
-            Node tempNode = node;
-            System.out.println(tempNode);
+        //     IntegerNode intnode = new IntegerNode(12);
+        //     Interpreter inter = new Interpreter();
+        //     inter.Resolve(intnode);
+        // System.out.println("temp");
         }    
         
         catch(IOException e)
