@@ -14,7 +14,7 @@ public class Lexer {
     public List<Token> lex(String Input) throws Exception
     {
         List<Token> tokenList = new ArrayList<Token>();
-        if(Input.isBlank())
+        if(Input.isEmpty())
         {
             tokenList.add(new Token(Token.Type.EndOfLine));
             return tokenList;
@@ -102,7 +102,12 @@ public class Lexer {
                     {
                         if (valueHolderForToken.contains(".")) {
                             throw new Exception("Incorrect formatting on Iteration " +  i);
-                        } else {
+                        }
+                        else if(valueHolderForToken.isEmpty())
+                        {
+                            State = 5;
+                        }
+                        else {
                             tokenList.add(new Token(Token.Type.NUMBER, valueHolderForToken));
                             valueHolderForToken = "";
                             State = 5;
@@ -152,8 +157,12 @@ public class Lexer {
                     break;
                 case 5:
                     if (CurrentCharacter == ' ') {
-                        valueHolderForToken += CurrentCharacter;
+
                         State = 5;
+                    }
+                    else if(Character.isDigit(CurrentCharacter))
+                    {
+                        throw new Exception("Incorrect formatting on Iteration " + i);
                     }
                     else if (CurrentCharacter == '+' || CurrentCharacter == '-' || CurrentCharacter == '/'|| CurrentCharacter == '*') 
                     {
@@ -185,76 +194,6 @@ public class Lexer {
                     }
                     break;
             }
-            //     switch (c) {
-            //         case '+':
-            //             tokenList.add(new Token(Token.Type.PLUS));
-            //             continue;
-            //         case '-':
-            //             tokenList.add(new Token(Token.Type.MINUS));
-            //             continue;
-            //         case '*':
-            //             tokenList.add(new Token(Token.Type.TIMES));
-            //             continue;
-            //         case '/':
-            //             tokenList.add(new Token(Token.Type.DIVIDE));
-            //             continue;
-            //         case ' ':
-            //             if (tokenList.get(tokenList.size()-1).getValue() != null &&tokenList.get(tokenList.size()-1).getValue().charAt(tokenList.get(tokenList.size()-1).getValue().length()-1) == '.')
-            //             {
-            //                 throw new Exception("Incorrect formatting.");
-            //             }
-            //             tokenList.add(new Token(Token.Type.SPACE));
-            //             continue;
-            //     }
-            //     //ensure that there's no index out of bounds error
-            //     if (i != 0)
-            //     {
-            //         if (c == '.')
-            //         {
-            //             //checking edge cases to ignore.
-            //             if (tokenList.get(tokenList.size() - 1).getTokenType().equals(Token.Type.DECIMAL)) {
-            //                 System.out.println("Illegal input");
-            //                 break;
-            //             }
-            //             if ((i + 1 >= Input.length())) {
-            //                 break;
-            //             } else { //if all edge cases are clear then remove token and recreate it as a decimal token with the same value and a . added for the next number to be created.
-            //                 Token tempToken = tokenList.get(tokenList.size() - 1);
-            //                 tokenList.remove(tokenList.size() - 1);
-            //                 tokenList.add(new Token(Token.Type.DECIMAL, tempToken.getValue() + "."));
-            //             }
-
-            //         }
-            //         //add number after a decimal point
-            //         else if(Character.isDigit(c) && tokenList.get(tokenList.size()-1).getTokenType().equals(Token.Type.DECIMAL))
-            //         {
-            //             Token tempToken = tokenList.get(tokenList.size() - 1);
-            //             tokenList.remove(tokenList.size() - 1);
-            //             tokenList.add(new Token(Token.Type.DECIMAL, tempToken.getValue() + Character.toString(c)));
-            //             continue;
-            //         }
-            //         //greater than 1 digit number detector. This allows for multidigit number input
-            //         if (Character.isDigit(c) && tokenList.get(tokenList.size() - 1).getTokenType().equals(Token.Type.NUMBER) &&
-            //         tokenList.get(tokenList.size()-1).getTokenType()!= Token.Type.SPACE) 
-            //         {
-            //             Token tempToken = tokenList.get(tokenList.size() - 1);
-            //             tokenList.remove(tokenList.size() - 1);
-            //             tokenList.add(new Token(Token.Type.NUMBER, tempToken.getValue() + Character.toString(c)));
-            //             continue;
-            //         }
-            //         else if(Character.isDigit(c) && !tokenList.get(tokenList.size()-1).getTokenType().equals(Token.Type.SPACE) &&
-            //         tokenList.get(tokenList.size()-1).getTokenType().equals(Token.Type.MINUS) )
-            //         {
-            //             tokenList.remove(tokenList.size() - 1);
-            //             tokenList.add(new Token(Token.Type.NUMBER, '-' + Character.toString(c)));
-            //             continue;
-            //         }
-            //     }
-            //     if(Character.isDigit(c))
-            //     {
-            //         tokenList.add(new Token(Token.Type.NUMBER, Character.toString(c)));
-            //     }
-
         }
         if (valueHolderForToken != null && valueHolderForToken.contains("."))
         {
