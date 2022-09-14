@@ -12,7 +12,7 @@ public class Parser {
     public Token MatchAndRemove(Token.Type type)
     {
         if (this.tokenList.size() > 0) {
-            if (type == tokenList.get(0).getTokenType()) {
+            if (tokenList.get(0).getTokenType() == type) {
                 Token returnToken = tokenList.get(0);
                 tokenList.remove(0);
                 return returnToken;
@@ -24,39 +24,67 @@ public class Parser {
 
     public Node Expression()
     {
-        Node HeadNode = Term();
+        Node FirstNode = Term();
+        Node SecondNode = null;
         
-        return HeadNode;
+            if (MatchAndRemove(Token.Type.PLUS) != null) {
+                SecondNode = Expression();
+                return new MathOpNode(FirstNode, SecondNode, MathOpNode.Operator.ADD);
+            } else if ((MatchAndRemove(Token.Type.MINUS) != null)) {
+                SecondNode = Expression();
+                return new MathOpNode(FirstNode, SecondNode, MathOpNode.Operator.SUBTRACT);
+            } else if (FirstNode != null) {
+                return FirstNode;
+            } else {
+                return null;
+            }
     }
 
     public Node Term()
     {
-        Node Term = Factor();
-        return Term;
-
-    }
-    public Node Factor()
-    {
-        Token Value = MatchAndRemove(Token.Type.NUMBER);
-        if(Value != null)
+        Node FirstNode = Factor();
+         if(MatchAndRemove(Token.Type.TIMES) != null)
         {
-            return new IntegerNode(Integer.parseInt(Value.getValue()));
+            return new MathOpNode(FirstNode, Term(), MathOpNode.Operator.TIMES);
         }
-        Value = MatchAndRemove(Token.Type.DECIMAL);
-        if(Value != null)
+        else if((MatchAndRemove(Token.Type.DIVIDE) != null))
         {
-            return new FloatNode(Float.parseFloat(Value.getValue()));
+            return new MathOpNode(FirstNode, Term(), MathOpNode.Operator.DIVIDE);
+        }
+        else if(FirstNode != null)
+        {
+            return FirstNode;
         }
         else
         {
             return null;
         }
     }
+    public Node Factor()
+    {
+        Token Value = MatchAndRemove(Token.Type.NUMBER);
+        if (Value != null) 
+        {
+            if (Value.getTokenType().equals(Token.Type.NUMBER)) {
+                return new IntegerNode(Integer.parseInt(Value.getValue()));
+            }
+
+        }
+        Value = MatchAndRemove(Token.Type.DECIMAL);
+        if (Value.getTokenType().equals(Token.Type.DECIMAL)) 
+        {
+            return new FloatNode(Float.parseFloat(Value.getValue()));
+        }
+        return null;
+    }
+    
+    
 
 
     public Node parseTokens()
     {
         Node HeadNode = Expression();
+        
         return HeadNode;
     }
 

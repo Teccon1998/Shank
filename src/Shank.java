@@ -4,8 +4,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import javax.swing.SpinnerDateModel;
-
 public class Shank {
     
     public static void main(String[] args) throws IOException
@@ -24,9 +22,14 @@ public class Shank {
             ArrayList<List<Token>> listOfTokenlists = new ArrayList<List<Token>>();
             for(int i = 0; i<InputList.size(); i++)
             {
-                try {
+                try 
+                {
+
                     listOfTokenlists.add(Lexer.lex(InputList.get(i)));
-                } catch (Exception e) {
+                    System.out.println(listOfTokenlists.get(i));
+                } 
+                catch (Exception e) 
+                {
                     System.out.println("Failed to Lex on InputFile line: " + i); // Iteration location for debugging
                     e.printStackTrace();
                 }
