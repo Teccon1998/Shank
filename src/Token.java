@@ -1,7 +1,7 @@
 public class Token {
     
     public enum Type {
-        EndOfLine, NUMBER, MINUS, PLUS, TIMES, DIVIDE, DECIMAL, LPAREN, RPAREN;
+        EndOfLine, NUMBER, MINUS, PLUS, TIMES, DIVIDE, DECIMAL, LPAREN, RPAREN, IDENTIFIER,DEFINE,INTEGER,REAL,BEGIN,END,SEMICOLON,COLON,EQUALS,COMMA,VARIABLE,CONST;
     }
     private Type TokenType;
     private String value = null;

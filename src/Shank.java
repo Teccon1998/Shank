@@ -8,7 +8,7 @@ public class Shank {
     
     public static void main(String[] args) throws IOException
     {
-    String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\GitBlame\\311\\Lexer\\src\\InputFile.txt";
+    String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\311\\Shank\\src\\InputFile.txt";
         if(args.length != 1)
         {
             System.out.println("Incorrect # of args");

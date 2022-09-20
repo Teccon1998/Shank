@@ -10,9 +10,24 @@ public class Lexer {
     {
         this.LOT = ListOfTokens;
     }
+    
 
     public List<Token> lex(String Input) throws Exception
     {
+        HashMap<String,Token.Type> reservedWords = new HashMap<>();
+        reservedWords.put("IDENTIFIER", Token.Type.IDENTIFIER);
+        reservedWords.put("DEFINE",Token.Type.DEFINE);
+        reservedWords.put("INTEGER",Token.Type.INTEGER);
+        reservedWords.put("REAL",Token.Type.REAL);
+        reservedWords.put("BEGIN",Token.Type.BEGIN);
+        reservedWords.put("END",Token.Type.END);
+        reservedWords.put(";",Token.Type.SEMICOLON);
+        reservedWords.put(":",Token.Type.COLON);
+        reservedWords.put("=",Token.Type.EQUALS);
+        reservedWords.put(",", Token.Type.COMMA);
+        reservedWords.put("VARIABLE", Token.Type.VARIABLE);
+        reservedWords.put("CONSTANT",Token.Type.CONST);
+        
         List<Token> tokenList = new ArrayList<Token>();
         if(Input.isEmpty())
         {
@@ -43,7 +58,53 @@ public class Lexer {
                         State = 6;
                     } else if (CurrentCharacter == ' ') {
                         State = 1;
-                    } else {
+                    }
+                    else if(Character.isLetter(CurrentCharacter))
+                    {
+                        State = 7;
+                        valueHolderForToken += CurrentCharacter;
+                    }
+                    else if(Character.isSpaceChar(CurrentCharacter))
+                    {
+                        if(reservedWords.containsKey(valueHolderForToken.toUpperCase()))
+                        {
+                            Token.Type tokenTypeRetrival = reservedWords.get(valueHolderForToken.toUpperCase());
+                            reservedWords.put(valueHolderForToken.toUpperCase(),tokenTypeRetrival);
+                            tokenList.add(new Token(tokenTypeRetrival));
+                            valueHolderForToken ="";
+                            State = 1;
+                        }
+                        else 
+                        {
+                            tokenList.add(new Token(Token.Type.IDENTIFIER,valueHolderForToken));
+                            valueHolderForToken = "";
+                            State = 1;
+                        }
+                    }
+                    else if(CurrentCharacter == ';' || CurrentCharacter == ':' || CurrentCharacter == ',' || CurrentCharacter == '=')
+                    {
+                        switch(CurrentCharacter)
+                        {
+                            case ';':
+                                tokenList.add(new Token(Token.Type.SEMICOLON));
+                                State =1;
+                                break;
+                            case ':':
+                                tokenList.add(new Token(Token.Type.COLON));
+                                State = 1;
+                                break;
+                            case ',':
+                                tokenList.add(new Token(Token.Type.COMMA));
+                                State = 1;
+                                break;
+                            case '=':
+                                tokenList.add(new Token(Token.Type.EQUALS));
+                                State = 1;
+                                break;
+                        }
+                    }
+                    else 
+                    {
                         throw new Exception("Incorrect formatting on Iteration " +  i);// I for iteration location for debugging
                     }
                     break;
@@ -65,9 +126,10 @@ public class Lexer {
                     if (Character.isDigit(CurrentCharacter)) {
                         valueHolderForToken += CurrentCharacter;
                         State = 3;
-                    } else if (CurrentCharacter == '+' || CurrentCharacter == '-' || CurrentCharacter == '/'
-                            || CurrentCharacter == '*') {
-                        if (valueHolderForToken.contains(".")) {
+                    } else if (CurrentCharacter == '+' || CurrentCharacter == '-' || CurrentCharacter == '/'|| CurrentCharacter == '*') 
+                    {
+                        if (valueHolderForToken.contains(".")) 
+                        {
                             tokenList.add(new Token(Token.Type.DECIMAL, valueHolderForToken));
                             valueHolderForToken = "";
                             State = 1;
@@ -76,7 +138,8 @@ public class Lexer {
                             valueHolderForToken = "";
                             State = 1;
                         }
-                        switch (CurrentCharacter) {
+                        switch (CurrentCharacter) 
+                        {
                             case '+':
                                 tokenList.add(new Token(Token.Type.PLUS));
                                 break;
@@ -133,7 +196,8 @@ public class Lexer {
                             valueHolderForToken = "";
                             State = 1;
                         }
-                        switch (CurrentCharacter) {
+                        switch (CurrentCharacter) 
+                        {
                             case '+':
                                 tokenList.add(new Token(Token.Type.PLUS));
                                 break;
@@ -156,7 +220,8 @@ public class Lexer {
                     }
                     break;
                 case 5:
-                    if (CurrentCharacter == ' ') {
+                    if (CurrentCharacter == ' ') 
+                    {
 
                         State = 5;
                     }
@@ -166,7 +231,8 @@ public class Lexer {
                     }
                     else if (CurrentCharacter == '+' || CurrentCharacter == '-' || CurrentCharacter == '/'|| CurrentCharacter == '*') 
                     {
-                        switch (CurrentCharacter) {
+                        switch (CurrentCharacter) 
+                        {
                             case '+':
                                 tokenList.add(new Token(Token.Type.PLUS));
                                 break;
@@ -193,18 +259,126 @@ public class Lexer {
                         throw new Exception("Incorrect formatting on Iteration " +  i);
                     }
                     break;
+                case 7:
+                    if(Character.isLetter(CurrentCharacter))
+                    {
+                        State = 7;
+                        valueHolderForToken += CurrentCharacter;
+                    }
+                    else if(Character.isSpaceChar(CurrentCharacter))
+                    {
+                        if(reservedWords.containsKey(valueHolderForToken.toUpperCase()))
+                        {
+                            Token.Type tokenTypeRetrival = reservedWords.get(valueHolderForToken.toUpperCase());
+                            reservedWords.put(valueHolderForToken.toUpperCase(),tokenTypeRetrival);
+                            tokenList.add(new Token(tokenTypeRetrival));
+                            valueHolderForToken ="";
+                            State = 1;
+                        }
+                        else
+                        {
+                            tokenList.add(new Token(Token.Type.IDENTIFIER,valueHolderForToken));
+                            valueHolderForToken = "";
+                            State = 1;
+                        }
+                    }
+                    else if(CurrentCharacter == ';' || CurrentCharacter == ':' || CurrentCharacter == ',' || CurrentCharacter == '=')
+                    {
+                        if(!valueHolderForToken.isEmpty())
+                        {
+                            if(reservedWords.containsKey(valueHolderForToken.toUpperCase()))
+                            {
+                                Token.Type tokenTypeRetrival = reservedWords.get(valueHolderForToken.toUpperCase());
+                                reservedWords.put(valueHolderForToken.toUpperCase(),tokenTypeRetrival);
+                                tokenList.add(new Token(tokenTypeRetrival));
+                                valueHolderForToken ="";
+                                State = 1;
+                            }
+                            else
+                            {
+                                tokenList.add(new Token(Token.Type.IDENTIFIER,valueHolderForToken));
+                                valueHolderForToken = "";
+                                State = 1;
+                            }
+                        }
+                        switch(CurrentCharacter)
+                        {
+                            case ';':
+                                tokenList.add(new Token(Token.Type.SEMICOLON));
+                                State =1;
+                                break;
+                            case ':':
+                                tokenList.add(new Token(Token.Type.COLON));
+                                State = 1;
+                                break;
+                            case ',':
+                                tokenList.add(new Token(Token.Type.COMMA));
+                                State = 1;
+                                break;
+                            case '=':
+                                tokenList.add(new Token(Token.Type.EQUALS));
+                                State = 1;
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("Incorrect formatting on Iteration " + i);
+                    }
             }
         }
-        if (valueHolderForToken != null && valueHolderForToken.contains("."))
+        if (!valueHolderForToken.isEmpty() && valueHolderForToken.contains("."))
         {
             tokenList.add(new Token(Token.Type.DECIMAL, valueHolderForToken));
         }
-        else if (valueHolderForToken != null)
+        else if(!valueHolderForToken.isEmpty() && reservedWords.containsKey(valueHolderForToken.toUpperCase()))
         {
-            tokenList.add(new Token(Token.Type.NUMBER, valueHolderForToken));
+            if(reservedWords.containsKey(valueHolderForToken.toUpperCase()))
+            {
+                Token.Type tokenTypeRetrival = reservedWords.get(valueHolderForToken.toUpperCase());
+                reservedWords.put(valueHolderForToken.toUpperCase(),tokenTypeRetrival);
+                tokenList.add(new Token(tokenTypeRetrival));
+                valueHolderForToken ="";
+            }
+            else
+            {
+                tokenList.add(new Token(Token.Type.IDENTIFIER,valueHolderForToken));
+                valueHolderForToken = "";
+            }
+        }
+        else if (!valueHolderForToken.isEmpty())
+        {
+
+            if(isNumeric(valueHolderForToken))
+            {
+                tokenList.add(new Token(Token.Type.NUMBER, valueHolderForToken));
+            }
+            else
+            {
+                tokenList.add(new Token(Token.Type.IDENTIFIER, valueHolderForToken));
+            }
+            
         }
         tokenList.add(new Token(Token.Type.EndOfLine));
         return tokenList;
+    }
+    
+    private boolean isNumeric(String input)
+    {
+        if (input == null) 
+        {
+            return false;
+        }
+        try
+        {
+            Integer.parseInt(input);
+            return true;
+        }
+        catch(NumberFormatException nfe)
+        {
+            return false;
+        }
+        
     }
     
 
