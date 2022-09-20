@@ -6,9 +6,9 @@ import java.util.*;
 
 public class Shank {
     
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args) throws Exception
     {
-    String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\311\\Shank\\src\\InputFile.txt";
+    String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\GitBlame\\311\\Lexer\\src\\InputFile.txt";
         if(args.length != 1)
         {
             System.out.println("Incorrect # of args");
@@ -38,7 +38,8 @@ public class Shank {
             for(int i = 0; i < listOfTokenlists.size(); i++)
             {
                 Parser parser = new Parser(listOfTokenlists.get(i));
-                System.out.println(parser.parseTokens());  
+                String temp = parser.parseTokens().toString();
+                System.out.println(temp);
             }
         }    
         catch(IOException e)

@@ -21,10 +21,6 @@ public class Lexer {
         reservedWords.put("REAL",Token.Type.REAL);
         reservedWords.put("BEGIN",Token.Type.BEGIN);
         reservedWords.put("END",Token.Type.END);
-        reservedWords.put(";",Token.Type.SEMICOLON);
-        reservedWords.put(":",Token.Type.COLON);
-        reservedWords.put("=",Token.Type.EQUALS);
-        reservedWords.put(",", Token.Type.COMMA);
         reservedWords.put("VARIABLE", Token.Type.VARIABLE);
         reservedWords.put("CONSTANT",Token.Type.CONST);
         
@@ -44,19 +40,27 @@ public class Lexer {
             char CurrentCharacter = Input.charAt(i);
             switch (State) {
                 case 1:
-                    if (Character.isDigit(CurrentCharacter)) {
+                {
+                    if (Character.isDigit(CurrentCharacter)) 
+                    {
                         valueHolderForToken += CurrentCharacter;
                         State = 3;
-                    } else if (CurrentCharacter == '+' || CurrentCharacter == '-') {
+                    } 
+                    else if (CurrentCharacter == '+' || CurrentCharacter == '-') 
+                    {
                         valueHolderForToken += CurrentCharacter;
                         State = 2;
-                    } else if (CurrentCharacter == '.') {
+                    }
+                    else if (CurrentCharacter == '.') 
+                    {
                         if (valueHolderForToken.contains(".")) {
-                            throw new Exception("Incorrect formatting on Iteration " +  i);
+                            throw new Exception("Incorrect formatting on Iteration " + i);
                         }
                         valueHolderForToken += CurrentCharacter;
                         State = 6;
-                    } else if (CurrentCharacter == ' ') {
+                    } 
+                    else if (CurrentCharacter == ' ') 
+                    {
                         State = 1;
                     }
                     else if(Character.isLetter(CurrentCharacter))
@@ -64,30 +68,12 @@ public class Lexer {
                         State = 7;
                         valueHolderForToken += CurrentCharacter;
                     }
-                    else if(Character.isSpaceChar(CurrentCharacter))
-                    {
-                        if(reservedWords.containsKey(valueHolderForToken.toUpperCase()))
-                        {
-                            Token.Type tokenTypeRetrival = reservedWords.get(valueHolderForToken.toUpperCase());
-                            reservedWords.put(valueHolderForToken.toUpperCase(),tokenTypeRetrival);
-                            tokenList.add(new Token(tokenTypeRetrival));
-                            valueHolderForToken ="";
-                            State = 1;
-                        }
-                        else 
-                        {
-                            tokenList.add(new Token(Token.Type.IDENTIFIER,valueHolderForToken));
-                            valueHolderForToken = "";
-                            State = 1;
-                        }
-                    }
                     else if(CurrentCharacter == ';' || CurrentCharacter == ':' || CurrentCharacter == ',' || CurrentCharacter == '=')
                     {
-                        switch(CurrentCharacter)
-                        {
+                        switch (CurrentCharacter) {
                             case ';':
                                 tokenList.add(new Token(Token.Type.SEMICOLON));
-                                State =1;
+                                State = 1;
                                 break;
                             case ':':
                                 tokenList.add(new Token(Token.Type.COLON));
@@ -103,74 +89,148 @@ public class Lexer {
                                 break;
                         }
                     }
+                    else if(CurrentCharacter == '(')
+                    {
+                        tokenList.add(new Token(Token.Type.LPAREN));
+                    }
                     else 
                     {
                         throw new Exception("Incorrect formatting on Iteration " +  i);// I for iteration location for debugging
                     }
-                    break;
+                    break;        
+                }
                 case 2:
-                    if (CurrentCharacter == '.') {
-                        if (valueHolderForToken.contains(".")) {
-                            throw new Exception("Incorrect formatting on Iteration " +  i);
+                    if (CurrentCharacter == '.') 
+                    {
+                        if (valueHolderForToken.contains(".")) 
+                        {
+                            throw new Exception("Incorrect formatting on Iteration " + i);
                         }
                         valueHolderForToken += CurrentCharacter;
                         State = 6;
-                    } else if (Character.isDigit(CurrentCharacter)) {
+                    } 
+                    else if (Character.isDigit(CurrentCharacter)) 
+                    {
                         valueHolderForToken += CurrentCharacter;
                         State = 3;
-                    } else {
+                    }
+                    else if(CurrentCharacter == '(')
+                    {
+                        if (!valueHolderForToken.isEmpty())
+                        {
+                            if (valueHolderForToken.contains("+")) 
+                            {
+                                tokenList.add(new Token(Token.Type.PLUS));
+                                valueHolderForToken = "";
+                            }
+                            else if(valueHolderForToken.contains("-"))
+                            {
+                                tokenList.add(new Token(Token.Type.MINUS));
+                                valueHolderForToken = "";
+                            }
+                        }
+                        tokenList.add(new Token(Token.Type.LPAREN));
+                    }
+                    else 
+                    {
                         throw new Exception("Incorrect formatting on Iteration " +  i);
                     }
                     break;
                 case 3:
-                    if (Character.isDigit(CurrentCharacter)) {
+                    if (Character.isDigit(CurrentCharacter)) 
+                    {
                         valueHolderForToken += CurrentCharacter;
                         State = 3;
-                    } else if (CurrentCharacter == '+' || CurrentCharacter == '-' || CurrentCharacter == '/'|| CurrentCharacter == '*') 
+                    } 
+                    else if (CurrentCharacter == '+' || CurrentCharacter == '-' || CurrentCharacter == '/'|| CurrentCharacter == '*') 
+                    {
+                        
+                        if (valueHolderForToken.contains(".")) {
+                            tokenList.add(new Token(Token.Type.DECIMAL, valueHolderForToken));
+                            valueHolderForToken = "";
+                        }
+                        else if(!valueHolderForToken.isEmpty())
+                        {
+                            tokenList.add(new Token(Token.Type.NUMBER, valueHolderForToken));
+                            valueHolderForToken = "";
+                            
+                        }
+                        switch (CurrentCharacter) 
+                            {
+                                case '+':
+                                    tokenList.add(new Token(Token.Type.PLUS));
+                                    break;
+                                case '-':
+                                    tokenList.add(new Token(Token.Type.MINUS));
+                                    break;
+                                case '/':
+                                    tokenList.add(new Token(Token.Type.DIVIDE));
+                                    break;
+                                case '*':
+                                    tokenList.add(new Token(Token.Type.TIMES));
+                                    break;
+                            }
+                        State = 1;
+                    }
+                    else if(CurrentCharacter == '(')
+                    {
+                        if (valueHolderForToken.isEmpty()) {
+                            tokenList.add(new Token(Token.Type.LPAREN));
+                        } else if (!valueHolderForToken.isEmpty()) {
+                            if (tokenList.get(tokenList.size()).equals(new Token(Token.Type.NUMBER))
+                                    || tokenList.get(tokenList.size()).equals(new Token(Token.Type.DECIMAL))) {
+                                tokenList.add(new Token(Token.Type.TIMES));
+                                tokenList.add(new Token(Token.Type.LPAREN));
+                            }
+                        }
+                        State = 1;
+                    }
+                    else if(CurrentCharacter == ')')
+                    {
+                        if (valueHolderForToken.isEmpty()) 
+                        {
+                            tokenList.add(new Token(Token.Type.RPAREN));
+                        } 
+                        else if (!valueHolderForToken.isEmpty()) 
+                        {
+                            if (valueHolderForToken.contains(".")) 
+                            {
+                                tokenList.add(new Token(Token.Type.DECIMAL,valueHolderForToken));
+                                tokenList.add(new Token(Token.Type.RPAREN));
+                                valueHolderForToken = "";
+                            }
+                            else
+                            {
+                                tokenList.add(new Token(Token.Type.NUMBER,valueHolderForToken));
+                                tokenList.add(new Token(Token.Type.RPAREN));
+                                valueHolderForToken = "";
+                            }
+                        }
+                    }
+                    else if (CurrentCharacter == '.') 
                     {
                         if (valueHolderForToken.contains(".")) 
                         {
-                            tokenList.add(new Token(Token.Type.DECIMAL, valueHolderForToken));
-                            valueHolderForToken = "";
-                            State = 1;
-                        } else {
-                            tokenList.add(new Token(Token.Type.NUMBER, valueHolderForToken));
-                            valueHolderForToken = "";
-                            State = 1;
-                        }
-                        switch (CurrentCharacter) 
+                            throw new Exception("Incorrect formatting on Iteration " + i);
+                        } 
+                        else 
                         {
-                            case '+':
-                                tokenList.add(new Token(Token.Type.PLUS));
-                                break;
-                            case '-':
-                                tokenList.add(new Token(Token.Type.MINUS));
-                                break;
-                            case '/':
-                                tokenList.add(new Token(Token.Type.DIVIDE));
-                                break;
-                            case '*':
-                                tokenList.add(new Token(Token.Type.TIMES));
-                                break;
-                        }
-                    } else if (CurrentCharacter == '.') {
-                        if (valueHolderForToken.contains(".")) {
-                            throw new Exception("Incorrect formatting on Iteration " +  i);
-                        } else {
                             valueHolderForToken += CurrentCharacter;
                             State = 4;
                         }
                     }
                     else if (CurrentCharacter == ' ')
                     {
-                        if (valueHolderForToken.contains(".")) {
+                        if (valueHolderForToken.contains(".")) 
+                        {
                             throw new Exception("Incorrect formatting on Iteration " +  i);
                         }
                         else if(valueHolderForToken.isEmpty())
                         {
                             State = 5;
                         }
-                        else {
+                        else 
+                        {
                             tokenList.add(new Token(Token.Type.NUMBER, valueHolderForToken));
                             valueHolderForToken = "";
                             State = 5;
@@ -182,16 +242,48 @@ public class Lexer {
                     }
                     break;
                 case 4:
-                    if (Character.isDigit(CurrentCharacter)) {
+                    if (Character.isDigit(CurrentCharacter)) 
+                    {
                         valueHolderForToken += CurrentCharacter;
                         State = 4;
-                    } else if (CurrentCharacter == '+' || CurrentCharacter == '-' || CurrentCharacter == '/'
-                            || CurrentCharacter == '*') {
-                        if (valueHolderForToken.contains(".")) {
+                    }
+                    else if(CurrentCharacter == '(')
+                    {
+                        if(valueHolderForToken.isEmpty())
+                        {
+                            tokenList.add(new Token(Token.Type.LPAREN));
+                        }
+                        else if(!valueHolderForToken.isEmpty())
+                        {
+                            if (valueHolderForToken.contains(".")) {
+                                tokenList.add(new Token(Token.Type.DECIMAL, valueHolderForToken));
+                                valueHolderForToken = "";
+                            } else if (isNumeric(valueHolderForToken)) {
+                                tokenList.add(new Token(Token.Type.NUMBER, valueHolderForToken));
+                                valueHolderForToken = "";
+                            } 
+                        }
+                        else
+                        {
+                            tokenList.add(new Token(Token.Type.LPAREN));
+                        }
+                        if (tokenList.get(tokenList.size() - 1).getTokenType().equals(Token.Type.NUMBER)|| tokenList.get(tokenList.size() - 1).getTokenType().equals(Token.Type.DECIMAL)) 
+                        {
+                            tokenList.add(new Token(Token.Type.TIMES));
+                            tokenList.add(new Token(Token.Type.LPAREN));
+                        }
+                        State = 1;
+                    }
+                    else if (CurrentCharacter == '+' || CurrentCharacter == '-' || CurrentCharacter == '/' || CurrentCharacter == '*') 
+                    {
+                        if (valueHolderForToken.contains(".")) 
+                        {
                             tokenList.add(new Token(Token.Type.DECIMAL, valueHolderForToken));
                             valueHolderForToken = "";
                             State = 1;
-                        } else {
+                        } 
+                        else 
+                        {
                             tokenList.add(new Token(Token.Type.NUMBER, valueHolderForToken));
                             valueHolderForToken = "";
                             State = 1;
@@ -211,11 +303,15 @@ public class Lexer {
                                 tokenList.add(new Token(Token.Type.TIMES));
                                 break;
                         }
-                    } else if (CurrentCharacter == ' ') {
+                    } 
+                    else if (CurrentCharacter == ' ') 
+                    {
                         tokenList.add(new Token(Token.Type.DECIMAL, valueHolderForToken));
                         valueHolderForToken = "";
                         State = 5;
-                    } else {
+                    } 
+                    else 
+                    {
                         throw new Exception("Incorrect formatting on Iteration " +  i);// I for iteration location for debugging
                     }
                     break;

@@ -22,7 +22,7 @@ public class Parser {
 
     }
 
-    public Node Expression()
+    public Node Expression() throws Exception
     {
         Node FirstNode = Term();
         Node SecondNode = null;
@@ -40,7 +40,7 @@ public class Parser {
             }
     }
 
-    public Node Term()
+    public Node Term() throws Exception
     {
         Node FirstNode = Factor();
          if(MatchAndRemove(Token.Type.TIMES) != null)
@@ -60,20 +60,27 @@ public class Parser {
             return null;
         }
     }
-    public Node Factor()
+    public Node Factor() throws Exception
     {
-        Token Value = MatchAndRemove(Token.Type.NUMBER);
-        if (Value != null) 
+        
+        Token Value;
+        Node Factor;
+        if ((Value = MatchAndRemove(Token.Type.NUMBER)) != null)
         {
-            if (Value.getTokenType().equals(Token.Type.NUMBER)) {
-                return new IntegerNode(Integer.parseInt(Value.getValue()));
-            }
-
+            return new IntegerNode(Integer.parseInt(Value.getValue()));
         }
-        Value = MatchAndRemove(Token.Type.DECIMAL);
-        if (Value.getTokenType().equals(Token.Type.DECIMAL)) 
+        else if ((Value = MatchAndRemove(Token.Type.DECIMAL)) != null)
         {
             return new FloatNode(Float.parseFloat(Value.getValue()));
+        }
+        else if (MatchAndRemove(Token.Type.LPAREN) != null)
+        {
+            Factor = Expression();
+            if (MatchAndRemove(Token.Type.RPAREN) == null) {
+                throw new Exception("No Closing Paren");
+            } else {
+                return Factor;
+            }
         }
         return null;
     }
@@ -81,7 +88,7 @@ public class Parser {
     
 
 
-    public Node parseTokens()
+    public Node parseTokens() throws Exception
     {
         Node HeadNode = Expression();
         

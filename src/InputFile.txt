@@ -1,6 +1,1 @@
-constants
-pi = 3.1414
-variable
-a,b,c : integer
-begin
-end
+.23(4*3+1+2+5
