@@ -10,13 +10,6 @@ public class VariableNode extends Node {
         INTEGER, REAL
     };
 
-    public VariableNode(Type Type,Boolean CONST, String VariableName)
-    {
-        this.Type = Type;
-        this.isConstant = CONST;
-        this.VariableName = VariableName;
-    }
-
     public VariableNode(Type Type,Boolean CONST, String VariableName, Node Node)
     {
         this.Type = Type;
@@ -42,7 +35,7 @@ public class VariableNode extends Node {
     }
     @Override
     public String toString() {
-        return "VariableNode(Constant:" + this.isConstant + ",Type:" + this.Type + ",Node: " + this.Node + ")";
+        return "VariableNode(Name:"+ this.VariableName + ", Constant:" + this.isConstant + ",Type:" + this.Type + ",Node: " + this.Node + ")";
     }
     
 }

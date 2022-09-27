@@ -1,7 +1,1 @@
-define start (t : integer; s : real)
-constants
-pi=3.1415
-variables
-a,b,c : integer
-begin
-end
+abc(*def*)dev

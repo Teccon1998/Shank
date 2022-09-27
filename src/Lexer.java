@@ -1,3 +1,4 @@
+import java.lang.Thread.State;
 import java.util.*;
 
 public class Lexer {
@@ -51,6 +52,10 @@ public class Lexer {
                         valueHolderForToken += CurrentCharacter;
                         State = 2;
                     }
+                    else if(CurrentCharacter == '=')
+                    {
+                        tokenList.add(new Token(Token.Type.EQUALS));
+                    }
                     else if (CurrentCharacter == '.') 
                     {
                         if (valueHolderForToken.contains(".")) {
@@ -92,6 +97,14 @@ public class Lexer {
                     else if(CurrentCharacter == '(')
                     {
                         tokenList.add(new Token(Token.Type.LPAREN));
+                    }
+                    else if(CurrentCharacter == '*')
+                    {
+                        if(tokenList.get(tokenList.size()-1).getTokenType().equals(Token.Type.LPAREN))
+                        {
+                            tokenList.remove(tokenList.size()-1);
+                            State = 8;
+                        }
                     }
                     else 
                     {
@@ -177,13 +190,22 @@ public class Lexer {
                         if (valueHolderForToken.isEmpty()) {
                             tokenList.add(new Token(Token.Type.LPAREN));
                         } else if (!valueHolderForToken.isEmpty()) {
-                            if (tokenList.get(tokenList.size()).equals(new Token(Token.Type.NUMBER))
-                                    || tokenList.get(tokenList.size()).equals(new Token(Token.Type.DECIMAL))) {
+                            if (tokenList.get(tokenList.size()-1).equals(new Token(Token.Type.NUMBER))
+                                    || tokenList.get(tokenList.size()-1).equals(new Token(Token.Type.DECIMAL))) {
                                 tokenList.add(new Token(Token.Type.TIMES));
                                 tokenList.add(new Token(Token.Type.LPAREN));
                             }
                         }
                         State = 1;
+                        
+                    }
+                    else if(CurrentCharacter == '*')
+                    {
+                        if(tokenList.get(tokenList.size()-1).getTokenType().equals(Token.Type.LPAREN))
+                        {
+                            tokenList.remove(tokenList.size()-1);
+                            State = 8;
+                        }
                     }
                     else if(CurrentCharacter == ')')
                     {
@@ -380,6 +402,7 @@ public class Lexer {
                     {
                         State = 7;
                         valueHolderForToken += CurrentCharacter;
+                        break;
                     }
                     else if(Character.isSpaceChar(CurrentCharacter))
                     {
@@ -391,12 +414,14 @@ public class Lexer {
                             valueHolderForToken ="";
                             State = 1;
                         }
+
                         else
                         {
                             tokenList.add(new Token(Token.Type.IDENTIFIER,valueHolderForToken));
                             valueHolderForToken = "";
                             State = 1;
                         }
+                        break;
                     }
                     else if(CurrentCharacter == ';' || CurrentCharacter == ':' || CurrentCharacter == ',' || CurrentCharacter == '=' || CurrentCharacter == ')')
                     {
@@ -408,10 +433,12 @@ public class Lexer {
                                 tokenList.add(new Token(tokenTypeRetrival));
                                 valueHolderForToken = "";
                                 State = 1;
+                                break;
                             } else {
                                 tokenList.add(new Token(Token.Type.IDENTIFIER, valueHolderForToken));
                                 valueHolderForToken = "";
                                 State = 1;
+                                break;
                             }
                         }
                         switch (CurrentCharacter) {
@@ -437,10 +464,54 @@ public class Lexer {
                                 break;
                         }
                     }
+                    else if(CurrentCharacter == '(')
+                    {
+                        State = 8;
+                        break;
+                    }
                     else
                     {
                         throw new Exception("Incorrect formatting on Iteration " + i);
                     }
+                case 8:
+                    if(CurrentCharacter == '*')
+                    {
+                        valueHolderForToken += '*';
+                    }
+                    if(CurrentCharacter == ')')
+                    {
+                        if(valueHolderForToken.indexOf("*")!= -1)
+                        {
+                            valueHolderForToken = valueHolderForToken.substring(0, valueHolderForToken.length()-2);
+                            State =1;
+                            if(!valueHolderForToken.isEmpty())
+                            {
+                                try
+                                {
+                                    if(isNumeric(valueHolderForToken))
+                                    {
+                                        Integer.parseInt(valueHolderForToken);
+                                        tokenList.add(new Token(Token.Type.NUMBER,valueHolderForToken));
+                                        valueHolderForToken = "";
+                                    }
+                                    else
+                                    {
+                                        Float.parseFloat(valueHolderForToken);
+                                        tokenList.add(new Token(Token.Type.DECIMAL,valueHolderForToken));
+                                        valueHolderForToken = "";
+                                    }
+                                }
+                                catch(Exception e)
+                                {
+                                    tokenList.add(new Token(Token.Type.IDENTIFIER, valueHolderForToken));
+                                    valueHolderForToken = "";
+                                }
+                                                                
+                            }
+                        }
+                    }
+                    break;
+
             }
         }
         if (!valueHolderForToken.isEmpty() && valueHolderForToken.contains("."))
@@ -475,6 +546,20 @@ public class Lexer {
             }
             
         }
+        // for (int i = 0; i <tokenList.size(); i++) {
+        //     if(tokenList.get(i).getTokenType().equals(Token.Type.EQUALS))
+        //     {
+        //         if(tokenList.get(i-1).getTokenType().equals(Token.Type.IDENTIFIER) && (tokenList.get(i+1).getTokenType().equals(Token.Type.DECIMAL) || tokenList.get(i+1).getTokenType().equals(Token.Type.NUMBER) || tokenList.get(i+1).getTokenType().equals(Token.Type.IDENTIFIER)))
+        //         {
+        //             Token AssignToken = new Token(Token.Type.ASSIGN,tokenList.get(i+1).getValue(),tokenList.get(i-1).getValue());
+                    
+        //             tokenList.remove(i);
+        //             tokenList.add(i, AssignToken);
+        //             tokenList.remove(i+1);
+        //             tokenList.remove(i-1);
+        //         }
+        //     }
+        // }
         tokenList.add(new Token(Token.Type.EndOfLine));
         return tokenList;
     }

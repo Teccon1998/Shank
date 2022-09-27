@@ -8,7 +8,7 @@ public class Shank {
     
     public static void main(String[] args) throws Exception
     {
-    String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\GitBlame\\311\\Lexer\\src\\InputFile.txt";
+    String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\311\\Shank\\src\\InputFile.txt";
         if(args.length != 1)
         {
             System.out.println("Incorrect # of args");
@@ -24,7 +24,6 @@ public class Shank {
             {
                 try 
                 {
-
                     listOfTokenlists.add(Lexer.lex(InputList.get(i)));
                     System.out.println(listOfTokenlists.get(i));
                 } 
@@ -34,19 +33,17 @@ public class Shank {
                     e.printStackTrace();
                 }
             }
-            
-            for(int i = 0; i < listOfTokenlists.size(); i++)
+            ArrayList<Token> MasterTokenList = new ArrayList<Token>();
+            for (List<Token> List : listOfTokenlists) 
             {
-                Parser parser = new Parser(listOfTokenlists.get(i));
-                try
+                for(Token token : List)
                 {
-                    System.out.println(parser.parseTokens());
-                }
-                catch(Exception e)
-                {
-                    throw new Exception("Cannot parse tokens");
+                    MasterTokenList.add(token);
                 }
             }
+            System.out.println("temp");
+            Parser parser = new Parser(MasterTokenList);
+            System.out.println(parser.parseTokens());
         }    
         catch(IOException e)
         {
