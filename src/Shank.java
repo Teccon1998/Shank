@@ -38,8 +38,14 @@ public class Shank {
             for(int i = 0; i < listOfTokenlists.size(); i++)
             {
                 Parser parser = new Parser(listOfTokenlists.get(i));
-                String temp = parser.parseTokens().toString();
-                System.out.println(temp);
+                try
+                {
+                    System.out.println(parser.parseTokens());
+                }
+                catch(Exception e)
+                {
+                    throw new Exception("Cannot parse tokens");
+                }
             }
         }    
         catch(IOException e)

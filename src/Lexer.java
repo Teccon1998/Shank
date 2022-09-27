@@ -318,8 +318,28 @@ public class Lexer {
                 case 5:
                     if (CurrentCharacter == ' ') 
                     {
-
                         State = 5;
+                    }
+                    else if(CurrentCharacter == ';' || CurrentCharacter == ':' || CurrentCharacter == ',' || CurrentCharacter == '=')
+                    {
+                        switch (CurrentCharacter) {
+                            case ';':
+                                tokenList.add(new Token(Token.Type.SEMICOLON));
+                                State = 1;
+                                break;
+                            case ':':
+                                tokenList.add(new Token(Token.Type.COLON));
+                                State = 1;
+                                break;
+                            case ',':
+                                tokenList.add(new Token(Token.Type.COMMA));
+                                State = 1;
+                                break;
+                            case '=':
+                                tokenList.add(new Token(Token.Type.EQUALS));
+                                State = 1;
+                                break;
+                        }
                     }
                     else if(Character.isDigit(CurrentCharacter))
                     {
@@ -378,30 +398,26 @@ public class Lexer {
                             State = 1;
                         }
                     }
-                    else if(CurrentCharacter == ';' || CurrentCharacter == ':' || CurrentCharacter == ',' || CurrentCharacter == '=')
+                    else if(CurrentCharacter == ';' || CurrentCharacter == ':' || CurrentCharacter == ',' || CurrentCharacter == '=' || CurrentCharacter == ')')
                     {
-                        if(!valueHolderForToken.isEmpty())
+                        if (!valueHolderForToken.isEmpty()) 
                         {
-                            if(reservedWords.containsKey(valueHolderForToken.toUpperCase()))
-                            {
+                            if (reservedWords.containsKey(valueHolderForToken.toUpperCase())) {
                                 Token.Type tokenTypeRetrival = reservedWords.get(valueHolderForToken.toUpperCase());
-                                reservedWords.put(valueHolderForToken.toUpperCase(),tokenTypeRetrival);
+                                reservedWords.put(valueHolderForToken.toUpperCase(), tokenTypeRetrival);
                                 tokenList.add(new Token(tokenTypeRetrival));
-                                valueHolderForToken ="";
+                                valueHolderForToken = "";
                                 State = 1;
-                            }
-                            else
-                            {
-                                tokenList.add(new Token(Token.Type.IDENTIFIER,valueHolderForToken));
+                            } else {
+                                tokenList.add(new Token(Token.Type.IDENTIFIER, valueHolderForToken));
                                 valueHolderForToken = "";
                                 State = 1;
                             }
                         }
-                        switch(CurrentCharacter)
-                        {
+                        switch (CurrentCharacter) {
                             case ';':
                                 tokenList.add(new Token(Token.Type.SEMICOLON));
-                                State =1;
+                                State = 1;
                                 break;
                             case ':':
                                 tokenList.add(new Token(Token.Type.COLON));
@@ -413,6 +429,10 @@ public class Lexer {
                                 break;
                             case '=':
                                 tokenList.add(new Token(Token.Type.EQUALS));
+                                State = 1;
+                                break;
+                            case ')':
+                                tokenList.add(new Token(Token.Type.RPAREN));
                                 State = 1;
                                 break;
                         }

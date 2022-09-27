@@ -4,7 +4,7 @@ public class Interpreter {
     {
 
     }
-
+     
     public FloatNode Resolve(Node node)
     {
         if(node instanceof IntegerNode)

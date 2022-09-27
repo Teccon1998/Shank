@@ -90,9 +90,55 @@ public class Parser {
 
     public Node parseTokens() throws Exception
     {
+        if(MatchAndRemove(Token.Type.DEFINE)!= null)
+        {
+            FunctionDefinition();
+        }
         Node HeadNode = Expression();
-        
+        if (HeadNode == null) {
+            System.out.println("Expression has returned null");
+        }
         return HeadNode;
+    }
+    
+    public List<Node> FunctionDefinition() throws Exception
+    {
+        Token Value = MatchAndRemove(Token.Type.IDENTIFIER);
+        String IdentifierName = Value.getValue();
+        MatchAndRemove(Token.Type.LPAREN);
+        String VariableName;
+        List<Node> VariableList = new ArrayList<Node>();
+        if((VariableName = MatchAndRemove(Token.Type.IDENTIFIER).getValue()) != null)
+        {
+            MatchAndRemove(Token.Type.COLON);
+            VariableNode.Type TypeHolder = null;
+            if((MatchAndRemove(Token.Type.INTEGER))!= null)
+            {
+                TypeHolder = VariableNode.Type.INTEGER;
+            }
+            else if((MatchAndRemove(Token.Type.REAL))!= null)
+            {
+                TypeHolder = VariableNode.Type.REAL;
+            }
+            if(MatchAndRemove(Token.Type.SEMICOLON)!= null)
+            {
+                if (TypeHolder != null)
+                {
+                    VariableList.add(new VariableNode(TypeHolder, false, VariableName));
+                }
+                else
+                {
+                    throw new Exception("No TYPE in PARSER");
+                }
+            }
+            else if(MatchAndRemove(Token.Type.RPAREN)!= null)
+            {
+
+            }
+        }
+        
+        
+        return VariableList;
     }
 
     public List<Token> getTokenList() {
