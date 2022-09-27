@@ -21,8 +21,8 @@ public class Lexer {
         reservedWords.put("REAL",Token.Type.REAL);
         reservedWords.put("BEGIN",Token.Type.BEGIN);
         reservedWords.put("END",Token.Type.END);
-        reservedWords.put("VARIABLE", Token.Type.VARIABLE);
-        reservedWords.put("CONSTANT",Token.Type.CONST);
+        reservedWords.put("VARIABLES", Token.Type.VARIABLES);
+        reservedWords.put("CONSTANTS",Token.Type.CONSTS);
         
         List<Token> tokenList = new ArrayList<Token>();
         if(Input.isEmpty())
