@@ -91,15 +91,14 @@ public class Parser {
     public Node parseTokens() throws Exception
     {
         Node returnNode;
+
         if((returnNode =FunctionDefinition()) == null)
         {
-            returnNode = Expression();
+            return Expression();
+
+        } else {
+            return returnNode;
         }
-        else
-        {
-            return null;
-        }
-        return returnNode;
     }
 
     private ArrayList<Node> parameters() throws Exception
@@ -157,7 +156,6 @@ public class Parser {
         List<Node> variableList = new ArrayList<>();
         List<Node> constantList = new ArrayList<>();
         List<Node> statementsList = new ArrayList<>();
-        String FunctionName = "";
         if(MatchAndRemove(Token.Type.DEFINE)!= null)
         {
             Token TempToken = null;
@@ -165,37 +163,32 @@ public class Parser {
             {
                 if(MatchAndRemove(Token.Type.LPAREN)!= null)
                 {
-                    parameterList.addAll(parameters());
+                    parameterList = parameters();    
                 }
                 while(!tokenList.isEmpty())
                 {
                     MatchAndRemove(Token.Type.EndOfLine);
                     if(MatchAndRemove(Token.Type.CONSTS)!= null)
                     {
-                        
-                        do
-                        {
+                        MatchAndRemove(Token.Type.EndOfLine);
+                        do {
                             Token IdentifierToken = MatchAndRemove(Token.Type.IDENTIFIER);
                             MatchAndRemove(Token.Type.COMMA);
-                            if(IdentifierToken!= null)
-                            {
-                                if(MatchAndRemove(Token.Type.EQUALS)!= null)
-                                {
+                            if (IdentifierToken != null) {
+                                if (MatchAndRemove(Token.Type.EQUALS) != null) {
                                     Token ValueToken;
-                                    if((ValueToken = MatchAndRemove(Token.Type.NUMBER))!=null)
-                                    {
+                                    if ((ValueToken = MatchAndRemove(Token.Type.NUMBER)) != null) {
                                         IntegerNode intNode = new IntegerNode(Integer.parseInt(ValueToken.getValue()));
-                                        constantList.add(new VariableNode(VariableNode.Type.INTEGER,true, IdentifierToken.getValue(), intNode));
-                                    }
-                                    else if((ValueToken = MatchAndRemove(Token.Type.DECIMAL))!= null)
-                                    {
+                                        constantList.add(new VariableNode(VariableNode.Type.INTEGER, true,
+                                                IdentifierToken.getValue(), intNode));
+                                    } else if ((ValueToken = MatchAndRemove(Token.Type.DECIMAL)) != null) {
                                         FloatNode floatNode = new FloatNode(Float.parseFloat(ValueToken.getValue()));
-                                        constantList.add(new VariableNode(VariableNode.Type.REAL, true,IdentifierToken.getValue() , floatNode));
+                                        constantList.add(new VariableNode(VariableNode.Type.REAL, true,
+                                                IdentifierToken.getValue(), floatNode));
                                     }
                                 }
                             }
-                        }
-                        while(MatchAndRemove(Token.Type.EndOfLine)!= null);
+                        } while (MatchAndRemove(Token.Type.EndOfLine) != null);
 
                     }
                     if(MatchAndRemove(Token.Type.VARIABLES)!= null)
@@ -230,95 +223,73 @@ public class Parser {
                     if(MatchAndRemove(Token.Type.BEGIN)!= null)
                     {
                         MatchAndRemove(Token.Type.EndOfLine);
+                        while(MatchAndRemove(Token.Type.END)== null)
+                        {
+                            MatchAndRemove(Token.Type.EndOfLine);
+                            Node tempNode = statement();
+                            if(tempNode != null)
+                            {
+                                statementsList.add(tempNode);
+                            }
+                            
+                        }
+
                     }
-                    if(MatchAndRemove(Token.Type.END)!= null)
-                    {
-                        MatchAndRemove(Token.Type.EndOfLine);
-                    }
+            
                 }
                 FunctionNode functionNode = new FunctionNode();
                 functionNode.setFunctionName(TempToken.getValue());
                 functionNode.setLocalsList(variableList);
                 functionNode.setParamsList(parameterList);
                 functionNode.setFunctionName(TempToken.getValue());
+                functionNode.setStatementList(statementsList);
                 return functionNode;
             }
-            
-            
-            
         }
         return null;
-        // FunctionNode holderFunctionNode = new FunctionNode();
-        // List<Node> VariableList = new ArrayList<Node>();
-        // while (true)
-        // {
-        //     Token TempToken;
-        //     if (MatchAndRemove(Token.Type.DEFINE) != null) {
-        //         Token Value = MatchAndRemove(Token.Type.IDENTIFIER);
-        //         if (Value != null) {
-        //             String IdentifierName = Value.getValue();
-        //             if (MatchAndRemove(Token.Type.LPAREN) != null) {
-        //                 String VariableName;
-        //                 if ((VariableName = MatchAndRemove(Token.Type.IDENTIFIER).getValue()) != null) {
-        //                     if (MatchAndRemove(Token.Type.COLON) != null) {
-        //                         VariableNode.Type TypeHolder = null;
-        //                         if ((MatchAndRemove(Token.Type.INTEGER)) != null) {
-        //                             TypeHolder = VariableNode.Type.INTEGER;
-        //                         } else if ((MatchAndRemove(Token.Type.REAL)) != null) {
-        //                             TypeHolder = VariableNode.Type.REAL;
-        //                         }
-        //                         if (MatchAndRemove(Token.Type.SEMICOLON) != null) {
-        //                             if (TypeHolder != null) {
-        //                                 VariableList.add(new VariableNode(TypeHolder, false, VariableName));
-        //                                 holderFunctionNode = tempFuncNode;
-        //                             } else {
-        //                                 throw new Exception("No TYPE in PARSER");
-        //                             }
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     } else if ((TempToken = MatchAndRemove(Token.Type.IDENTIFIER)) != null) {
-        //         String Tokenname = TempToken.getValue();
-        //         if (Tokenname != null) {
-
-        //             if (MatchAndRemove(Token.Type.COLON) != null) {
-        //                 VariableNode.Type TypeHolder = null;
-        //                 if ((MatchAndRemove(Token.Type.INTEGER)) != null) {
-        //                     TypeHolder = VariableNode.Type.INTEGER;
-        //                 } else if ((MatchAndRemove(Token.Type.REAL)) != null) {
-        //                     TypeHolder = VariableNode.Type.REAL;
-        //                 }
-        //                 if (MatchAndRemove(Token.Type.SEMICOLON) != null) {
-        //                     if (TypeHolder != null) {
-        //                         VariableList.add(new VariableNode(TypeHolder, false, Tokenname));
-        //                     } else {
-        //                         throw new Exception("No TYPE in PARSER");
-        //                     }
-        //                 } else if (MatchAndRemove(Token.Type.RPAREN) != null) {
-        //                     VariableList.add(new VariableNode(TypeHolder, false, Tokenname));
-        //                     holderFunctionNode.setParamsList(VariableList);
-        //                     MatchAndRemove(Token.Type.EndOfLine);
-        //                     return holderFunctionNode;
-        //                 }
-        //             }
-
-        //         }
-
-        //     }
-        //     else
-        //     {
-        //         throw new Exception("Not parsable");
-        //     }
-            
-        // }
-
-
-        
-        
     }
 
+    public Node statement() throws Exception
+    {
+        return assignment();
+    }
+    public Node assignment()
+    {
+        AssignmentNode node = new AssignmentNode();
+        Token AssignToken;
+        if((AssignToken = MatchAndRemove(Token.Type.ASSIGN))!= null)
+        {
+            node.setName(AssignToken.getName());
+            if (isNumeric(AssignToken.getValue())) {
+                node.setIntValue(Integer.parseInt(AssignToken.getValue()));
+                MatchAndRemove(Token.Type.EndOfLine);
+                return node;
+            } else {
+                node.setFloatValue(Float.parseFloat(AssignToken.getValue()));
+                MatchAndRemove(Token.Type.EndOfLine);
+                return node;
+            }
+        }
+        return null;
+        
+    }
+    private boolean isNumeric(String input)
+    {
+        if (input == null) 
+        {
+            return false;
+        }
+        try
+        {
+            Integer.parseInt(input);
+            return true;
+        }
+        catch(NumberFormatException nfe)
+        {
+            return false;
+        }
+        
+    }
     public List<Token> getTokenList() {
         return this.tokenList;
     }

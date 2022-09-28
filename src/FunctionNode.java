@@ -40,7 +40,13 @@ public class FunctionNode extends Node {
         this.LocalsList = LocalsList;
     }
     
-
+    public FunctionNode(String FunctionName, List<Node> StatementList,List<Node> ParamsList, List<Node> LocalsList)
+    {
+        this.FunctionName = FunctionName;
+        this.StatementList = StatementList;
+        this.ParamsList = ParamsList;
+        this.LocalsList = LocalsList;
+    }
     public FunctionNode(String FunctionName, List<Node> StatementList)
     {
         this.FunctionName = FunctionName;
@@ -60,12 +66,13 @@ public class FunctionNode extends Node {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("FunctionNode(NAME:");
+        sb.append("FunctionNode(\nNAME:");
         sb.append(this.FunctionName);
-        sb.append(",PARAMS:");
+        sb.append(" \nPARAMS:");
         if (this.ParamsList != null)
         {
             for (Node node : ParamsList) {
+                sb.append("\n");
                 sb.append(node);
             }
 
@@ -74,10 +81,11 @@ public class FunctionNode extends Node {
         {
             sb.append("NULL");
         }
-        sb.append(",LOCALS:");
+        sb.append(" \nLOCALS:");
         if (this.LocalsList != null)
         {
             for (Node node : LocalsList) {
+                sb.append("\n");
                 sb.append(node);
             }
 
@@ -86,7 +94,20 @@ public class FunctionNode extends Node {
         {
             sb.append("NULL");
         }
-        sb.append(")");
+        sb.append(" \nSTATEMENTS: ");
+        if (this.StatementList != null)
+        {
+            for (Node node : StatementList) {
+                sb.append("\n");
+                sb.append(node);
+                
+            }
+        }
+        else
+        {
+            sb.append("NULL");
+        }
+        sb.append("\n)");
         return sb.toString();
     }
     

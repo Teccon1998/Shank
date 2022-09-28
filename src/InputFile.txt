@@ -1,1 +1,10 @@
-abc(*def*)dev
+define start (t : integer; s,t,v : real)
+constants
+pi = 3.1414
+variables
+a,b,c : integer
+begin
+ANNUMBER (*This is a comment*) := 1234
+NUMBERTWO := 1.23 (*This is a comment*)
+(*this is a comment*)
+end

@@ -1,4 +1,3 @@
-import java.lang.Thread.State;
 import java.util.*;
 
 public class Lexer {
@@ -102,7 +101,8 @@ public class Lexer {
                     {
                         if(tokenList.get(tokenList.size()-1).getTokenType().equals(Token.Type.LPAREN))
                         {
-                            tokenList.remove(tokenList.size()-1);
+                            tokenList.remove(tokenList.size() - 1);
+                            valueHolderForToken += CurrentCharacter;
                             State = 8;
                         }
                     }
@@ -190,11 +190,16 @@ public class Lexer {
                         if (valueHolderForToken.isEmpty()) {
                             tokenList.add(new Token(Token.Type.LPAREN));
                         } else if (!valueHolderForToken.isEmpty()) {
-                            if (tokenList.get(tokenList.size()-1).equals(new Token(Token.Type.NUMBER))
-                                    || tokenList.get(tokenList.size()-1).equals(new Token(Token.Type.DECIMAL))) {
+                            if (tokenList.get(tokenList.size() - 1).equals(new Token(Token.Type.NUMBER))
+                                    || tokenList.get(tokenList.size() - 1).equals(new Token(Token.Type.DECIMAL))) {
                                 tokenList.add(new Token(Token.Type.TIMES));
                                 tokenList.add(new Token(Token.Type.LPAREN));
                             }
+                        }
+                        if (isNumeric(valueHolderForToken))
+                        {
+                            tokenList.add(new Token(Token.Type.LPAREN));
+                            valueHolderForToken = "";
                         }
                         State = 1;
                         
@@ -369,8 +374,7 @@ public class Lexer {
                     }
                     else if (CurrentCharacter == '+' || CurrentCharacter == '-' || CurrentCharacter == '/'|| CurrentCharacter == '*') 
                     {
-                        switch (CurrentCharacter) 
-                        {
+                        switch (CurrentCharacter) {
                             case '+':
                                 tokenList.add(new Token(Token.Type.PLUS));
                                 break;
@@ -385,6 +389,10 @@ public class Lexer {
                                 break;
                         }
                         State = 1;
+                    }
+                    else if (CurrentCharacter == '(')
+                    {
+                        State = 8;
                     }
                     break;
                 case 6:
@@ -433,12 +441,11 @@ public class Lexer {
                                 tokenList.add(new Token(tokenTypeRetrival));
                                 valueHolderForToken = "";
                                 State = 1;
-                                break;
+
                             } else {
                                 tokenList.add(new Token(Token.Type.IDENTIFIER, valueHolderForToken));
                                 valueHolderForToken = "";
                                 State = 1;
-                                break;
                             }
                         }
                         switch (CurrentCharacter) {
@@ -546,20 +553,28 @@ public class Lexer {
             }
             
         }
-        // for (int i = 0; i <tokenList.size(); i++) {
-        //     if(tokenList.get(i).getTokenType().equals(Token.Type.EQUALS))
-        //     {
-        //         if(tokenList.get(i-1).getTokenType().equals(Token.Type.IDENTIFIER) && (tokenList.get(i+1).getTokenType().equals(Token.Type.DECIMAL) || tokenList.get(i+1).getTokenType().equals(Token.Type.NUMBER) || tokenList.get(i+1).getTokenType().equals(Token.Type.IDENTIFIER)))
-        //         {
-        //             Token AssignToken = new Token(Token.Type.ASSIGN,tokenList.get(i+1).getValue(),tokenList.get(i-1).getValue());
-                    
-        //             tokenList.remove(i);
-        //             tokenList.add(i, AssignToken);
-        //             tokenList.remove(i+1);
-        //             tokenList.remove(i-1);
-        //         }
-        //     }
-        // }
+        try
+        {
+            for (int i = 0; i <tokenList.size(); i++) 
+            {
+                if(tokenList.get(i).getTokenType().equals(Token.Type.EQUALS))
+                {
+                    if(tokenList.get(i-2).getTokenType().equals(Token.Type.IDENTIFIER) && tokenList.get(i-1).getTokenType().equals(Token.Type.COLON) && (tokenList.get(i+1).getTokenType().equals(Token.Type.DECIMAL) || tokenList.get(i+1).getTokenType().equals(Token.Type.NUMBER) || tokenList.get(i+1).getTokenType().equals(Token.Type.IDENTIFIER)))
+                    {
+                        Token AssignToken = new Token(Token.Type.ASSIGN,tokenList.get(i+1).getValue(),tokenList.get(i-2).getValue());
+                        
+                        tokenList.remove(i);
+                        tokenList.add(i, AssignToken);
+                        tokenList.remove(i+1);
+                        tokenList.remove(i-2);
+                        tokenList.remove(i-2);
+                    }
+                }
+            }
+        }catch (Exception e)
+        {
+            //do nothing
+        }
         tokenList.add(new Token(Token.Type.EndOfLine));
         return tokenList;
     }
