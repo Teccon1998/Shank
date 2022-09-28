@@ -45,23 +45,7 @@ public class AssignmentNode extends StatementNode {
     public void setIntValue(int intValue) {
         this.intValue = intValue;
     }
-    private boolean isNumeric(String input)
-    {
-        if (input == null) 
-        {
-            return false;
-        }
-        try
-        {
-            Integer.parseInt(input);
-            return true;
-        }
-        catch(NumberFormatException nfe)
-        {
-            return false;
-        }
-        
-    }
+    
 
     @Override
     public String toString()
