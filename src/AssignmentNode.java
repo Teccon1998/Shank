@@ -53,10 +53,16 @@ public class AssignmentNode extends StatementNode {
         StringBuilder sb = new StringBuilder();
         sb.append("AssignmentNode(Name: ");
         sb.append(this.name);
-        sb.append(", intValue: ");
-        sb.append(this.intValue);
-        sb.append(", FloatValue: ");
-        sb.append(this.floatValue);
+        if(intValue % 1 ==0)
+        {
+            sb.append(", intValue: ");
+            sb.append(this.intValue);
+        }
+        else
+        {
+            sb.append(", FloatValue: ");
+            sb.append(this.floatValue);
+        }
         sb.append(")");
         return sb.toString();
     }

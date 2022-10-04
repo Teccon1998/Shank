@@ -23,7 +23,17 @@ public class Lexer {
         reservedWords.put("END",Token.Type.END);
         reservedWords.put("VARIABLES", Token.Type.VARIABLES);
         reservedWords.put("CONSTANTS",Token.Type.CONSTS);
-        
+        reservedWords.put("IF",Token.Type.IF);
+        reservedWords.put("THEN",Token.Type.THEN);
+        reservedWords.put("ELSE",Token.Type.ELSE);
+        reservedWords.put("ELSIF",Token.Type.ELSIF);
+        reservedWords.put("FOR",Token.Type.FOR);
+        reservedWords.put("FROM",Token.Type.FROM);
+        reservedWords.put("TO", Token.Type.TO);
+        reservedWords.put("WHILE",Token.Type.WHILE);
+        reservedWords.put("REPEAT",Token.Type.REPEAT);
+        reservedWords.put("UNTIL",Token.Type.UNTIL);
+        reservedWords.put("MOD",Token.Type.MOD);
         List<Token> tokenList = new ArrayList<Token>();
         if(Input.isEmpty())
         {

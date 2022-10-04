@@ -1,10 +1,7 @@
-define start (t : integer; s,t,v : real)
+define start(t : integer; s,t,v,q : real)
 constants
-pi = 3.1414
+pi = 3.14
 variables
-a,b,c : integer
-begin
-ANNUMBER (*This is a comment*) := 1234
-NUMBERTWO := 1.23 (*This is a comment*)
-(*this is a comment*)
+a,q,v : integer
+begin 
 end

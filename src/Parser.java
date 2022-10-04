@@ -271,7 +271,7 @@ public class Parser {
             }
         }
         return null;
-        
+        //Cast your value as a float, mod it and if the result is 0 then you cast it back to int.
     }
     private boolean isNumeric(String input)
     {
