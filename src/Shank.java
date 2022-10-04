@@ -35,17 +35,12 @@ public class Shank {
                     e.printStackTrace();
                 }
             }
-            ArrayList<Token> MasterTokenList = new ArrayList<Token>();
-            for (List<Token> List : listOfTokenlists) 
+            
+            for(List<Token> list : listOfTokenlists)
             {
-                for(Token token : List)
-                {
-                    MasterTokenList.add(token);
-                }
+                Parser parser = new Parser(list);
+                System.out.println(parser.parseTokens());
             }
-            System.out.println("temp");
-            Parser parser = new Parser(MasterTokenList);
-            System.out.println(parser.parseTokens());
         }    
         catch(IOException e)
         {

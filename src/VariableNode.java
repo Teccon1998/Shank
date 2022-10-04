@@ -2,7 +2,7 @@ public class VariableNode extends Node {
 
     private String VariableName;
     private boolean isConstant;
-    private Type Type;
+    private Token.Type Type;
     private Node Node;
 
     public enum Type
@@ -10,7 +10,7 @@ public class VariableNode extends Node {
         INTEGER, REAL
     };
 
-    public VariableNode(Type Type,Boolean CONST, String VariableName, Node Node)
+    public VariableNode(Token.Type Type,Boolean CONST, String VariableName, Node Node)
     {
         this.Type = Type;
         this.isConstant = CONST;
@@ -25,7 +25,7 @@ public class VariableNode extends Node {
         return this.VariableName;
     }
 
-    public Type getType() {
+    public Token.Type getType() {
         return this.Type;
     }
     

@@ -1,7 +1,5 @@
-define start (t : integer; s,t,v,q : real)
-constants
-pi = 3.14
-variables
-a,q,v : integer
-begin 
-end
+
+12 >= 12
+12 <=12
+25 <> 15
+53 <> number

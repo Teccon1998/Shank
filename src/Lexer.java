@@ -1,3 +1,4 @@
+import java.lang.Thread.State;
 import java.util.*;
 
 public class Lexer {
@@ -116,6 +117,11 @@ public class Lexer {
                             State = 8;
                         }
                     }
+                    else if(tokenList.get(tokenList.size()-1).getTokenType().equals(Token.Type.LESS))
+                    {
+                        tokenList.add(new Token(Token.Type.GREATER));
+                        State =1;
+                    }
                     else 
                     {
                         throw new Exception("Incorrect formatting on Iteration " +  i);// I for iteration location for debugging
@@ -165,7 +171,7 @@ public class Lexer {
                         valueHolderForToken += CurrentCharacter;
                         State = 3;
                     } 
-                    else if (CurrentCharacter == '+' || CurrentCharacter == '-' || CurrentCharacter == '/'|| CurrentCharacter == '*') 
+                    else if (CurrentCharacter == '+' || CurrentCharacter == '-' || CurrentCharacter == '/'|| CurrentCharacter == '*' || CurrentCharacter == '>' || CurrentCharacter == '<' || CurrentCharacter == '=') 
                     {
                         
                         if (valueHolderForToken.contains(".")) {
@@ -191,6 +197,15 @@ public class Lexer {
                                     break;
                                 case '*':
                                     tokenList.add(new Token(Token.Type.TIMES));
+                                    break;
+                                case '>':
+                                    tokenList.add(new Token(Token.Type.GREATER));
+                                    break;
+                                case '<':
+                                    tokenList.add(new Token(Token.Type.LESS));
+                                    break;
+                                case '=':
+                                    tokenList.add(new Token(Token.Type.EQUALS));
                                     break;
                             }
                         State = 1;
@@ -273,6 +288,11 @@ public class Lexer {
                             State = 5;
                         }
                     }
+                    else if(CurrentCharacter == ':')
+                    {
+                        tokenList.add(new Token(Token.Type.COLON));
+                        State = 5;
+                    }
                     else
                     {
                         throw new Exception("Incorrect formatting on Iteration " +  i);
@@ -311,7 +331,7 @@ public class Lexer {
                         }
                         State = 1;
                     }
-                    else if (CurrentCharacter == '+' || CurrentCharacter == '-' || CurrentCharacter == '/' || CurrentCharacter == '*') 
+                    else if (CurrentCharacter == '+' || CurrentCharacter == '-' || CurrentCharacter == '/'|| CurrentCharacter == '*' || CurrentCharacter == '>' || CurrentCharacter == '<' || CurrentCharacter == '=') 
                     {
                         if (valueHolderForToken.contains(".")) 
                         {
@@ -328,17 +348,26 @@ public class Lexer {
                         switch (CurrentCharacter) 
                         {
                             case '+':
-                                tokenList.add(new Token(Token.Type.PLUS));
-                                break;
-                            case '-':
-                                tokenList.add(new Token(Token.Type.MINUS));
-                                break;
-                            case '/':
-                                tokenList.add(new Token(Token.Type.DIVIDE));
-                                break;
-                            case '*':
-                                tokenList.add(new Token(Token.Type.TIMES));
-                                break;
+                                    tokenList.add(new Token(Token.Type.PLUS));
+                                    break;
+                                case '-':
+                                    tokenList.add(new Token(Token.Type.MINUS));
+                                    break;
+                                case '/':
+                                    tokenList.add(new Token(Token.Type.DIVIDE));
+                                    break;
+                                case '*':
+                                    tokenList.add(new Token(Token.Type.TIMES));
+                                    break;
+                                case '>':
+                                    tokenList.add(new Token(Token.Type.GREATER));
+                                    break;
+                                case '<':
+                                    tokenList.add(new Token(Token.Type.LESS));
+                                    break;
+                                case '=':
+                                    tokenList.add(new Token(Token.Type.EQUALS));
+                                    break;
                         }
                     } 
                     else if (CurrentCharacter == ' ') 
@@ -382,27 +411,42 @@ public class Lexer {
                     {
                         throw new Exception("Incorrect formatting on Iteration " + i);
                     }
-                    else if (CurrentCharacter == '+' || CurrentCharacter == '-' || CurrentCharacter == '/'|| CurrentCharacter == '*') 
+                    else if (CurrentCharacter == '+' || CurrentCharacter == '-' || CurrentCharacter == '/'|| CurrentCharacter == '*' || CurrentCharacter == '>' || CurrentCharacter == '<' || CurrentCharacter == '=') 
                     {
                         switch (CurrentCharacter) {
                             case '+':
-                                tokenList.add(new Token(Token.Type.PLUS));
-                                break;
-                            case '-':
-                                tokenList.add(new Token(Token.Type.MINUS));
-                                break;
-                            case '/':
-                                tokenList.add(new Token(Token.Type.DIVIDE));
-                                break;
-                            case '*':
-                                tokenList.add(new Token(Token.Type.TIMES));
-                                break;
+                                    tokenList.add(new Token(Token.Type.PLUS));
+                                    break;
+                                case '-':
+                                    tokenList.add(new Token(Token.Type.MINUS));
+                                    break;
+                                case '/':
+                                    tokenList.add(new Token(Token.Type.DIVIDE));
+                                    break;
+                                case '*':
+                                    tokenList.add(new Token(Token.Type.TIMES));
+                                    break;
+                                case '>':
+                                    tokenList.add(new Token(Token.Type.GREATER));
+                                    break;
+                                case '<':
+                                    tokenList.add(new Token(Token.Type.LESS));
+                                    break;
+                                case '=':
+                                    tokenList.add(new Token(Token.Type.EQUALS));
+                                    break;
                         }
                         State = 1;
                     }
                     else if (CurrentCharacter == '(')
                     {
                         State = 8;
+                    }
+                    else if(Character.isLetter(CurrentCharacter))
+                    {
+                        State = 7;
+                        valueHolderForToken += CurrentCharacter;
+                        break;
                     }
                     break;
                 case 6:
@@ -437,7 +481,7 @@ public class Lexer {
                         {
                             tokenList.add(new Token(Token.Type.IDENTIFIER,valueHolderForToken));
                             valueHolderForToken = "";
-                            State = 1;
+                            State = 3;
                         }
                         break;
                     }
@@ -578,6 +622,36 @@ public class Lexer {
             }
             
         }
+        for(int i = 0; i < tokenList.size(); i++)
+        {
+            if(tokenList.get(i).getTokenType().equals(Token.Type.LESS))
+            {
+                if(tokenList.get(i+1).getTokenType().equals(Token.Type.EQUALS))
+                {
+                    Token AssignToken = new Token(Token.Type.LESSEQUAL);
+                    tokenList.remove(i);
+                    tokenList.add(i, AssignToken);
+                    tokenList.remove(i+1);
+                }
+                else if(tokenList.get(i+1).getTokenType().equals(Token.Type.GREATER))
+                {
+                    Token AssignToken = new Token(Token.Type.NOTEQUAL);
+                    tokenList.remove(i);
+                    tokenList.add(i, AssignToken);
+                    tokenList.remove(i+1);
+                }
+            }
+            else if(tokenList.get(i).getTokenType().equals(Token.Type.GREATER))
+            {
+                if(tokenList.get(i+1).getTokenType().equals(Token.Type.EQUALS))
+                {
+                Token AssignToken = new Token(Token.Type.GREATEREQUAL);
+                    tokenList.remove(i);
+                    tokenList.add(i, AssignToken);
+                    tokenList.remove(i+1);
+                }
+            }
+        }
         try
         {
             for (int i = 0; i <tokenList.size(); i++) 
@@ -594,6 +668,7 @@ public class Lexer {
                         tokenList.remove(i-2);
                         tokenList.remove(i-2);
                     }
+                    
                 }
             }
         }catch (Exception e)

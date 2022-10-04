@@ -51,6 +51,10 @@ public class Parser {
         {
             return new MathOpNode(FirstNode, Term(), MathOpNode.Operator.DIVIDE);
         }
+        else if((MatchAndRemove(Token.Type.MOD)!= null))
+        {
+            return new MathOpNode(FirstNode, Term(), MathOpNode.Operator.MODULO);
+        }
         else if(FirstNode != null)
         {
             return FirstNode;
@@ -73,6 +77,13 @@ public class Parser {
         {
             return new FloatNode(Float.parseFloat(Value.getValue()));
         }
+        else if((Value = MatchAndRemove(Token.Type.IDENTIFIER))!= null)
+        {}
+        else if ((Value = MatchAndRemove(Token.Type.ASSIGN))!= null)
+        {
+            tokenList.add(0,Value);
+            return new VariableNode(Value.getTokenType(), false, Value.getName(),assignment());
+        }
         else if (MatchAndRemove(Token.Type.LPAREN) != null)
         {
             Factor = Expression();
@@ -85,20 +96,94 @@ public class Parser {
         return null;
     }
     
+    public BooleanNode BooleanExpression(Token ValOne, Token Condition, Token ValTwo)
+    {
+        Node NodeOne = null;
+        Node NodeTwo = null;
     
+        if(ValOne.getTokenType().equals(Token.Type.NUMBER))
+        {
+            NodeOne = new IntegerNode(Integer.parseInt(ValOne.getValue()));
+        }
+        else if(ValOne.getTokenType().equals(Token.Type.DECIMAL))
+        {
+            NodeOne = new FloatNode(Float.parseFloat(ValOne.getValue()));
+        }
+        else if(ValOne.getTokenType().equals(Token.Type.ASSIGN) || ValOne.getTokenType().equals(Token.Type.IDENTIFIER))
+        {
+            String name = ValOne.getName();
+            if(ValOne.getName() == null)
+            {
+                name = ValOne.getValue();
+            }
+            NodeOne = new VariableNode(ValOne.getTokenType(), false, name, assignment());
+        }
+        if(ValTwo.getTokenType().equals(Token.Type.NUMBER))
+        {
+            NodeTwo = new IntegerNode(Integer.parseInt(ValTwo.getValue()));
+        }
+        else if(ValTwo.getTokenType().equals(Token.Type.DECIMAL))
+        {
+            NodeTwo = new FloatNode(Float.parseFloat(ValTwo.getValue()));
+        }
+        else if(ValTwo.getTokenType().equals(Token.Type.ASSIGN) || ValTwo.getTokenType().equals(Token.Type.IDENTIFIER))
+        {
+            String name = ValTwo.getName();
+            if(ValTwo.getName() == null)
+            {
+                name = ValTwo.getValue();
+            }
+            NodeTwo = new VariableNode(ValTwo.getTokenType(), false, name , assignment());
+        }
+        BooleanNode boolNode = new BooleanNode(NodeOne, Condition, NodeTwo);
+        return boolNode;
+    }
 
 
     public Node parseTokens() throws Exception
     {
         Node returnNode;
+        Token ValueOne = new Token(Token.Type.INTEGER, null);
+        Token Condition = new Token(Token.Type.INTEGER, null);
+        Token ValueTwo = new Token(Token.Type.INTEGER, null);
 
+        if((ValueOne = MatchAndRemove(Token.Type.NUMBER))!= null || (ValueOne = MatchAndRemove(Token.Type.DECIMAL))!= null ||  (ValueOne = MatchAndRemove(Token.Type.ASSIGN))!= null )
+        {
+            if((Condition = MatchAndRemove(Token.Type.LESS)) !=null || (Condition = MatchAndRemove(Token.Type.GREATER)) != null|| (Condition = MatchAndRemove(Token.Type.LESSEQUAL)) != null|| (Condition = MatchAndRemove(Token.Type.GREATEREQUAL)) != null|| (Condition = MatchAndRemove(Token.Type.NOTEQUAL))!= null)
+            {
+                if((ValueTwo = MatchAndRemove(Token.Type.NUMBER))!= null || (ValueTwo = MatchAndRemove(Token.Type.DECIMAL))!= null ||  (ValueTwo = MatchAndRemove(Token.Type.IDENTIFIER))!= null )
+                {
+                    return BooleanExpression(ValueOne,Condition,ValueTwo);
+                }
+            }
+        }
+        
+        try
+        {
+            if(ValueOne.getValue() != null)
+            {
+                tokenList.add(0, ValueOne);
+            }
+            if(Condition.getValue() != null)
+            {
+                tokenList.add(0,Condition);
+            }
+            if(ValueTwo.getValue() != null)
+            {
+                tokenList.add(0,ValueTwo);
+            }
+        }
+        catch(Exception e)
+        {
+            //do nothing just continue.
+        }
         if((returnNode =FunctionDefinition()) == null)
         {
             return Expression();
 
         } else {
             return returnNode;
-        }
+        }        
     }
 
     private ArrayList<Node> parameters() throws Exception
@@ -134,7 +219,7 @@ public class Parser {
                 for(int i = 0; i<parameterTokens.size(); i++)
                 {
                     IntegerNode integerNode = new IntegerNode(0);
-                    parameterNodes.add(new VariableNode(VariableNode.Type.INTEGER, false, parameterTokens.get(i).getValue(), integerNode));
+                    parameterNodes.add(new VariableNode(Token.Type.INTEGER, false, parameterTokens.get(i).getValue(), integerNode));
                 }
             }
             else if(MatchAndRemove(Token.Type.REAL)!= null)
@@ -142,7 +227,7 @@ public class Parser {
                 for(int i = 0; i<parameterTokens.size(); i++)
                 {
                     FloatNode floatNode = new FloatNode(0);
-                    parameterNodes.add(new VariableNode(VariableNode.Type.REAL, false, parameterTokens.get(i).getValue(), floatNode));
+                    parameterNodes.add(new VariableNode(Token.Type.DECIMAL, false, parameterTokens.get(i).getValue(), floatNode));
                 }
             }
             return parameterNodes;
@@ -178,11 +263,11 @@ public class Parser {
                                     Token ValueToken;
                                     if ((ValueToken = MatchAndRemove(Token.Type.NUMBER)) != null) {
                                         IntegerNode intNode = new IntegerNode(Integer.parseInt(ValueToken.getValue()));
-                                        variableList.add(new VariableNode(VariableNode.Type.INTEGER, true,
+                                        variableList.add(new VariableNode(Token.Type.INTEGER, true,
                                                 IdentifierToken.getValue(), intNode));
                                     } else if ((ValueToken = MatchAndRemove(Token.Type.DECIMAL)) != null) {
                                         FloatNode floatNode = new FloatNode(Float.parseFloat(ValueToken.getValue()));
-                                        variableList.add(new VariableNode(VariableNode.Type.REAL, true,
+                                        variableList.add(new VariableNode(Token.Type.DECIMAL, true,
                                                 IdentifierToken.getValue(), floatNode));
                                     }
                                 }
@@ -206,7 +291,7 @@ public class Parser {
                                 for(int i = 0; i<variableTokens.size(); i++)
                                 {
                                     IntegerNode integerNode = new IntegerNode(0);
-                                    variableList.add(new VariableNode(VariableNode.Type.INTEGER, false, variableTokens.get(i).getValue(), integerNode));
+                                    variableList.add(new VariableNode(Token.Type.INTEGER, false, variableTokens.get(i).getValue(), integerNode));
                                 }
                             }
                             else if(MatchAndRemove(Token.Type.REAL)!= null)
@@ -214,7 +299,7 @@ public class Parser {
                                 for(int i = 0; i<variableTokens.size(); i++)
                                 {
                                     FloatNode floatNode = new FloatNode(0);
-                                    variableList.add(new VariableNode(VariableNode.Type.REAL, false, variableTokens.get(i).getValue(), floatNode));
+                                    variableList.add(new VariableNode(Token.Type.DECIMAL, false, variableTokens.get(i).getValue(), floatNode));
                                 }
                             }
                         }
@@ -270,7 +355,6 @@ public class Parser {
             }
         }
         return null;
-        //Cast your value as a float, mod it and if the result is 0 then you cast it back to int.
     }
     private boolean isNumeric(String input)
     {

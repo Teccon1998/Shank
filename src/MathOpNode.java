@@ -1,6 +1,6 @@
 public class MathOpNode extends Node {
     public enum Operator {
-        ADD, SUBTRACT, DIVIDE, TIMES;
+        ADD, SUBTRACT, DIVIDE, TIMES, MODULO;
     }
 
     private Node Operand1;
@@ -32,6 +32,9 @@ public class MathOpNode extends Node {
                 return new FloatNode(Result);
             case TIMES:
                 Result = Num1 * Num2;
+                return new FloatNode(Result);
+            case MODULO:
+                Result = Num1 % Num2;
                 return new FloatNode(Result);
         }
         return null;
