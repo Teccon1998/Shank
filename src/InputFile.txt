@@ -1,4 +1,4 @@
-define start(t : integer; s,t,v,q : real)
+define start (t : integer; s,t,v,q : real)
 constants
 pi = 3.14
 variables

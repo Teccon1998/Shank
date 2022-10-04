@@ -154,7 +154,6 @@ public class Parser {
     {
         List<Node> parameterList = new ArrayList<>();
         List<Node> variableList = new ArrayList<>();
-        List<Node> constantList = new ArrayList<>();
         List<Node> statementsList = new ArrayList<>();
         if(MatchAndRemove(Token.Type.DEFINE)!= null)
         {
@@ -179,11 +178,11 @@ public class Parser {
                                     Token ValueToken;
                                     if ((ValueToken = MatchAndRemove(Token.Type.NUMBER)) != null) {
                                         IntegerNode intNode = new IntegerNode(Integer.parseInt(ValueToken.getValue()));
-                                        constantList.add(new VariableNode(VariableNode.Type.INTEGER, true,
+                                        variableList.add(new VariableNode(VariableNode.Type.INTEGER, true,
                                                 IdentifierToken.getValue(), intNode));
                                     } else if ((ValueToken = MatchAndRemove(Token.Type.DECIMAL)) != null) {
                                         FloatNode floatNode = new FloatNode(Float.parseFloat(ValueToken.getValue()));
-                                        constantList.add(new VariableNode(VariableNode.Type.REAL, true,
+                                        variableList.add(new VariableNode(VariableNode.Type.REAL, true,
                                                 IdentifierToken.getValue(), floatNode));
                                     }
                                 }
