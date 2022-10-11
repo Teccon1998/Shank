@@ -1,5 +1,18 @@
-
-12 >= 12
-12 <=12
-25 <> 15
-53 <> number
+define start (t : integer; s,t,v,q : real)
+constants
+pi = 3.14
+variables
+a,q,v : integer
+begin
+q := 23 + 4 
+v := (8*4) + 23 
+while(8 > 3)
+    begin
+    a := 19
+    v := pi
+    end
+if(number <> 8)
+    begin
+    a := 23
+    b := 24
+end

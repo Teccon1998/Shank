@@ -29,9 +29,9 @@ public class WhileNode extends Node{
         for(Node node : Statements)
         {
             sb.append("STATEMENT:");
-            sb.append(node+"\n");
+            sb.append(node);
         }
-        sb.append(")\n");
+        sb.append(")");
         return sb.toString();
     }
     

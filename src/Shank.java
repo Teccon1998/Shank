@@ -9,13 +9,14 @@ public class Shank {
     public static void main(String[] args) throws Exception
     {
         String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\311\\Shank\\src\\InputFile.txt";
-    
-        if(args.length != 1)
-        {
-            System.out.println("Incorrect # of args");
-            // System.exit(0);
-        }
         Path path = Paths.get(arg);
+        // if(args.length != 1)
+        // {
+        //     System.out.println("Incorrect # of args");
+        //     System.exit(0);
+        // }
+        // Path path = Paths.get(args[0]);
+
         try
         {
             
@@ -35,12 +36,16 @@ public class Shank {
                     e.printStackTrace();
                 }
             }
-            
+            ArrayList<Token> MasterTokenList = new ArrayList<>();
+            int debugSum = 0;
             for(List<Token> list : listOfTokenlists)
             {
-                Parser parser = new Parser(list);
-                System.out.println(parser.parseTokens());
+                debugSum += list.size();
+                MasterTokenList.addAll(list);
             }
+            
+            Parser parser = new Parser(MasterTokenList);
+            System.out.println(parser.parseTokens());
         }    
         catch(IOException e)
         {

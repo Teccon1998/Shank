@@ -6,7 +6,6 @@ public class Token {
     }
     private Type TokenType;
     private String value = null;
-    private String name = null;
     public Token(Type TokenType) {
         this.TokenType = TokenType;
     }
@@ -17,23 +16,9 @@ public class Token {
         this.TokenType = TokenType;
         this.value = value;
     }
-    public Token(Type TokenType, String value, String name)
-    {
-        this.TokenType = TokenType;
-        this.value = value;
-        this.name = name;
-    }
 
-    public String getName()
-    {
-        return this.name;
-    }
     @Override
     public String toString() {
-        if(this.name != null)
-        {
-            return "Token = " + getTokenType()+ "(Name: " + getName() + ", Value:" + getValue() + ')';
-        }
         if (this.value == null)
         {
             return "Token = " + getTokenType();

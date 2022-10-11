@@ -97,17 +97,17 @@ public class FunctionNode extends Node {
         sb.append(" \nSTATEMENTS: ");
         if (this.StatementList != null)
         {
+            sb.append("\n");
             for (Node node : StatementList) {
-                sb.append("\n");
-                sb.append(node);
                 
+                sb.append(node);
             }
         }
         else
         {
             sb.append("NULL");
         }
-        sb.append("\n)");
+        sb.append(")");
         return sb.toString();
     }
     

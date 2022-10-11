@@ -1,29 +1,31 @@
+import java.util.*;
+
 public class IfNode extends Node{
 
     private BooleanNode boolNode;
-    private StatementNode StatementNode;
+    private ArrayList<StatementNode> StatementNodes;
     private IfNode ifelseNode;
     private ElseNode elseNode;
 
     //terminating else
-    public IfNode(BooleanNode boolNode, StatementNode StatementNode, ElseNode elseNode)
+    public IfNode(BooleanNode boolNode, ArrayList<StatementNode> StatementNodes, ElseNode elseNode)
     {
         this.boolNode = boolNode;
-        this.StatementNode = StatementNode;
+        this.StatementNodes = StatementNodes;
         this.elseNode = elseNode;
     }
     //for if else nodes
-    public IfNode(BooleanNode boolNode, StatementNode StatementNode, IfNode ifelseNode)
+    public IfNode(BooleanNode boolNode, ArrayList<StatementNode> StatementNodes, IfNode ifelseNode)
     {
         this.boolNode = boolNode;
-        this.StatementNode = StatementNode;
+        this.StatementNodes = StatementNodes;
         this.ifelseNode = ifelseNode;
     }
     //solo if call
-    public IfNode(BooleanNode boolNode, StatementNode StatementNode)
+    public IfNode(BooleanNode boolNode, ArrayList<StatementNode> StatementNodes)
     {
         this.boolNode = boolNode;
-        this.StatementNode = StatementNode;
+        this.StatementNodes = StatementNodes;
     }
 
     public BooleanNode getBoolNode()
@@ -31,9 +33,9 @@ public class IfNode extends Node{
         return this.boolNode;
     }
 
-    public StatementNode getStatementNode()
+    public ArrayList<StatementNode> getStatementNodes()
     {
-        return this.StatementNode;
+        return this.StatementNodes;
     }
 
     public IfNode getIfelseNode()
@@ -50,7 +52,7 @@ public class IfNode extends Node{
         StringBuilder sb = new StringBuilder();
         sb.append("IfNode(");
         sb.append(this.boolNode + ", ");
-        sb.append("StatementNodes " + this.StatementNode.toString());
+        sb.append("StatementNodes " + this.StatementNodes.toString());
         if(elseNode!= null)
         {
             sb.append("ElseNode" + this.elseNode + ")\n");

@@ -1,8 +1,7 @@
 public class AssignmentNode extends StatementNode {
     
     private String name;
-    private Float floatValue;
-    private Integer intValue;
+    private Node node;
 
     
 
@@ -10,15 +9,9 @@ public class AssignmentNode extends StatementNode {
         
     }
 
-    public AssignmentNode(String name, Float floatValue)
+    public AssignmentNode(String name, Node node)
     {
-        this.floatValue = floatValue;
-        this.name = name;
-    }
-
-    public AssignmentNode(String name, int intValue)
-    {
-        this.intValue = intValue;
+        this.node = node;
         this.name = name;
     }
 
@@ -30,40 +23,17 @@ public class AssignmentNode extends StatementNode {
         this.name = name;
     }
 
-    public Float getFloatValue() {
-        return this.floatValue;
+    public Node getNode()
+    {
+        return this.node;
     }
-
-    public void setFloatValue(Float floatValue) {
-        this.floatValue = floatValue;
+    public void setNode(Node node)
+    {
+        this.node = node;
     }
-
-    public int getIntValue() {
-        return this.intValue;
-    }
-
-    public void setIntValue(int intValue) {
-        this.intValue = intValue;
-    }
-    
-
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append("AssignmentNode(Name: ");
-        sb.append(this.name);
-        if(intValue % 1 ==0)
-        {
-            sb.append(", intValue: ");
-            sb.append(this.intValue);
-        }
-        else
-        {
-            sb.append(", FloatValue: ");
-            sb.append(this.floatValue);
-        }
-        sb.append(")");
-        return sb.toString();
+        return "AssignmentNode(NAME:" + this.name + ", " + this.node + ")";
     }
 }

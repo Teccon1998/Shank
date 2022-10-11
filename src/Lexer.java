@@ -1,4 +1,3 @@
-import java.lang.Thread.State;
 import java.util.*;
 
 public class Lexer {
@@ -107,6 +106,10 @@ public class Lexer {
                     else if(CurrentCharacter == '(')
                     {
                         tokenList.add(new Token(Token.Type.LPAREN));
+                    }
+                    else if(CurrentCharacter == ')')
+                    {
+                        tokenList.add(new Token(Token.Type.RPAREN));
                     }
                     else if(CurrentCharacter == '*')
                     {
@@ -656,19 +659,12 @@ public class Lexer {
         {
             for (int i = 0; i <tokenList.size(); i++) 
             {
-                if(tokenList.get(i).getTokenType().equals(Token.Type.EQUALS))
+                
+                if(tokenList.get(i).getTokenType().equals(Token.Type.EQUALS)&& tokenList.get(i-1).getTokenType().equals(Token.Type.COLON))
                 {
-                    if(tokenList.get(i-2).getTokenType().equals(Token.Type.IDENTIFIER) && tokenList.get(i-1).getTokenType().equals(Token.Type.COLON) && (tokenList.get(i+1).getTokenType().equals(Token.Type.DECIMAL) || tokenList.get(i+1).getTokenType().equals(Token.Type.NUMBER) || tokenList.get(i+1).getTokenType().equals(Token.Type.IDENTIFIER)))
-                    {
-                        Token AssignToken = new Token(Token.Type.ASSIGN,tokenList.get(i+1).getValue(),tokenList.get(i-2).getValue());
-                        
-                        tokenList.remove(i);
-                        tokenList.add(i, AssignToken);
-                        tokenList.remove(i+1);
-                        tokenList.remove(i-2);
-                        tokenList.remove(i-2);
-                    }
-                    
+                    tokenList.remove(i);
+                    tokenList.add(i, new Token(Token.Type.ASSIGN));
+                    tokenList.remove(i-1);
                 }
             }
         }catch (Exception e)
