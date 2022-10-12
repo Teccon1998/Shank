@@ -33,7 +33,8 @@ public class Lexer {
         reservedWords.put("WHILE",Token.Type.WHILE);
         reservedWords.put("REPEAT",Token.Type.REPEAT);
         reservedWords.put("UNTIL",Token.Type.UNTIL);
-        reservedWords.put("MOD",Token.Type.MOD);
+        reservedWords.put("MOD", Token.Type.MOD);
+        reservedWords.put("VAR", Token.Type.VAR);
         List<Token> tokenList = new ArrayList<Token>();
         if(Input.isEmpty())
         {

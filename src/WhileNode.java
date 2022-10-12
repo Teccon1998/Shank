@@ -1,3 +1,4 @@
+import java.lang.Thread.State;
 import java.util.ArrayList;
 
 public class WhileNode extends Node{
@@ -25,11 +26,18 @@ public class WhileNode extends Node{
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("WhileNode(");
-        sb.append(this.BoolNode + ", ");
+        sb.append(this.BoolNode+", ");
         for(Node node : Statements)
         {
-            sb.append("STATEMENT:");
             sb.append(node);
+            if(Statements.get(Statements.size()-1).equals(node))
+            {
+                break;
+            }
+            else if(Statements.size() > 1)
+            {
+                sb.append(", ");
+            }
         }
         sb.append(")");
         return sb.toString();

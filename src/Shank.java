@@ -8,7 +8,7 @@ public class Shank {
     
     public static void main(String[] args) throws Exception
     {
-        String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\311\\Shank\\src\\InputFile.txt";
+        String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\GitBlame\\311\\Shank\\src\\InputFile.txt";
         Path path = Paths.get(arg);
         // if(args.length != 1)
         // {
@@ -45,7 +45,7 @@ public class Shank {
             }
             
             Parser parser = new Parser(MasterTokenList);
-            System.out.println(parser.parseTokens());
+            System.out.println("\n" + parser.parseTokens());
         }    
         catch(IOException e)
         {
