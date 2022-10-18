@@ -24,7 +24,7 @@ public class VariableReferenceNode extends Node{
         return this.node;
     }
 
-    public void setNode(Node node)
+    public void setNode(VariableNode node)
     {
         this.node = node;
     }

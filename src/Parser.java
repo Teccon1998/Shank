@@ -167,6 +167,7 @@ public class Parser {
         }
         throw new Exception("Not a valid function defintion");
     }
+
     
     private Node FunctionDefinition() throws Exception
     {
@@ -262,16 +263,15 @@ public class Parser {
         {
             MatchAndRemove(Token.Type.BEGIN);
             MatchAndRemove(Token.Type.EndOfLine);
-            StatementNode tempNode = statement();
-            if(tempNode != null)
-            {
+            StatementNode tempNode = statement(StatementList);
+            if (tempNode != null) {
                 StatementList.add(tempNode);
-            }   
+            }
         }
         return StatementList;
     }
 
-    private StatementNode statement() throws Exception
+    private StatementNode statement(ArrayList<StatementNode> StatementList) throws Exception
     {
         StatementNode statementNode = new StatementNode();
         Token leftToken;
@@ -315,7 +315,16 @@ public class Parser {
         }
         if(MatchAndRemove(Token.Type.FOR)!= null)
         {
-            //TODO
+            MatchAndRemove(Token.Type.LPAREN);
+            AssignmentNode assignmentNode = assignment();
+            if(assignmentNode == null)
+            {
+                throw new Exception("improper for node");
+            }
+            
+            ForNode forNode = new ForNode(new VariableReferenceNode(assignmentNode.getName(), assignmentNode.getNode()), Statements());
+            statementNode.setStatement(forNode);
+            return statementNode;
         }
         if(MatchAndRemove(Token.Type.IF)!= null)
         {
@@ -328,10 +337,23 @@ public class Parser {
             statementNode.setStatement(ifNode);
             return statementNode;
         }
+        if (MatchAndRemove(Token.Type.ELSIF) != null)
+        {
+            MatchAndRemove(Token.Type.LPAREN);
+            //TODO: Not sure what to do here.   
+        }
+        if (MatchAndRemove(Token.Type.ELSE) != null)
+        {
+            //TODO: Not sure what to do here.
+            ElseNode elseNode = new ElseNode(Statements());
+            MatchAndRemove(Token.Type.EndOfLine);
+            statementNode.setStatement(elseNode);
+            return statementNode;
+        }
         return null;
         
     }
-    private Node assignment() throws Exception
+    private AssignmentNode assignment() throws Exception
     {
         AssignmentNode node = new AssignmentNode();
         Token AssignToken;

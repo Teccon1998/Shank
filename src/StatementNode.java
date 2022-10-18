@@ -11,7 +11,7 @@ public class StatementNode extends Node {
         this.Statement = Statement;
     }
 
-    public Node getStatements()
+    public Node getStatement()
     {
         return this.Statement;
     }

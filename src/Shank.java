@@ -37,10 +37,8 @@ public class Shank {
                 }
             }
             ArrayList<Token> MasterTokenList = new ArrayList<>();
-            int debugSum = 0;
             for(List<Token> list : listOfTokenlists)
             {
-                debugSum += list.size();
                 MasterTokenList.addAll(list);
             }
             

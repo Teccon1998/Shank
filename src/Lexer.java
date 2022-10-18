@@ -444,6 +444,7 @@ public class Lexer {
                     }
                     else if (CurrentCharacter == '(')
                     {
+                        tokenList.add(new Token(Token.Type.LPAREN));
                         State = 8;
                     }
                     else if(Character.isLetter(CurrentCharacter))
@@ -537,13 +538,14 @@ public class Lexer {
                             Token.Type tokenTypeRetrival = reservedWords.get(valueHolderForToken.toUpperCase());
                             reservedWords.put(valueHolderForToken.toUpperCase(),tokenTypeRetrival);
                             tokenList.add(new Token(tokenTypeRetrival));
+                            tokenList.add(new Token(Token.Type.LPAREN));
                             valueHolderForToken ="";
                             State = 1;
                         }
-
                         else
                         {
-                            tokenList.add(new Token(Token.Type.IDENTIFIER,valueHolderForToken));
+                            tokenList.add(new Token(Token.Type.IDENTIFIER, valueHolderForToken));
+                            tokenList.add(new Token(Token.Type.LPAREN));
                             valueHolderForToken = "";
                             State = 1;
                         }

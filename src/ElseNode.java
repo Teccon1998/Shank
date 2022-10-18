@@ -1,21 +1,40 @@
 import java.util.ArrayList;
 
-public class ElseNode extends IfNode{
+public class ElseNode extends Node{
 
-    private BooleanNode boolnode;
     private ArrayList<StatementNode> StatementNodes;
 
-    public ElseNode(BooleanNode boolNode, ArrayList<StatementNode> StatementNodes) {
-        super(boolNode, StatementNodes);
+    public ElseNode( ArrayList<StatementNode> StatementNodes) {
+        this.StatementNodes = StatementNodes;
     }
-    public BooleanNode getBooleanNode()
-    {
-        return this.boolnode;
-    }
+    
 
     public ArrayList<StatementNode> getStatementNode()
     {
         return this.StatementNodes;
     }
-    
+
+
+    @Override
+    public String toString() {
+         StringBuilder sb = new StringBuilder();
+        sb.append("ElseNode(");
+        for(Node node : StatementNodes)
+        {
+            sb.append(node);
+            if(StatementNodes.get(StatementNodes.size()-1).equals(node))
+            {
+                break;
+            }
+            else if(StatementNodes.size() > 1)
+            {
+                sb.append(", ");
+            }
+        }
+        
+        sb.append(")");
+        return sb.toString();
+    }
 }
+    
+

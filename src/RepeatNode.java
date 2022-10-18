@@ -39,7 +39,7 @@ public class RepeatNode extends Node{
                 sb.append(", ");
             }
         }
-        sb.append(")\n");
+        sb.append(")");
         return sb.toString();
     }
     
