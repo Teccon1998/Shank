@@ -40,7 +40,7 @@ public class VariableReferenceNode extends Node{
         }
         else
         {
-            return "VariableReferenceNode("+ this.VariableName + this.node + ")";
+            return "VariableReferenceNode("+ this.VariableName + ", " + this.node + ")";
         }
         
     }

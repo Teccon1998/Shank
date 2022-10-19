@@ -2,6 +2,7 @@ import java.util.*;
 
 public class Parser {
     
+    private static final Node StartNode = null;
     private List<Token> tokenList;
 
     public Parser(List<Token> tokenList)
@@ -315,36 +316,54 @@ public class Parser {
         }
         if(MatchAndRemove(Token.Type.FOR)!= null)
         {
-            MatchAndRemove(Token.Type.LPAREN);
-            AssignmentNode assignmentNode = assignment();
-            if(assignmentNode == null)
+            if(MatchAndRemove(Token.Type.LPAREN)!= null)
             {
-                throw new Exception("improper for node");
+                Token IdentifierVariableReference = MatchAndRemove(Token.Type.IDENTIFIER);
+                if(IdentifierVariableReference != null)
+                {
+                    VariableReferenceNode varRefNode = new VariableReferenceNode(IdentifierVariableReference.getValue());
+                    if(MatchAndRemove(Token.Type.FROM)!= null)
+                    {
+                        Node StartNode = Expression();
+                        if(StartNode != null)
+                        {
+                            if(MatchAndRemove(Token.Type.TO)!=null)
+                            {
+                                Node EndNode = Expression();
+                                if(EndNode != null)
+                                {
+                                    if(MatchAndRemove(Token.Type.RPAREN)!= null)
+                                    {
+                                        ForNode forNode = new ForNode(varRefNode,StartNode, EndNode, Statements());
+                                        statementNode.setStatement(forNode);
+                                        return statementNode;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                }
+                
             }
-            
-            ForNode forNode = new ForNode(new VariableReferenceNode(assignmentNode.getName(), assignmentNode.getNode()), Statements());
-            statementNode.setStatement(forNode);
-            return statementNode;
+            throw new Exception("Improper for node");
         }
         if(MatchAndRemove(Token.Type.IF)!= null)
         {
-            //TODO: Not sure what to do for else nodes. If statements as long as theyre formatted correctly should allow for chained if statements.
-            //Statments calls and finds IF token, within the ifnode creation, ifnode calls statements which finds another if statement.
+            //TODO: Check with Phipps
             MatchAndRemove(Token.Type.LPAREN);
             IfNode ifNode = new IfNode(BooleanExpression(), Statements());
-            MatchAndRemove(Token.Type.RPAREN);
             MatchAndRemove(Token.Type.EndOfLine);
             statementNode.setStatement(ifNode);
             return statementNode;
         }
         if (MatchAndRemove(Token.Type.ELSIF) != null)
         {
-            MatchAndRemove(Token.Type.LPAREN);
-            //TODO: Not sure what to do here.   
+            //TODO: Check with Phipps 
         }
         if (MatchAndRemove(Token.Type.ELSE) != null)
         {
-            //TODO: Not sure what to do here.
+            //TODO: Check with Phipps
             ElseNode elseNode = new ElseNode(Statements());
             MatchAndRemove(Token.Type.EndOfLine);
             statementNode.setStatement(elseNode);
@@ -382,7 +401,10 @@ public class Parser {
                 {
                     //TODO: Not sure what to do if expression finds an identifier in a math assignment or regular assignment:
                     // e.g. a := 14 or a:=b
-                    node.setNode(new VariableReferenceNode(tempToken.getValue()));
+                    //or i := i + 1
+                    tokenList.add(0,tempToken);
+                    Node ExpressionNode = Expression();
+                    node.setNode(new VariableReferenceNode(tempToken.getValue(),ExpressionNode));
                     return node;
                     
                 }
@@ -405,7 +427,6 @@ public class Parser {
     public List<Token> getTokenList() {
         return this.tokenList;
     }
-
     public void setTokenList(List<Token> tokenList) {
         this.tokenList = tokenList;
     }

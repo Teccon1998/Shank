@@ -121,6 +121,14 @@ public class Lexer {
                             State = 8;
                         }
                     }
+                    else if(CurrentCharacter == '<')
+                    {
+                        tokenList.add(new Token(Token.Type.LESS));
+                    }
+                    else if(CurrentCharacter == '>')
+                    {
+                        tokenList.add(new Token(Token.Type.GREATER));
+                    }
                     else if(tokenList.get(tokenList.size()-1).getTokenType().equals(Token.Type.LESS))
                     {
                         tokenList.add(new Token(Token.Type.GREATER));
@@ -146,6 +154,10 @@ public class Lexer {
                     {
                         valueHolderForToken += CurrentCharacter;
                         State = 3;
+                    }
+                    else if(CurrentCharacter == ' ')
+                    {
+
                     }
                     else if(CurrentCharacter == '(')
                     {
@@ -296,6 +308,11 @@ public class Lexer {
                     {
                         tokenList.add(new Token(Token.Type.COLON));
                         State = 5;
+                    }
+                    else if(Character.isLetter(CurrentCharacter))
+                    {
+                        valueHolderForToken += CurrentCharacter;
+                        State = 7;
                     }
                     else
                     {
