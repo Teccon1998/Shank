@@ -1,4 +1,4 @@
-define start (t : integer; s,t,v,q : real)
+define start(t : integer; s,t,v,q : real)
 constants
 pi = 3.14
 variables
@@ -11,8 +11,31 @@ while(8 > 3)
     a := 19
     v := pi
     end
-if(number <> 8)
+if(number > 8)
     begin
     a := 23
+    if(number = 8)
+        begin
+        q := 9
+        end
     b := 24
+    end
+elsif(number < 8)
+    begin
+    a := 24
+    b := 25
+    end
+else
+    begin
+    g:= 65
+    end
+repeat(1 > 0)
+    begin
+    c:= 24
+    d := 25
+    end
+for(i from 1 to 10)
+    begin
+    i := i+1
+    end
 end
