@@ -2,17 +2,17 @@ import java.util.*;
 public class FunctionNode extends Node {
 
     private String FunctionName;
-    private List<Node> ParamsList;
-    private List<Node> StatementList;
-    private List<Node> LocalsList;
+    private List<VariableNode> ParamsList;
+    private List<StatementNode> StatementList;
+    private List<VariableNode> LocalsList;
 
 
-    public void setParamsList(List<Node> ParamsList)
+    public void setParamsList(List<VariableNode> parameterList)
     {
-        this.ParamsList = ParamsList;
+        this.ParamsList = parameterList;
     }
 
-    public List<Node> getParamsList()
+    public List<VariableNode> getParamsList()
     {
         return this.ParamsList;
     }
@@ -24,37 +24,28 @@ public class FunctionNode extends Node {
         this.FunctionName = FunctionName;
     }
 
-    public List<Node> getStatementList() {
+    public List<StatementNode> getStatementList() {
         return this.StatementList;
     }
 
-    public void setStatementList(List<Node> StatementList) {
+    public void setStatementList(List<StatementNode> StatementList) {
         this.StatementList = StatementList;
     }
 
-    public List<Node> getLocalsList() {
+    public List<VariableNode> getLocalsList() {
         return this.LocalsList;
     }
 
-    public void setLocalsList(List<Node> LocalsList) {
-        this.LocalsList = LocalsList;
+    public void setLocalsList(List<VariableNode> variableList) {
+        this.LocalsList = variableList;
     }
     
-    public FunctionNode(String FunctionName, List<Node> StatementList,List<Node> ParamsList, List<Node> LocalsList)
+    public FunctionNode(String FunctionName, List<StatementNode> StatementList,List<VariableNode> ParamsList, List<VariableNode> LocalsList)
     {
         this.FunctionName = FunctionName;
         this.StatementList = StatementList;
         this.ParamsList = ParamsList;
         this.LocalsList = LocalsList;
-    }
-    public FunctionNode(String FunctionName, List<Node> StatementList)
-    {
-        this.FunctionName = FunctionName;
-        this.StatementList = StatementList;
-    }
-    public FunctionNode(String FunctionName)
-    {
-        this.FunctionName = FunctionName;
     }
 
     public FunctionNode()

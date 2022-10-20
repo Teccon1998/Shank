@@ -2,12 +2,25 @@ import java.util.*;
 
 public class Parser {
     
-    private static final Node StartNode = null;
     private List<Token> tokenList;
 
     public Parser(List<Token> tokenList)
     {
         this.tokenList = tokenList;
+    }
+    public ArrayList<Node> parseTokens() throws Exception
+    {
+        //
+        ArrayList<Node> FunctionList = new ArrayList<>();
+        while(tokenList.size() != 0)
+        {
+            Node node = FunctionDefinition();
+            if(node != null)
+            {
+                FunctionList.add(node);
+            }
+        }
+        return FunctionList;
     }
 
     private Token MatchAndRemove(Token.Type type)
@@ -22,6 +35,7 @@ public class Parser {
         return null;
 
     }
+    /*--------------- */
 
     private Node Expression() throws Exception
     {
@@ -40,7 +54,6 @@ public class Parser {
                 return null;
             }
     }
-
     private Node Term() throws Exception
     {
         Node FirstNode = Factor();
@@ -67,23 +80,16 @@ public class Parser {
     }
     private Node Factor() throws Exception
     {
-        
+
         Token Value;
         Node Factor;
-        if ((Value = MatchAndRemove(Token.Type.NUMBER)) != null)
-        {
+        if ((Value = MatchAndRemove(Token.Type.NUMBER)) != null) {
             return new IntegerNode(Integer.parseInt(Value.getValue()));
-        }
-        else if ((Value = MatchAndRemove(Token.Type.DECIMAL)) != null)
-        {
+        } else if ((Value = MatchAndRemove(Token.Type.DECIMAL)) != null) {
             return new FloatNode(Float.parseFloat(Value.getValue()));
-        }
-        else if((Value = MatchAndRemove(Token.Type.IDENTIFIER))!= null)
-        {
+        } else if ((Value = MatchAndRemove(Token.Type.IDENTIFIER)) != null) {
             return new VariableReferenceNode(Value.getValue());
-        }
-        else if (MatchAndRemove(Token.Type.LPAREN) != null)
-        {
+        } else if (MatchAndRemove(Token.Type.LPAREN) != null) {
             Factor = Expression();
             if (MatchAndRemove(Token.Type.RPAREN) == null) {
                 throw new Exception("No Closing Paren");
@@ -93,6 +99,7 @@ public class Parser {
         }
         return null;
     }
+/*---------------------- */
     private BooleanNode BooleanExpression() throws Exception
     {
         BooleanNode booleanNode = new BooleanNode();
@@ -114,20 +121,16 @@ public class Parser {
         }
     }
     
-    public Node parseTokens() throws Exception
-    {
-        Node node = FunctionDefinition();
-        return node;
-    }
+
     
-    private ArrayList<Node> parameters() throws Exception
+    private List<VariableNode> parameters() throws Exception
     {
-        ArrayList<Node> AllParameterNodes = new ArrayList<Node>();
+        ArrayList<VariableNode> AllParameterNodes = new ArrayList<VariableNode>();
         if (MatchAndRemove(Token.Type.RPAREN) != null) {
             MatchAndRemove(Token.Type.EndOfLine);
             return AllParameterNodes;
         }
-        ArrayList<Node> parameterNode = ParameterNodes();
+        ArrayList<VariableNode> parameterNode = ParameterNodes();
         while (MatchAndRemove(Token.Type.SEMICOLON) != null) {
             parameterNode.addAll(ParameterNodes());
             AllParameterNodes.addAll(parameterNode);
@@ -135,10 +138,10 @@ public class Parser {
         return AllParameterNodes;
     }
     
-    private ArrayList<Node> ParameterNodes() throws Exception
+    private ArrayList<VariableNode> ParameterNodes() throws Exception
     {
         ArrayList<Token> parameterTokens = new ArrayList<>();
-        ArrayList<Node> parameterNodes = new ArrayList<>();
+        ArrayList<VariableNode> parameterNodes = new ArrayList<>();
         parameterTokens.add(MatchAndRemove(Token.Type.IDENTIFIER));
         while(MatchAndRemove(Token.Type.COMMA)!= null)
         {
@@ -172,9 +175,9 @@ public class Parser {
     
     private Node FunctionDefinition() throws Exception
     {
-        List<Node> parameterList = new ArrayList<>();
-        List<Node> variableList = new ArrayList<>();
-        List<Node> statementsList = new ArrayList<>();
+        List<VariableNode> parameterList = new ArrayList<>();
+        List<VariableNode> variableList = new ArrayList<>();
+        List<StatementNode> statementsList = new ArrayList<>();
         if(MatchAndRemove(Token.Type.DEFINE)!= null)
         {
             Token TempToken = null;
@@ -272,32 +275,57 @@ public class Parser {
         return StatementList;
     }
 
+
+
+
     private StatementNode statement(ArrayList<StatementNode> StatementList) throws Exception
     {
         StatementNode statementNode = new StatementNode();
         Token leftToken;
-        if((leftToken = MatchAndRemove(Token.Type.IDENTIFIER))!= null || (leftToken = MatchAndRemove(Token.Type.NUMBER)) != null || (leftToken = MatchAndRemove(Token.Type.DECIMAL))!= null)
+        if((leftToken = MatchAndRemove(Token.Type.IDENTIFIER))!= null)
         {
             Token assignToken;
             if((assignToken = MatchAndRemove(Token.Type.ASSIGN))!=null)
             {
-                tokenList.add(0,assignToken);
-                tokenList.add(0,leftToken);
+                tokenList.add(0, assignToken);
+                tokenList.add(0, leftToken);
                 statementNode.setStatement(assignment());
                 return statementNode;
             }
-            Token booleanCondition;
-            if((booleanCondition = MatchAndRemove(Token.Type.LESS))!= null || (booleanCondition = MatchAndRemove(Token.Type.GREATER))!= null || (booleanCondition = MatchAndRemove(Token.Type.LESSEQUAL))!= null || (booleanCondition = MatchAndRemove(Token.Type.GREATEREQUAL))!= null || (booleanCondition = MatchAndRemove(Token.Type.NOTEQUAL))!= null || (booleanCondition = MatchAndRemove(Token.Type.EQUALS))!= null)
+            
+            if(MatchAndRemove(Token.Type.EndOfLine)!= null)
             {
-                Token rightToken;
-                if((rightToken = MatchAndRemove(Token.Type.IDENTIFIER))!= null || (rightToken = MatchAndRemove(Token.Type.NUMBER)) != null || (rightToken = MatchAndRemove(Token.Type.DECIMAL))!= null)
+                FunctionCallNode functionCallNode = new FunctionCallNode(leftToken.getValue(), null);
+                statementNode.setStatement(functionCallNode);
+                return statementNode;
+            }
+            else
+            {
+                ArrayList<ParameterNode> parameterFunctionNodes = new ArrayList<>();
+                do
                 {
-                    tokenList.add(0,rightToken);
-                    tokenList.add(0,booleanCondition);
-                    tokenList.add(0,leftToken);
-                    BooleanExpression();
-                    
+                    Token HolderToken;
+                    if((HolderToken = MatchAndRemove(Token.Type.NUMBER))!= null)
+                    {
+                        parameterFunctionNodes
+                                .add(new ParameterNode(new IntegerNode(Integer.parseInt(HolderToken.getValue()))));
+                    }
+                    else if((HolderToken = MatchAndRemove(Token.Type.DECIMAL))!= null)
+                    {
+                        parameterFunctionNodes
+                                .add(new ParameterNode(new FloatNode(Float.parseFloat(HolderToken.getValue()))));
+                    }
+                    else if((HolderToken = MatchAndRemove(Token.Type.VAR))!= null)
+                    {
+                        Token VariableReferenceToken = MatchAndRemove(Token.Type.IDENTIFIER);
+                        parameterFunctionNodes
+                                .add(new ParameterNode(new VariableReferenceNode(VariableReferenceToken.getValue())));
+                    }
                 }
+                while (MatchAndRemove(Token.Type.COMMA) != null);
+                FunctionCallNode functionCallNode = new FunctionCallNode(leftToken.getValue(), parameterFunctionNodes);
+                statementNode.setStatement(functionCallNode);
+                return statementNode;
             }
         }
         if(MatchAndRemove(Token.Type.WHILE)!= null)
@@ -348,82 +376,61 @@ public class Parser {
             }
             throw new Exception("Improper for node");
         }
-        if(MatchAndRemove(Token.Type.IF)!= null)
+        if( MatchAndRemove(Token.Type.IF)!= null)
         {
-            //TODO: Check with Phipps
             MatchAndRemove(Token.Type.LPAREN);
             IfNode ifNode = new IfNode(BooleanExpression(), Statements());
+            MatchAndRemove(Token.Type.RPAREN);
             MatchAndRemove(Token.Type.EndOfLine);
+            if (MatchAndRemove(Token.Type.ELSIF) != null) {
+                MatchAndRemove(Token.Type.LPAREN);
+                ifNode.setElseNode(new IfNode(BooleanExpression(), Statements()));
+                MatchAndRemove(Token.Type.RPAREN);
+                MatchAndRemove(Token.Type.EndOfLine);
+            }
+            if (MatchAndRemove(Token.Type.ELSE) != null) {
+                MatchAndRemove(Token.Type.LPAREN);
+                ifNode.setElseNode(new ElseNode(Statements()));
+                MatchAndRemove(Token.Type.RPAREN);
+                MatchAndRemove(Token.Type.EndOfLine);
+
+            }
             statementNode.setStatement(ifNode);
             return statementNode;
         }
-        if (MatchAndRemove(Token.Type.ELSIF) != null)
-        {
-            //TODO: Check with Phipps 
-        }
-        if (MatchAndRemove(Token.Type.ELSE) != null)
-        {
-            //TODO: Check with Phipps
-            ElseNode elseNode = new ElseNode(Statements());
-            MatchAndRemove(Token.Type.EndOfLine);
-            statementNode.setStatement(elseNode);
-            return statementNode;
-        }
         return null;
-        
     }
     private AssignmentNode assignment() throws Exception
     {
-        AssignmentNode node = new AssignmentNode();
         Token AssignToken;
-        if((AssignToken = MatchAndRemove(Token.Type.IDENTIFIER))!= null)
+        if ((AssignToken = MatchAndRemove(Token.Type.IDENTIFIER)) != null) 
         {
-            if(MatchAndRemove(Token.Type.ASSIGN)!= null)
+            if (MatchAndRemove(Token.Type.ASSIGN) != null) 
             {
-                node.setName(AssignToken.getValue());
-                Token tempToken;
-                Node tempNode;
-                if((tempToken = MatchAndRemove(Token.Type.NUMBER))!= null)
+                Token ValueFindToken;
+                VariableReferenceNode variableReferenceNode = new VariableReferenceNode(AssignToken.getValue());
+
+                if ((ValueFindToken = MatchAndRemove(Token.Type.LPAREN))!= null || (ValueFindToken = MatchAndRemove(Token.Type.NUMBER)) != null || (ValueFindToken = MatchAndRemove(Token.Type.DECIMAL)) != null || (ValueFindToken = MatchAndRemove(Token.Type.IDENTIFIER)) != null  ) 
                 {
-                    tokenList.add(0,tempToken);
-                    tempNode = Expression();
-                    node.setNode(tempNode);
-                    return node;
-                }
-                else if((tempToken = MatchAndRemove(Token.Type.DECIMAL))!= null)
-                {
-                    tokenList.add(0, tempToken);
-                    tempNode = Expression();
-                    node.setNode(tempNode);
-                    return node;
-                }
-                else if((tempToken = MatchAndRemove(Token.Type.IDENTIFIER))!= null)
-                {
-                    //TODO: Not sure what to do if expression finds an identifier in a math assignment or regular assignment:
-                    // e.g. a := 14 or a:=b
-                    //or i := i + 1
-                    tokenList.add(0,tempToken);
-                    Node ExpressionNode = Expression();
-                    node.setNode(new VariableReferenceNode(tempToken.getValue(),ExpressionNode));
-                    return node;
-                    
-                }
-                else if((tempToken = MatchAndRemove(Token.Type.ASSIGN))!= null)
-                {
-                    //TODO
-                }
-                else if((tempToken = MatchAndRemove(Token.Type.LPAREN))!= null)
-                {
-                    tokenList.add(0,tempToken);
-                    tempNode = Expression();
-                    node.setNode(tempNode);
-                    return node;
-                }
+                    tokenList.add(0, ValueFindToken);
+                    AssignmentNode AssignmentNode = new AssignmentNode(variableReferenceNode, Expression());
+                    return AssignmentNode;
+                } 
             }
-            
         }
         return null;
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public List<Token> getTokenList() {
         return this.tokenList;
     }

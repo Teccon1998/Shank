@@ -4,23 +4,11 @@ public class IfNode extends Node{
 
     private BooleanNode boolNode;
     private ArrayList<StatementNode> Statements;
-    private IfNode ifelseNode;
-    private ElseNode elseNode;
+    private Node elseNode;
 
-    //terminating else
-    public IfNode(BooleanNode boolNode, ArrayList<StatementNode> Statements, ElseNode elseNode)
-    {
-        this.boolNode = boolNode;
-        this.Statements = Statements;
-        this.elseNode = elseNode;
-    }
-    //for if else nodes
-    public IfNode(BooleanNode boolNode, ArrayList<StatementNode> Statements, IfNode ifelseNode)
-    {
-        this.boolNode = boolNode;
-        this.Statements = Statements;
-        this.ifelseNode = ifelseNode;
-    }
+    
+
+
     //solo if call
     public IfNode(BooleanNode boolNode, ArrayList<StatementNode> Statements)
     {
@@ -28,24 +16,31 @@ public class IfNode extends Node{
         this.Statements = Statements;
     }
 
-    public BooleanNode getBoolNode()
-    {
+    public BooleanNode getBoolNode() {
         return this.boolNode;
     }
 
-    public ArrayList<StatementNode> getStatements()
-    {
+    public void setBoolNode(BooleanNode boolNode) {
+        this.boolNode = boolNode;
+    }
+
+    public ArrayList<StatementNode> getStatements() {
         return this.Statements;
     }
 
-    public IfNode getIfelseNode()
-    {
-        return this.ifelseNode;
+    public void setStatements(ArrayList<StatementNode> Statements) {
+        this.Statements = Statements;
     }
-    public ElseNode getElseNode()
-    {
+
+
+    public Node getElseNode() {
         return this.elseNode;
     }
+
+    public void setElseNode(Node elseNode) {
+        this.elseNode = elseNode;
+    }
+   
 
     @Override
     public String toString() {
@@ -66,7 +61,7 @@ public class IfNode extends Node{
         }
         if(elseNode!= null)
         {
-            sb.append("ElseNode" + this.elseNode + ")\n");
+            sb.append("ELSENODE: " + this.elseNode + ")\n");
         }
         else
         {

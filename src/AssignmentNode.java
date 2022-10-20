@@ -1,39 +1,41 @@
 public class AssignmentNode extends StatementNode {
     
-    private String name;
-    private Node node;
+    private VariableReferenceNode variableReferenceNode;
+    private Node ASTNODE;
 
     
 
     public AssignmentNode() {
-        
+
     }
 
-    public AssignmentNode(String name, Node node)
+    public AssignmentNode(VariableReferenceNode variableReferenceNode, Node ASTNODE)
     {
-        this.node = node;
-        this.name = name;
+        this.variableReferenceNode = variableReferenceNode;
+        this.ASTNODE = ASTNODE;
     }
 
-    public String getName() {
-        return this.name;
+    public VariableReferenceNode getVariableReferenceNode() {
+        return this.variableReferenceNode;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setVariableReferenceNode(VariableReferenceNode variableReferenceNode) {
+        this.variableReferenceNode = variableReferenceNode;
     }
 
-    public Node getNode()
-    {
-        return this.node;
+    public Node getASTNODE() {
+        return this.ASTNODE;
     }
-    public void setNode(Node node)
-    {
-        this.node = node;
+
+    public void setASTNODE(Node ASTNODE) {
+        this.ASTNODE = ASTNODE;
     }
+
+
+    
     @Override
     public String toString()
     {
-        return "AssignmentNode(NAME:" + this.name + ", " + this.node + ")";
+        return "AssignmentNode(VARREF:" + this.variableReferenceNode + "= ASTNODE: " + this.ASTNODE + ")";
     }
 }
