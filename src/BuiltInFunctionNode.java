@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class BuiltInFunctionNode extends CallableNode {
+public abstract class BuiltInFunctionNode extends CallableNode {
 
     private boolean isVariadic;
 
@@ -19,6 +19,8 @@ public class BuiltInFunctionNode extends CallableNode {
     public void setVariadic(boolean isVariadic) {
         this.isVariadic = isVariadic;
     }
+
+    public abstract InterpreterDataType Execute(ArrayList<InterpreterDataType> interpreterDataTypes);
 
     @Override
     public String toString() {

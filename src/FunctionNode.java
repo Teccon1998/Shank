@@ -1,21 +1,15 @@
-import java.util.*;
-public class FunctionNode extends Node {
+import java.util.ArrayList;
+
+public class FunctionNode extends StatementNode {
 
     private String FunctionName;
-    private List<VariableNode> ParamsList;
-    private List<StatementNode> StatementList;
-    private List<VariableNode> LocalsList;
+    private ArrayList<ParameterNode> ParameterNodes;
 
-
-    public void setParamsList(List<VariableNode> parameterList)
-    {
-        this.ParamsList = parameterList;
+    public FunctionNode(String FunctionName, ArrayList<ParameterNode> ParameterNodes) {
+        this.FunctionName = FunctionName;
+        this.ParameterNodes = ParameterNodes;
     }
 
-    public List<VariableNode> getParamsList()
-    {
-        return this.ParamsList;
-    }
     public String getFunctionName() {
         return this.FunctionName;
     }
@@ -24,81 +18,34 @@ public class FunctionNode extends Node {
         this.FunctionName = FunctionName;
     }
 
-    public List<StatementNode> getStatementList() {
-        return this.StatementList;
+    public ArrayList<ParameterNode> getParameterNodes() {
+        return this.ParameterNodes;
     }
 
-    public void setStatementList(List<StatementNode> StatementList) {
-        this.StatementList = StatementList;
+    public void setParameterNodes(ArrayList<ParameterNode> ParameterNodes) {
+        this.ParameterNodes = ParameterNodes;
     }
 
-    public List<VariableNode> getLocalsList() {
-        return this.LocalsList;
-    }
-
-    public void setLocalsList(List<VariableNode> variableList) {
-        this.LocalsList = variableList;
-    }
-    
-    public FunctionNode(String FunctionName, List<StatementNode> StatementList,List<VariableNode> ParamsList, List<VariableNode> LocalsList)
-    {
-        this.FunctionName = FunctionName;
-        this.StatementList = StatementList;
-        this.ParamsList = ParamsList;
-        this.LocalsList = LocalsList;
-    }
-
-    public FunctionNode()
-    {
-
-    }
-
-    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("FunctionNode(\nNAME:");
-        sb.append(this.FunctionName);
-        sb.append(" \nPARAMS:");
-        if (this.ParamsList != null)
-        {
-            for (Node node : ParamsList) {
-                sb.append("\n");
-                sb.append(node);
-            }
 
-        }
-        else
+        sb.append("FunctionCallNode(" + this.FunctionName);
+        if (ParameterNodes != null)
         {
-            sb.append("NULL");
-        }
-        sb.append(" \nLOCALS:");
-        if (this.LocalsList != null)
-        {
-            for (Node node : LocalsList) {
-                sb.append("\n");
-                sb.append(node);
+            int i = 0;
+            for(ParameterNode parNode : ParameterNodes)
+            {
+                if (i < ParameterNodes.size())
+                {
+                    sb.append(", ");
+                }
+                sb.append(parNode);
+                i++;
             }
+        }
+        sb.append(")");
 
-        }
-        else
-        {
-            sb.append("NULL");
-        }
-        sb.append(" \nSTATEMENTS:");
-        if (this.StatementList != null)
-        {
-            
-            for (Node node : StatementList) {
-                sb.append("\n");
-                sb.append(node);
-            }
-        }
-        else
-        {
-            sb.append("NULL");
-        }
-        sb.append("\n)");
         return sb.toString();
     }
     

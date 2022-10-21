@@ -249,13 +249,13 @@ public class Parser {
                     }
             
                 }
-                FunctionNode functionNode = new FunctionNode();
-                functionNode.setFunctionName(TempToken.getValue());
-                functionNode.setLocalsList(variableList);
-                functionNode.setParamsList(parameterList);
-                functionNode.setFunctionName(TempToken.getValue());
-                functionNode.setStatementList(statementsList);
-                return functionNode;
+                FunctionDefintionNode functionDefinitionNode = new FunctionDefintionNode();
+                functionDefinitionNode.setFunctionName(TempToken.getValue());
+                functionDefinitionNode.setLocalsList(variableList);
+                functionDefinitionNode.setParamsList(parameterList);
+                functionDefinitionNode.setFunctionName(TempToken.getValue());
+                functionDefinitionNode.setStatementList(statementsList);
+                return functionDefinitionNode;
             }
         }
         return null;
@@ -267,7 +267,7 @@ public class Parser {
         {
             MatchAndRemove(Token.Type.BEGIN);
             MatchAndRemove(Token.Type.EndOfLine);
-            StatementNode tempNode = statement(StatementList);
+            StatementNode tempNode = statement();
             if (tempNode != null) {
                 StatementList.add(tempNode);
             }
@@ -278,7 +278,7 @@ public class Parser {
 
 
 
-    private StatementNode statement(ArrayList<StatementNode> StatementList) throws Exception
+    private StatementNode statement() throws Exception
     {
         StatementNode statementNode = new StatementNode();
         Token leftToken;
@@ -295,7 +295,7 @@ public class Parser {
             
             if(MatchAndRemove(Token.Type.EndOfLine)!= null)
             {
-                FunctionCallNode functionCallNode = new FunctionCallNode(leftToken.getValue(), null);
+                FunctionNode functionCallNode = new FunctionNode(leftToken.getValue(), null);
                 statementNode.setStatement(functionCallNode);
                 return statementNode;
             }
