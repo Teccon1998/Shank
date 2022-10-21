@@ -1,81 +1,56 @@
 import java.util.*;
-public class FunctionDefintionNode extends Node {
+public class FunctionDefintionNode extends CallableNode {
 
-    private String FunctionName;
-    private List<VariableNode> ParamsList;
-    private List<StatementNode> StatementList;
-    private List<VariableNode> LocalsList;
+    private ArrayList<StatementNode> StatementList;
+    private ArrayList<VariableNode> LocalVariablesList;
 
 
-    public void setParamsList(List<VariableNode> parameterList)
-    {
-        this.ParamsList = parameterList;
-    }
-
-    public List<VariableNode> getParamsList()
-    {
-        return this.ParamsList;
-    }
-    public String getFunctionName() {
-        return this.FunctionName;
-    }
-
-    public void setFunctionName(String FunctionName) {
-        this.FunctionName = FunctionName;
-    }
-
-    public List<StatementNode> getStatementList() {
+    public ArrayList<StatementNode> getStatementList() {
         return this.StatementList;
     }
 
-    public void setStatementList(List<StatementNode> StatementList) {
+    public void setStatementList(ArrayList<StatementNode> StatementList) {
         this.StatementList = StatementList;
     }
 
-    public List<VariableNode> getLocalsList() {
-        return this.LocalsList;
+    public ArrayList<VariableNode> getLocalVariablesList() {
+        return this.LocalVariablesList;
     }
 
-    public void setLocalsList(List<VariableNode> variableList) {
-        this.LocalsList = variableList;
+    public void setLocalVariablesList(ArrayList<VariableNode> variableList) {
+        this.LocalVariablesList = variableList;
     }
     
-    public FunctionDefintionNode(String FunctionName, List<StatementNode> StatementList,List<VariableNode> ParamsList, List<VariableNode> LocalsList)
+    public FunctionDefintionNode(String FunctionName, ArrayList<StatementNode> StatementList, ArrayList<VariableNode> ParamsList, ArrayList<VariableNode> LocalVariablesList)
     {
-        this.FunctionName = FunctionName;
+        super(FunctionName, ParamsList);
         this.StatementList = StatementList;
-        this.ParamsList = ParamsList;
-        this.LocalsList = LocalsList;
-    }
-
-    public FunctionDefintionNode()
-    {
-
+        this.LocalVariablesList = LocalVariablesList;
     }
 
     
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("FunctionNode(\nNAME:");
-        sb.append(this.FunctionName);
-        sb.append(" \nPARAMS:");
-        if (this.ParamsList != null)
-        {
-            for (Node node : ParamsList) {
-                sb.append("\n");
-                sb.append(node);
-            }
+        // sb.append("FunctionNode(\nNAME:");
+        // sb.append(this.FunctionName);
+        // sb.append(" \nPARAMS:");
+        // if (this.ParamsList != null)
+        // {
+        //     for (Node node : ParamsList) {
+        //         sb.append("\n");
+        //         sb.append(node);
+        //     }
 
-        }
-        else
-        {
-            sb.append("NULL");
-        }
+        // }
+        // else
+        // {
+        //     sb.append("NULL");
+        // }
         sb.append(" \nLOCALS:");
-        if (this.LocalsList != null)
+        if (this.LocalVariablesList != null)
         {
-            for (Node node : LocalsList) {
+            for (Node node : LocalVariablesList) {
                 sb.append("\n");
                 sb.append(node);
             }
@@ -101,5 +76,4 @@ public class FunctionDefintionNode extends Node {
         sb.append("\n)");
         return sb.toString();
     }
-    
 }

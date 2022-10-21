@@ -7,6 +7,18 @@ public class IntDataType extends InterpreterDataType {
     {
         this.IntValue = IntValue;
     }
+
+    public int getIntValue()
+    {
+        return this.IntValue;
+    }
+
+    public void setIntValue(int IntValue)
+    {
+        this.IntValue = IntValue;
+    }
+
+
     @Override
     public String toString() {
         return Integer.toString(IntValue);

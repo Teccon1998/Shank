@@ -129,11 +129,6 @@ public class Lexer {
                     {
                         tokenList.add(new Token(Token.Type.GREATER));
                     }
-                    else if(tokenList.get(tokenList.size()-1).getTokenType().equals(Token.Type.LESS))
-                    {
-                        tokenList.add(new Token(Token.Type.GREATER));
-                        State =1;
-                    }
                     else 
                     {
                         throw new Exception("Incorrect formatting on Iteration " +  i);// I for iteration location for debugging

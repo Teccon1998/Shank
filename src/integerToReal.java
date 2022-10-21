@@ -3,14 +3,13 @@ import java.util.ArrayList;
 public class integerToReal extends BuiltInFunctionNode {
 
     public integerToReal(String FunctionName, ArrayList<VariableNode> parameterVariableNodes, boolean isVariadic) {
-        super(FunctionName, parameterVariableNodes, isVariadic);
-        //TODO Auto-generated constructor stub
+        super(FunctionName, parameterVariableNodes, false);
     }
 
     @Override
-    public InterpreterDataType Execute(ArrayList<InterpreterDataType> interpreterDataTypes) {
-        // FloatDataType floatDataType = new FloatDataType(Float.parseFloat(interpreterDataTypes.get(0)));
-        return null;
+    public void Execute(ArrayList<InterpreterDataType> interpreterDataTypes) {
+        Float integerToRealValue = Float.parseFloat(interpreterDataTypes.get(0).toString());
+        interpreterDataTypes.set(1, new FloatDataType(integerToRealValue));
     }
     
     

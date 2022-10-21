@@ -7,6 +7,15 @@ public class FloatDataType extends InterpreterDataType {
         this.FloatValue = FloatValue;
     }
 
+    public Float getFloatValue()
+    {
+        return this.FloatValue;
+    }
+
+    public void setFloatValue(float FloatValue)
+    {
+        this.FloatValue = FloatValue;
+    }
     @Override
     public String toString() {
         return FloatValue.toString();
@@ -14,7 +23,7 @@ public class FloatDataType extends InterpreterDataType {
 
     @Override
     public void fromString(String input) {
-        Float.parseFloat(input);
+       this.FloatValue = Float.parseFloat(input);
     }
     
 }

@@ -123,7 +123,7 @@ public class Parser {
     
 
     
-    private List<VariableNode> parameters() throws Exception
+    private ArrayList<VariableNode> parameters() throws Exception
     {
         ArrayList<VariableNode> AllParameterNodes = new ArrayList<VariableNode>();
         if (MatchAndRemove(Token.Type.RPAREN) != null) {
@@ -175,9 +175,9 @@ public class Parser {
     
     private Node FunctionDefinition() throws Exception
     {
-        List<VariableNode> parameterList = new ArrayList<>();
-        List<VariableNode> variableList = new ArrayList<>();
-        List<StatementNode> statementsList = new ArrayList<>();
+        ArrayList<VariableNode> parameterList = new ArrayList<>();
+        ArrayList<VariableNode> variableList = new ArrayList<>();
+        ArrayList<StatementNode> statementsList = new ArrayList<>();
         if(MatchAndRemove(Token.Type.DEFINE)!= null)
         {
             Token TempToken = null;
@@ -187,7 +187,7 @@ public class Parser {
                 {
                     parameterList = parameters();    
                 }
-                while(!tokenList.isEmpty())
+                while(!tokenList.isEmpty() || tokenList == null)
                 {
                     MatchAndRemove(Token.Type.EndOfLine);
                     if(MatchAndRemove(Token.Type.CONSTS)!= null)
@@ -249,12 +249,13 @@ public class Parser {
                     }
             
                 }
-                FunctionDefintionNode functionDefinitionNode = new FunctionDefintionNode();
-                functionDefinitionNode.setFunctionName(TempToken.getValue());
-                functionDefinitionNode.setLocalsList(variableList);
-                functionDefinitionNode.setParamsList(parameterList);
-                functionDefinitionNode.setFunctionName(TempToken.getValue());
-                functionDefinitionNode.setStatementList(statementsList);
+                FunctionDefintionNode functionDefinitionNode = new FunctionDefintionNode
+                (
+                    TempToken.getValue(), 
+                    statementsList,
+                    parameterList,
+                    variableList
+                );
                 return functionDefinitionNode;
             }
         }
@@ -295,7 +296,7 @@ public class Parser {
             
             if(MatchAndRemove(Token.Type.EndOfLine)!= null)
             {
-                FunctionNode functionCallNode = new FunctionNode(leftToken.getValue(), null);
+                FunctionCallNode functionCallNode = new FunctionCallNode(leftToken.getValue(), null);
                 statementNode.setStatement(functionCallNode);
                 return statementNode;
             }
@@ -307,19 +308,22 @@ public class Parser {
                     Token HolderToken;
                     if((HolderToken = MatchAndRemove(Token.Type.NUMBER))!= null)
                     {
+                        tokenList.add(0,HolderToken);
                         parameterFunctionNodes
-                                .add(new ParameterNode(new IntegerNode(Integer.parseInt(HolderToken.getValue()))));
+                                .add(new ParameterNode(Expression()));
                     }
                     else if((HolderToken = MatchAndRemove(Token.Type.DECIMAL))!= null)
                     {
+                        tokenList.add(0,HolderToken);
                         parameterFunctionNodes
-                                .add(new ParameterNode(new FloatNode(Float.parseFloat(HolderToken.getValue()))));
+                                .add(new ParameterNode(Expression()));
                     }
                     else if((HolderToken = MatchAndRemove(Token.Type.VAR))!= null)
                     {
                         Token VariableReferenceToken = MatchAndRemove(Token.Type.IDENTIFIER);
+                        tokenList.add(0, VariableReferenceToken);
                         parameterFunctionNodes
-                                .add(new ParameterNode(new VariableReferenceNode(VariableReferenceToken.getValue())));
+                                .add(new ParameterNode(Expression()));
                     }
                 }
                 while (MatchAndRemove(Token.Type.COMMA) != null);

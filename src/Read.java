@@ -1,17 +1,22 @@
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Read extends BuiltInFunctionNode {
 
-    public Read(String FunctionName, ArrayList<VariableNode> parameterVariableNodes, boolean isVariadic) {
+    public Read(String FunctionName, ArrayList<VariableNode> parameterVariableNodes) {
         super(FunctionName, parameterVariableNodes, true);
-        //TODO Auto-generated constructor stub
     }
 
     @Override
-    public InterpreterDataType Execute(ArrayList<InterpreterDataType> interpreterDataTypes) {
-        // TODO Auto-generated method stub
-        return null;
+    public void Execute(ArrayList<InterpreterDataType> interpreterDataTypes) {
         
+        Scanner sc = new Scanner(System.in);
+        
+        for(int i = 0; i< interpreterDataTypes.size(); i++)
+        {
+            interpreterDataTypes.get(i).fromString(sc.nextLine());
+        }
+        sc.close();
     }
     
 }

@@ -2,17 +2,15 @@ import java.util.ArrayList;
 
 public class squareRoot extends BuiltInFunctionNode {
 
-    private float value;
-
-    public squareRoot(String FunctionName, ArrayList<VariableNode> parameterVariableNodes, boolean isVariadic, float value) {
+    public squareRoot(String FunctionName, ArrayList<VariableNode> parameterVariableNodes, boolean isVariadic) {
         super(FunctionName, parameterVariableNodes, isVariadic);
-        this.value = value;
     }
 
     @Override
-    public InterpreterDataType Execute(ArrayList<InterpreterDataType> interpreterDataTypes) {
-        FloatDataType floatDataType = new FloatDataType((float) Math.sqrt(this.value));
-        return floatDataType;
+    public void Execute(ArrayList<InterpreterDataType> interpreterDataTypes) {
+        FloatDataType fdt =  ((FloatDataType) interpreterDataTypes.get(0));
+        Float floatValue = (float) Math.sqrt(fdt.getFloatValue());
+        interpreterDataTypes.set(1, new FloatDataType(floatValue));
     }
     
 }

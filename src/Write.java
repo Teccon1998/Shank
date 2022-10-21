@@ -2,18 +2,19 @@ import java.util.ArrayList;
 
 public class Write extends BuiltInFunctionNode {
 
-    private String str;
 
-    public Write(String FunctionName, ArrayList<VariableNode> parameterVariableNodes, boolean isVariadic, String str) throws Exception {
+    public Write(String FunctionName, ArrayList<VariableNode> parameterVariableNodes, boolean isVariadic){
         super(FunctionName, parameterVariableNodes, true);
-        this.str = str;
         
     }
 
     @Override
-    public InterpreterDataType Execute(ArrayList<InterpreterDataType> interpreterDataTypes) {
-        System.out.println(this.str);
-        return null;
+    public void Execute(ArrayList<InterpreterDataType> interpreterDataTypes) {
+        
+        for(int i = 0; i< interpreterDataTypes.size(); i++)
+        {
+            interpreterDataTypes.get(i).toString();
+        }
     }
     
 }
