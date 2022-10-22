@@ -1,10 +1,17 @@
-define start(t : integer; s,t,v,q : real)
+define start()
 constants
 pi = 3.14
 variables
-a,v,n : integer
+firstNumber : integer ; s,t,v, var q : real
 begin
-while(8 > 3)
+second firstNumber ; s, t, v, var q
+end
+
+define second(firstNumber : integer; s,t,v, var q : real)
+constants
+variables
+begin
+    while(8 > 3)
     begin
     a := 19
     v := pi
@@ -14,7 +21,7 @@ if(number > 8)
     a := 23
     if(number <> 8)
         begin
-        gcd 124.51+15, 12, var value
+        (*Do nothing*)
         end
     b := 24
     end
@@ -36,4 +43,3 @@ for(i from 1 to 10)
     begin
     i := i+1
     end
-end

@@ -3,6 +3,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Function;
 
 public class Shank {
     
@@ -43,7 +44,11 @@ public class Shank {
             }
             
             Parser parser = new Parser(MasterTokenList);
-            System.out.println("\n" + parser.parseTokens());
+            ArrayList<FunctionDefinitionNode> FunctionNodes = new ArrayList<>();
+            FunctionNodes = parser.parseTokens();
+            System.out.println("\n" + FunctionNodes);
+            Interpreter interpreter = new Interpreter(FunctionNodes);
+            
         }    
         catch(IOException e)
         {

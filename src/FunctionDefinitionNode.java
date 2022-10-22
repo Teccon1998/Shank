@@ -1,5 +1,5 @@
 import java.util.*;
-public class FunctionDefintionNode extends CallableNode {
+public class FunctionDefinitionNode extends CallableNode {
 
     private ArrayList<StatementNode> StatementList;
     private ArrayList<VariableNode> LocalVariablesList;
@@ -21,7 +21,7 @@ public class FunctionDefintionNode extends CallableNode {
         this.LocalVariablesList = variableList;
     }
     
-    public FunctionDefintionNode(String FunctionName, ArrayList<StatementNode> StatementList, ArrayList<VariableNode> ParamsList, ArrayList<VariableNode> LocalVariablesList)
+    public FunctionDefinitionNode(String FunctionName, ArrayList<StatementNode> StatementList, ArrayList<VariableNode> ParamsList, ArrayList<VariableNode> LocalVariablesList)
     {
         super(FunctionName, ParamsList);
         this.StatementList = StatementList;

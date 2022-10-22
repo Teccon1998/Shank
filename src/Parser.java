@@ -8,13 +8,13 @@ public class Parser {
     {
         this.tokenList = tokenList;
     }
-    public ArrayList<Node> parseTokens() throws Exception
+    public ArrayList<FunctionDefinitionNode> parseTokens() throws Exception
     {
         //
-        ArrayList<Node> FunctionList = new ArrayList<>();
+        ArrayList<FunctionDefinitionNode> FunctionList = new ArrayList<>();
         while(tokenList.size() != 0)
         {
-            Node node = FunctionDefinition();
+            FunctionDefinitionNode node = FunctionDefinition();
             if(node != null)
             {
                 FunctionList.add(node);
@@ -173,7 +173,7 @@ public class Parser {
     }
 
     
-    private Node FunctionDefinition() throws Exception
+    private FunctionDefinitionNode FunctionDefinition() throws Exception
     {
         ArrayList<VariableNode> parameterList = new ArrayList<>();
         ArrayList<VariableNode> variableList = new ArrayList<>();
@@ -249,7 +249,7 @@ public class Parser {
                     }
             
                 }
-                FunctionDefintionNode functionDefinitionNode = new FunctionDefintionNode
+                FunctionDefinitionNode functionDefinitionNode = new FunctionDefinitionNode
                 (
                     TempToken.getValue(), 
                     statementsList,

@@ -1,8 +1,28 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class Interpreter {
+    
+    private ArrayList<FunctionDefinitionNode> FunctionDefinitionNodes;
     
     public Interpreter()
     {
+        
+    }
 
+    public Interpreter(ArrayList<FunctionDefinitionNode> FunctionDefinitionNodes)
+    {
+        this.FunctionDefinitionNodes = FunctionDefinitionNodes;
+    }
+
+    public void setFunctionDefinitionNodes(ArrayList<FunctionDefinitionNode> FunctionDefinitionNodes)
+    {
+        this.FunctionDefinitionNodes = FunctionDefinitionNodes;
+    }
+
+    public ArrayList<FunctionDefinitionNode> getFunctionDefinitionNodes()
+    {
+        return FunctionDefinitionNodes;
     }
      
     public FloatNode Resolve(Node node)
@@ -18,4 +38,15 @@ public class Interpreter {
         }
         return null;
     }
+
+    public static void InterpretFunction(FunctionDefinitionNode functionDefinitionNode, ArrayList<InterpreterDataType> dataTypes)
+    {
+        HashMap<String,InterpreterDataType> VariableHashMap = new HashMap<>();
+
+
+    }
+
+
+
+
 }

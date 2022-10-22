@@ -304,6 +304,11 @@ public class Lexer {
                         tokenList.add(new Token(Token.Type.COLON));
                         State = 5;
                     }
+                    else if(CurrentCharacter == ';')
+                    {
+                        tokenList.add(new Token(Token.Type.SEMICOLON));
+                        State = 1;
+                    }
                     else if(CurrentCharacter == ',')
                     {
                         if (valueHolderForToken != null)
