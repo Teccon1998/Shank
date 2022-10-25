@@ -12,6 +12,16 @@ public class FunctionCallNode extends StatementNode {
         this.ParameterNodes = PararameterNodes;
     }
 
+    public ArrayList<ParameterNode> getParameterNodes()
+    {
+        return this.ParameterNodes;
+    }
+
+    public String getFunctionName()
+    {
+        return this.FunctionName;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

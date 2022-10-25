@@ -18,7 +18,7 @@ public class ElseNode extends Node{
     @Override
     public String toString() {
          StringBuilder sb = new StringBuilder();
-        sb.append("ElseNode(");
+        sb.append("\nElseNode(");
         for(Node node : StatementNodes)
         {
             sb.append(node);

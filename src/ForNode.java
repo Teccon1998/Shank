@@ -43,7 +43,7 @@ public class ForNode extends Node {
         sb.append("VARIABLEREFERENCE: "+ this.VariableReference + ", ");
         sb.append("StartNode: "+ this.StartNode + ", ");
         sb.append("EndNode: "+ this.EndNode + ", ");
-        sb.append("StatementNodes: " + this.Statements.toString() + ")");
+        sb.append(" : " + this.Statements.toString() + ")");
         return sb.toString();
     }
     

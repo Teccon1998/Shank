@@ -23,7 +23,7 @@ public class StatementNode extends Node {
 
     @Override
     public String toString() {
-        return "\nStatement(" + this.Statement + ")";
+        return "\nStatement(" + this.Statement + ") EOS";
     }
     
     

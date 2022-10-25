@@ -1,6 +1,8 @@
 import java.util.*;
 public class FunctionDefinitionNode extends CallableNode {
 
+    private String FunctionName;
+    private ArrayList<VariableNode> ParamsList;
     private ArrayList<StatementNode> StatementList;
     private ArrayList<VariableNode> LocalVariablesList;
 
@@ -24,6 +26,8 @@ public class FunctionDefinitionNode extends CallableNode {
     public FunctionDefinitionNode(String FunctionName, ArrayList<StatementNode> StatementList, ArrayList<VariableNode> ParamsList, ArrayList<VariableNode> LocalVariablesList)
     {
         super(FunctionName, ParamsList);
+        this.FunctionName = FunctionName;
+        this.ParamsList = ParamsList;
         this.StatementList = StatementList;
         this.LocalVariablesList = LocalVariablesList;
     }
@@ -32,21 +36,21 @@ public class FunctionDefinitionNode extends CallableNode {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        // sb.append("FunctionNode(\nNAME:");
-        // sb.append(this.FunctionName);
-        // sb.append(" \nPARAMS:");
-        // if (this.ParamsList != null)
-        // {
-        //     for (Node node : ParamsList) {
-        //         sb.append("\n");
-        //         sb.append(node);
-        //     }
+        sb.append("FunctionNode(\nNAME:");
+        sb.append(this.FunctionName);
+        sb.append(" \nPARAMS:");
+        if (this.ParamsList != null)
+        {
+            for (Node node : ParamsList) {
+                sb.append("\n");
+                sb.append(node);
+            }
 
-        // }
-        // else
-        // {
-        //     sb.append("NULL");
-        // }
+        }
+        else
+        {
+            sb.append("NULL");
+        }
         sb.append(" \nLOCALS:");
         if (this.LocalVariablesList != null)
         {

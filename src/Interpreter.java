@@ -39,9 +39,10 @@ public class Interpreter {
         return null;
     }
 
-    public static void InterpretFunction(FunctionDefinitionNode functionDefinitionNode, ArrayList<InterpreterDataType> dataTypes)
+    public static void InterpretFunction(FunctionCallNode functionCallNode, ArrayList<InterpreterDataType> dataTypes)
     {
-        HashMap<String,InterpreterDataType> VariableHashMap = new HashMap<>();
+        HashMap<String, InterpreterDataType> VariableHashMap = new HashMap<>();
+        
 
 
     }
