@@ -11,5 +11,6 @@ define second(firstNumber : integer; s,t,v, var q : real)
 constants
 variables
 begin
-    intToReal 1, 2
+    read 5
+
 end
