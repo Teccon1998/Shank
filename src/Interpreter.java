@@ -2,126 +2,129 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Interpreter {
-    
-    private static HashMap<String, CallableNode> functionsHashmap;
 
-    public Interpreter(HashMap<String, CallableNode> functionsHashmap)
-    {
+    static HashMap<String, CallableNode> functionsHashmap;
+
+    public Interpreter() {
+    }
+
+    public Interpreter(HashMap<String, CallableNode> functionsHashmap) {
         Interpreter.functionsHashmap = functionsHashmap;
     }
-     
-    public FloatNode Resolve(Node node)
+
+    
+    public HashMap<String,CallableNode> getFunctionsHashMap()
     {
-        if(node instanceof IntegerNode)
-        {
+        return Interpreter.functionsHashmap;
+    }
+
+    public FloatNode Resolve(Node node) {
+        if (node instanceof IntegerNode) {
             float floatCastHolder = ((IntegerNode) node).getNumber();
             return new FloatNode(floatCastHolder);
-        }
-        else if (node instanceof FloatNode)
-        {
-            return ((FloatNode)node);
+        } else if (node instanceof FloatNode) {
+            return ((FloatNode) node);
         }
         return null;
     }
 
-    public static void InterpretFunction(FunctionCallNode functionCallNode, ArrayList<InterpreterDataType> dataTypes)
+    public static void InterpretFunction(FunctionCallNode functionCallNode, ArrayList<InterpreterDataType> dataTypes) throws Exception
     {
-    
-        //Loops through all the functionDefintionNodes
-        for (FunctionDefinitionNode functionDefinitionNode : FunctionNodes) {
-            //loops through each DefinitionNode to get its statements
-            for (int i = 0; i < functionDefinitionNode.getStatementList().size(); i++) 
-            {
-                //checks that each of the statements are FunctionCallNodes
-                if(functionDefinitionNode.getStatementList().get(i).getStatement() instanceof FunctionCallNode)
-                {
-                    //Creates a CallableNode to store and work with that node
-                    CallableNode functionCallNode;
-                    if((functionCallNode = functionHashMap.get(functionDefinitionNode.getFunctionName()))!=null)
-                    {
-                        //Checks the parametersize of that functionCallNode and checks to see if its equal to the functiondefinition parameter size
-                        int functionCallNodeParameterSize = functionCallNode.getParameterVariableNodes().size();
-                        if(functionDefinitionNode.getParameterVariableNodes().size() == functionCallNodeParameterSize)
-                        {
-                            //if its a built in functionNode cast it to a builtinfunctionnode and check if its variadic
-                            if(functionCallNode instanceof BuiltInFunctionNode)
-                            {
-                                BuiltInFunctionNode builtInFunctionCallNode = (BuiltInFunctionNode) functionCallNode;
-                                if (builtInFunctionCallNode.isVariadic()) {
-                                    //if its built in and variadic then get the data types from its variables passed and call the function
-                                    ArrayList<InterpreterDataType> dataTypes = new ArrayList<>();
-                                    dataTypes = getDataType(functionCallNode);
-                                    //TODO Running Builtin functions?
-                                }
+        
+        HashMap<String,InterpreterDataType> variables = new HashMap<>();
+        for (ParameterNode parameterNode : functionCallNode.getParameterNodes()) {
+            if (parameterNode.getValueNode() == null || parameterNode.getValueNode() == null) {
+                throw new Exception("null value");
+            }
+            if (parameterNode.getValueNode() instanceof IntegerNode) {
+                variables.put(parameterNode.getVarRefNode().getVariableName(),
+                        new IntDataType(((IntegerNode) parameterNode.getValueNode()).getNumber()));
+            } else if (parameterNode.getValueNode() instanceof FloatNode) {
+                variables.put(parameterNode.getVarRefNode().getVariableName(),
+                        new FloatDataType(((FloatNode) parameterNode.getValueNode()).getNumber()));
+            }
 
-                            }
-                            //if its a regular function call then build the data types and pass it to interpreter
-                            else if(functionCallNode instanceof FunctionDefinitionNode)
-                            {
-                                ArrayList<InterpreterDataType> dataTypes = new ArrayList<>();
-                                dataTypes = getDataType(functionCallNode);
-                                //TODO: Interpret? How do I get the first function? What is the variable hashmap?
-                                System.out.println(dataTypes);
-                                
-                                Interpreter interpreter = new Interpreter();
-                                
-                                Interpreter.InterpretFunction(functionDefinitionNode, dataTypes);
-                            }  
-                            else
-                            {
-                                throw new Exception("Not a recognized function");
-                                
-                            }
-                            
+        }
+        for(VariableNode variableNode : functionsHashmap.get(functionCallNode.getFunctionName()).getLocalVariablesList())
+        {
+            if (variableNode.getNode() instanceof IntegerNode) {
+                variables.put(variableNode.getVariableName(),
+                        new IntDataType(((IntegerNode) variableNode.getNode()).getNumber()));
+            } else if (variableNode.getNode() instanceof FloatNode) {
+                variables.put(variableNode.getVariableName(),
+                        new FloatDataType(((FloatNode) variableNode.getNode()).getNumber()));
+            }
+        }
+        InterpretBlock(functionsHashmap.get(functionCallNode.getFunctionName()).getStatementList(), variables);
+        
+    }
+    
+    
+    public static void InterpretBlock(ArrayList<StatementNode> StatementList, HashMap<String, InterpreterDataType> VariableHashMap) throws Exception {
+        for (int i = 0; i < StatementList.size(); i++) 
+        {
+            StatementNode statementNode = StatementList.get(i);
+            if (statementNode.getStatement() instanceof FunctionCallNode)
+            {
+                FunctionCallNode calledNode = (FunctionCallNode) statementNode.getStatement();
+                if(functionsHashmap.get(calledNode.getFunctionName())instanceof BuiltInFunctionNode)
+                {
+                    BuiltInFunctionNode builtin = (BuiltInFunctionNode) functionsHashmap
+                            .get(calledNode.getFunctionName());
+                    for (ParameterNode parameterNode : calledNode.getParameterNodes()) 
+                    {
+                        if (parameterNode.getValueNode() instanceof IntegerNode) {
+                            VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),
+                                    new IntDataType(((IntegerNode) parameterNode.getValueNode()).getNumber()));
+                        } else if (parameterNode.getValueNode() instanceof FloatNode) {
+                            VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),
+                                    new FloatDataType(((FloatNode) parameterNode.getValueNode()).getNumber()));
                         }
                     }
+                    for(int j = 0; j < calledNode.getParameterNodes().size();j++)
+                    {
+                        ParameterNode parameterNode = calledNode.getParameterNodes().get(j);
+                        ArrayList<InterpreterDataType> datainputOrOutput = new ArrayList<>();
+                        FloatDataType floatDataType = new FloatDataType(0);
+                        datainputOrOutput.add(j,floatDataType);
+                        datainputOrOutput = builtin.Execute(datainputOrOutput);
+                        VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),datainputOrOutput.get(j));
+                    }
+                         
+                    
                 }
-            }
-        }
-        
-        HashMap<String, InterpreterDataType> VariableHashMap = new HashMap<>();
-        
-        for(int i = 0; i<functionDefinitionNode.getParameterVariableNodes().size(); i++)
-        {
-            VariableHashMap.put(functionDefinitionNode.getParameterVariableNodes().get(i).getVariableName(), dataTypes.get(i));
-            
-        }
-        for(int i = 0; i< functionDefinitionNode.getLocalVariablesList().size(); i++)
-        {   
-            if(functionDefinitionNode.getLocalVariablesList().get(i).getType().equals(VariableNode.Type.INTEGER))
-            {
-                int value = ((IntegerNode) functionDefinitionNode.getLocalVariablesList().get(i).getNode()).getNumber();
-                VariableHashMap.put(functionDefinitionNode.getLocalVariablesList().get(i).getVariableName(),new IntDataType(value));
-            }
-            else if(functionDefinitionNode.getLocalVariablesList().get(i).getType().equals(VariableNode.Type.REAL))
-            {
-                float value = ((FloatNode) functionDefinitionNode.getLocalVariablesList().get(i).getNode()).getNumber();
-                VariableHashMap.put(functionDefinitionNode.getLocalVariablesList().get(i).getVariableName(),new FloatDataType(value));
-            }
-            
-        }
-
-        
-
-    }
-
-    public static void InterpretBlock(ArrayList<StatementNode> StatementList, HashMap<String,InterpreterDataType> VariableHashMap)
-    {
-        for (StatementNode statementNode : StatementList) {
-            if(statementNode instanceof FunctionCallNode)
-            {
-                
-            }
-            else if(statementNode instanceof BuiltInFunctionNode)
-            {
-
+                else
+                {
+                    FunctionDefinitionNode functionDefinitionNode = (FunctionDefinitionNode) functionsHashmap
+                            .get(calledNode.getFunctionName());
+                    int calledNodeSize = 0;
+                    if(calledNode.getParameterNodes()!= null)
+                    {
+                        calledNodeSize = calledNode.getParameterNodes().size();
+                    }        
+                    
+                    if (calledNodeSize == functionDefinitionNode.getParameterVariableNodes().size())
+                    {
+                        ArrayList<InterpreterDataType> dataTypes = new ArrayList<>();
+                        for (ParameterNode parameterNode : calledNode.getParameterNodes()) {
+                            if (parameterNode.getValueNode() instanceof IntegerNode) {
+                                VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),
+                                        new IntDataType(((IntegerNode) parameterNode.getValueNode()).getNumber()));
+                            } else if (parameterNode.getValueNode() instanceof FloatNode) {
+                                VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),
+                                        new FloatDataType(((FloatNode) parameterNode.getValueNode()).getNumber()));
+                            }
+                        }
+                        InterpretFunction(calledNode, dataTypes);
+                    }
+                }
             }
             else
             {
                 //Do nothing
             }
+            
         }
     }
-
 
 }

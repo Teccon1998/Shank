@@ -3,9 +3,8 @@ public class FunctionDefinitionNode extends CallableNode {
 
     private String FunctionName;
     private ArrayList<VariableNode> ParamsList;
-    private ArrayList<StatementNode> StatementList;
     private ArrayList<VariableNode> LocalVariablesList;
-
+    private ArrayList<StatementNode> StatementList;
 
     public ArrayList<StatementNode> getStatementList() {
         return this.StatementList;
@@ -25,7 +24,7 @@ public class FunctionDefinitionNode extends CallableNode {
     
     public FunctionDefinitionNode(String FunctionName, ArrayList<StatementNode> StatementList, ArrayList<VariableNode> ParamsList, ArrayList<VariableNode> LocalVariablesList)
     {
-        super(FunctionName, ParamsList);
+        super(FunctionName, ParamsList,StatementList,LocalVariablesList);
         this.FunctionName = FunctionName;
         this.ParamsList = ParamsList;
         this.StatementList = StatementList;

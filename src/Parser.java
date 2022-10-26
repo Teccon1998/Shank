@@ -331,25 +331,29 @@ public class Parser {
                     {
                         tokenList.add(0,HolderToken);
                         parameterFunctionNodes
-                                .add(new ParameterNode(Expression()));
+                                .add(new ParameterNode(null,Expression()));
                     }
                     else if((HolderToken = MatchAndRemove(Token.Type.DECIMAL))!= null)
                     {
                         tokenList.add(0,HolderToken);
                         parameterFunctionNodes
-                                .add(new ParameterNode(Expression()));
+                                .add(new ParameterNode(null,Expression()));
                     }
                     else if((HolderToken = MatchAndRemove(Token.Type.VAR))!= null)
                     {
                         Token VariableReferenceToken = MatchAndRemove(Token.Type.IDENTIFIER);
                         tokenList.add(0, VariableReferenceToken);
                         parameterFunctionNodes
-                                .add(new ParameterNode(Expression()));
+                                .add(new ParameterNode(new VariableReferenceNode(VariableReferenceToken.getValue()),
+                                        null));
+                                MatchAndRemove(Token.Type.IDENTIFIER);
                     }
                     else if((HolderToken = MatchAndRemove(Token.Type.IDENTIFIER))!= null)
                     {
                         tokenList.add(0, HolderToken);
-                        parameterFunctionNodes.add(new ParameterNode(Expression()));
+                        parameterFunctionNodes
+                                .add(new ParameterNode(new VariableReferenceNode(HolderToken.getValue()), null));
+                        MatchAndRemove(Token.Type.IDENTIFIER);
                     }
                 }
                 while (MatchAndRemove(Token.Type.COMMA) != null);

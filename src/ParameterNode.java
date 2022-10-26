@@ -14,6 +14,12 @@ public class ParameterNode extends Node {
         this.varRefNode = varRefNode;
     }
 
+    public ParameterNode(VariableReferenceNode varRefNode,Node ValueNode)
+    {
+        this.varRefNode = varRefNode;
+        this.ValueNode = ValueNode;
+    }
+
     public VariableReferenceNode getVarRefNode() {
         return this.varRefNode;
     }

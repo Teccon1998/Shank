@@ -4,10 +4,18 @@ public abstract class CallableNode extends Node {
     
     private String FunctionName;
     private ArrayList<VariableNode> parameterVariableNodes;
+    private ArrayList<StatementNode> StatementList;
+    private ArrayList<VariableNode> LocalVariablesList;
 
-    public CallableNode(String FunctionName, ArrayList<VariableNode> parameterVariableNodes) {
+   
+    public CallableNode() {
+    }
+
+    public CallableNode(String FunctionName, ArrayList<VariableNode> parameterVariableNodes,ArrayList<StatementNode> StatementList, ArrayList<VariableNode> LocalVariablesList) {
         this.FunctionName = FunctionName;
         this.parameterVariableNodes = parameterVariableNodes;
+        this.StatementList = StatementList;
+        this.LocalVariablesList = LocalVariablesList;
     }
     public String getFunctionName() {
         return this.FunctionName;
@@ -23,6 +31,21 @@ public abstract class CallableNode extends Node {
 
     public void setParameterVariableNodes(ArrayList<VariableNode> parameterVariableNodes) {
         this.parameterVariableNodes = parameterVariableNodes;
+    }
+     public ArrayList<StatementNode> getStatementList() {
+        return this.StatementList;
+    }
+
+    public void setStatementList(ArrayList<StatementNode> StatementList) {
+        this.StatementList = StatementList;
+    }
+
+    public ArrayList<VariableNode> getLocalVariablesList() {
+        return this.LocalVariablesList;
+    }
+
+    public void setLocalVariablesList(ArrayList<VariableNode> LocalVariablesList) {
+        this.LocalVariablesList = LocalVariablesList;
     }
 
     @Override

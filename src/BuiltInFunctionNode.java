@@ -2,12 +2,12 @@ import java.util.ArrayList;
 
 public abstract class BuiltInFunctionNode extends CallableNode {
 
-    private boolean isVariadic;
+    private boolean isVariadic = false;
 
-    
+    public BuiltInFunctionNode(){}
     public BuiltInFunctionNode(String FunctionName, ArrayList<VariableNode> parameterVariableNodes, boolean isVariadic) 
     {
-        super(FunctionName, parameterVariableNodes);
+        super(FunctionName, parameterVariableNodes,null, null);
         this.isVariadic = isVariadic;
 
     }
@@ -20,7 +20,7 @@ public abstract class BuiltInFunctionNode extends CallableNode {
         this.isVariadic = isVariadic;
     }
 
-    public abstract void Execute(ArrayList<InterpreterDataType> interpreterDataTypes) throws Exception;
+    public abstract ArrayList<InterpreterDataType> Execute(ArrayList<InterpreterDataType> interpreterDataTypes) throws Exception;
 
     @Override
     public String toString() {

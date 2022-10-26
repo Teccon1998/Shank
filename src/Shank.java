@@ -3,13 +3,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.function.Function;
 
 public class Shank {
     
     public static void main(String[] args) throws Exception
     {
-        String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\311\\Shank\\src\\InputFile.txt";
+        String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\GitBlame\\311\\Shank\\src\\InputFile.txt";
         Path path = Paths.get(arg);
         // if(args.length != 1)
         // {
@@ -47,12 +46,87 @@ public class Shank {
             ArrayList<FunctionDefinitionNode> FunctionNodes = new ArrayList<>();
             FunctionNodes = parser.parseTokens();
             HashMap<String, CallableNode> functionHashMap = new HashMap<>();
+            ArrayList<String> notPermittedNames = new ArrayList<>();
+            String[] notPermittedList = new String[] {"read", "write", "getRandom", "integerToReal", "realToInteger","squareRoot"};
+            notPermittedNames.addAll(Arrays.asList(notPermittedList));
             for (FunctionDefinitionNode functionDefinitionNode : FunctionNodes) {
+                if (notPermittedNames.contains(functionDefinitionNode.getFunctionName()))
+                {
+                    throw new Exception("Cannot overwrite built in functions");
+                }
                 functionHashMap.put(functionDefinitionNode.getFunctionName(), functionDefinitionNode);
             }
-            //TODO: add builtinnodes
-            // functionHashMap.put("getRandom",new getRandom(arg, null, false))
+            functionHashMap.put("read", new Read("read", new ArrayList<VariableNode>(), true));
+            functionHashMap.put("write", new Write("write", new ArrayList<VariableNode>(), true));
+            functionHashMap.put("getRandom", new getRandom());
+            functionHashMap.put("integerToReal", new integerToReal());
+            functionHashMap.put("realToInteger", new realToInteger());
+            functionHashMap.put("squareRoot", new squareRoot());
             
+            for (FunctionDefinitionNode functionDefinitionNode : FunctionNodes) {
+                System.out.println("\n\n " + functionDefinitionNode + "\n");
+            }
+            Interpreter.functionsHashmap = functionHashMap;
+            for (FunctionDefinitionNode functionDefinitionNode : FunctionNodes) {
+                if(functionDefinitionNode.getFunctionName().equals("start"))
+                {
+                    ArrayList<InterpreterDataType> dataTypes = new ArrayList<>();
+                    ArrayList<ParameterNode> parameterNodes = new ArrayList<>();
+                    Interpreter.InterpretFunction(new FunctionCallNode("start", parameterNodes), dataTypes);
+                }
+            }
+            // for(FunctionDefinitionNode functionDefinitionNode : FunctionNodes)
+            // {
+            //     for(int i = 0; i <functionDefinitionNode.getStatementList().size(); i++)
+            //     {
+            //         if(functionDefinitionNode.getStatementList().get(i).getStatement() instanceof FunctionCallNode)
+            //         {
+            //             FunctionCallNode functionCallNode = (FunctionCallNode) functionDefinitionNode.getStatementList().get(i).getStatement();
+                        
+            //             if(functionCallNode == null)
+            //             {
+            //                 throw new Exception("Undefined function");
+            //             }
+            //             CallableNode variaticNode = functionHashMap.get(functionCallNode.getFunctionName());
+            //             if(variaticNode.getFunctionName().equals("read") || variaticNode.getFunctionName().equals("write"))
+            //             {
+                            
+            //             }
+            //             else if(functionCallNode.getParameterNodes().size() == functionHashMap.get(functionCallNode.getFunctionName()).getParameterVariableNodes().size())
+            //             {
+            //                 ArrayList<InterpreterDataType> dataTypes = new ArrayList<>();
+            //                 for (int j = 0; j < functionCallNode.getParameterNodes().size();j++)
+            //                 {
+            //                     for (int k = 0; k < functionDefinitionNode.getLocalVariablesList().size(); k++) {
+            //                         if (functionCallNode.getParameterNodes() == null) {
+            //                             break;
+            //                         }
+            //                         if (functionCallNode.getParameterNodes().get(j).getVarRefNode().getVariableName()
+            //                                 .equals(functionDefinitionNode.getLocalVariablesList().get(k)
+            //                                         .getVariableName())) {
+            //                             if (functionDefinitionNode.getLocalVariablesList().get(k).getType()
+            //                                     .equals(VariableNode.Type.INTEGER)) {
+            //                                 int value = ((IntegerNode) functionDefinitionNode.getLocalVariablesList()
+            //                                         .get(k).getNode()).getNumber();
+            //                                 dataTypes.add(new IntDataType(value));
+            //                                 break;
+            //                             } else if (functionDefinitionNode.getLocalVariablesList().get(k).getType()
+            //                                     .equals(VariableNode.Type.REAL)) {
+            //                                 float value = ((FloatNode) functionDefinitionNode.getLocalVariablesList()
+            //                                         .get(k).getNode()).getNumber();
+            //                                 dataTypes.add(new FloatDataType(value));
+            //                                 break;
+            //                             }
+            //                         }
+            //                     }
+            //                 }
+                            
+                        
+                        
+                        
+            //         }
+            //     }
+            // }
             
         }    
         catch(IOException e)
@@ -60,31 +134,6 @@ public class Shank {
             System.out.println("Exception occured opening file");
             e.printStackTrace();
         }
-    }
-
-    private static ArrayList<InterpreterDataType> getDataType(CallableNode callableNode)
-    {
-        ArrayList<InterpreterDataType> dataTypes = new ArrayList<>();
-        for(int i = 0; i <callableNode.getParameterVariableNodes().size(); i++)
-        {
-            VariableNode.Type Type = callableNode.getParameterVariableNodes().get(i)
-                    .getType();
-            if (Type.equals(VariableNode.Type.INTEGER)) {
-                IntegerNode intNode = (IntegerNode) callableNode
-                        .getParameterVariableNodes().get(i).getNode();
-                dataTypes.add(new IntDataType(intNode.getNumber()));
-            }
-            else if (Type.equals(VariableNode.Type.REAL)) {
-                FloatNode floatNode = (FloatNode) callableNode
-                        .getParameterVariableNodes().get(i).getNode();
-                dataTypes.add(new FloatDataType(floatNode.getNumber()));
-            }
-            else
-            {
-                return null;
-            }
-        }
-        return dataTypes;
     }
     
 }

@@ -2,12 +2,16 @@ import java.util.ArrayList;
 
 public class integerToReal extends BuiltInFunctionNode {
 
+    public integerToReal()
+    {
+        
+    }
     public integerToReal(String FunctionName, ArrayList<VariableNode> parameterVariableNodes, boolean isVariadic) {
         super(FunctionName, parameterVariableNodes, false);
     }
 
     @Override
-    public void Execute(ArrayList<InterpreterDataType> interpreterDataTypes) throws Exception {
+    public ArrayList<InterpreterDataType> Execute(ArrayList<InterpreterDataType> interpreterDataTypes) throws Exception {
         if(!(interpreterDataTypes.get(0) instanceof IntDataType))
         {
             throw new Exception("First value not a Int Data Type");
@@ -18,6 +22,7 @@ public class integerToReal extends BuiltInFunctionNode {
         }
         Float integerToRealValue = Float.parseFloat(interpreterDataTypes.get(0).toString());
         interpreterDataTypes.set(1, new FloatDataType(integerToRealValue));
+        return interpreterDataTypes;
     }
     
     
