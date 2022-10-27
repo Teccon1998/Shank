@@ -15,7 +15,10 @@ public class Write extends BuiltInFunctionNode {
     @Override
     public void Execute(ArrayList<InterpreterDataType> interpreterDataTypes) {
         
-        System.out.println(interpreterDataTypes.get(0).toString());
+        for(int i = 0; i< interpreterDataTypes.size(); i++)
+        {
+            System.out.println(interpreterDataTypes.get(i).toString());
+        }
     }
     
 }

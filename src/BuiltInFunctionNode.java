@@ -24,8 +24,7 @@ public abstract class BuiltInFunctionNode extends CallableNode {
 
     @Override
     public String toString() {
-        // TODO Auto-generated method stub
-        return null;
+        return "BuiltInFunctionNode(IsVariatic:"+this.isVariadic+")";
     }
     
 }

@@ -51,7 +51,7 @@ public class Parser {
             } else if (FirstNode != null) {
                 return FirstNode;
             } else {
-                return null;
+                throw new Exception("Not an expression");
             }
     }
     private Node Term() throws Exception
@@ -141,14 +141,23 @@ public class Parser {
     private ArrayList<VariableNode> ParameterNodes() throws Exception
     {
         ArrayList<VariableNode> parameterNodes = new ArrayList<>();
-
         ArrayList<Token> parameterTokens = new ArrayList<>();
         
-        parameterTokens.add(MatchAndRemove(Token.Type.IDENTIFIER));
+        //Do this to check if the next value after a function open paren is not var.
+        if(tokenList.get(0).getTokenType().equals(Token.Type.IDENTIFIER))
+        {
+            parameterTokens.add(MatchAndRemove(Token.Type.IDENTIFIER));
+        }
+        else
+        {
+            parameterTokens.add(MatchAndRemove(Token.Type.VAR));
+            parameterTokens.add(MatchAndRemove(Token.Type.IDENTIFIER));
+        }
         while(MatchAndRemove(Token.Type.COMMA)!= null)
         {
             if (MatchAndRemove(Token.Type.VAR) != null)
             {
+                parameterTokens.add(new Token(Token.Type.VAR));
                 parameterTokens.add(MatchAndRemove(Token.Type.IDENTIFIER));
             }
             else
@@ -165,16 +174,43 @@ public class Parser {
             {
                 for(int i = 0; i<parameterTokens.size(); i++)
                 {
-                    IntegerNode integerNode = new IntegerNode(0);
-                    parameterNodes.add(new VariableNode(VariableNode.Type.INTEGER, false, parameterTokens.get(i).getValue(), integerNode));
+                    if(parameterTokens.get(i).getTokenType().equals(Token.Type.VAR))
+                    {
+
+                        IntegerNode integerNode = new IntegerNode(0);
+                        if(i == parameterTokens.size())
+                        {
+                            break;
+                        }
+                        i++;
+                        parameterNodes.add(new VariableNode(VariableNode.Type.INTEGER, false, parameterTokens.get(i).getValue(), integerNode));
+                    }
+                    else
+                    {
+                        IntegerNode integerNode = new IntegerNode(0);
+                        parameterNodes.add(new VariableNode(VariableNode.Type.INTEGER, true, parameterTokens.get(i).getValue(), integerNode));
+                    }
                 }
             }
             else if(MatchAndRemove(Token.Type.REAL)!= null)
             {
                 for(int i = 0; i<parameterTokens.size(); i++)
                 {
-                    FloatNode floatNode = new FloatNode(0);
-                    parameterNodes.add(new VariableNode(VariableNode.Type.REAL, false, parameterTokens.get(i).getValue(), floatNode));
+                    if(parameterTokens.get(i).getTokenType().equals(Token.Type.VAR))
+                    {
+                        if(i == parameterTokens.size())
+                        {
+                            break;
+                        }
+                        i++;
+                        FloatNode floatNode = new FloatNode(0);
+                        parameterNodes.add(new VariableNode(VariableNode.Type.REAL, false, parameterTokens.get(i).getValue(), floatNode));
+                    }
+                    else
+                    {
+                        FloatNode floatNode = new FloatNode(0);
+                        parameterNodes.add(new VariableNode(VariableNode.Type.REAL, true, parameterTokens.get(i).getValue(), floatNode));
+                    }
                 }
             }
         }
@@ -290,8 +326,12 @@ public class Parser {
             MatchAndRemove(Token.Type.BEGIN);
             MatchAndRemove(Token.Type.EndOfLine);
             StatementNode tempNode = statement();
-            if (tempNode != null) {
+            if (tempNode.getStatement() != null) {
                 StatementList.add(tempNode);
+            }
+            else if(tempNode.getStatement()== null)
+            {
+                //Do nothing part of normal flow
             }
         }
         return StatementList;
@@ -314,7 +354,7 @@ public class Parser {
                 statementNode.setStatement(assignment());
                 return statementNode;
             }
-            
+            // if()
             if(MatchAndRemove(Token.Type.EndOfLine)!= null)
             {
                 FunctionCallNode functionCallNode = new FunctionCallNode(leftToken.getValue(), null);
@@ -341,12 +381,18 @@ public class Parser {
                     }
                     else if((HolderToken = MatchAndRemove(Token.Type.VAR))!= null)
                     {
-                        Token VariableReferenceToken = MatchAndRemove(Token.Type.IDENTIFIER);
-                        tokenList.add(0, VariableReferenceToken);
-                        parameterFunctionNodes
+                        Token VariableReferenceToken;
+                        if((VariableReferenceToken = MatchAndRemove(Token.Type.IDENTIFIER))!= null)
+                        {
+                            parameterFunctionNodes
                                 .add(new ParameterNode(new VariableReferenceNode(VariableReferenceToken.getValue()),
                                         null));
-                                MatchAndRemove(Token.Type.IDENTIFIER);
+                        }
+                        else
+                        {
+                            throw new Exception("No value after VAR");
+                        }
+                        
                     }
                     else if((HolderToken = MatchAndRemove(Token.Type.IDENTIFIER))!= null)
                     {
@@ -432,7 +478,12 @@ public class Parser {
             statementNode.setStatement(ifNode);
             return statementNode;
         }
-        return null;
+        if(tokenList.get(0).getTokenType().equals(Token.Type.END))
+        {
+            statementNode.setStatement(null);
+            return statementNode;
+        }
+        throw new Exception("Not a valid Statement");
     }
     private AssignmentNode assignment() throws Exception
     {
@@ -452,7 +503,7 @@ public class Parser {
                 } 
             }
         }
-        return null;
+        throw new Exception("Not a valid assignment");
     }
     
     

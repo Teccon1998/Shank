@@ -4,11 +4,13 @@ pi = 3.14
 variables
 firstNumber : integer ; s,t,v,n : real
 begin
-second firstNumber,  pi, s,t,v, var n
-write n, s, pi, firstNumber
+    second var firstNumber,  pi, var s,t,v, var n
+    write n, s, pi, firstNumber
 end
 
-define second(firstNumber : integer; pi,s,t,v, var n : real)
+define second(var firstNumber : integer; pi, var s,t,v, var n : real)
+variables
+constants
 begin
     read var n, var s, var firstNumber
 end

@@ -74,7 +74,7 @@ public class Shank {
                     ArrayList<InterpreterDataType> dataTypes = new ArrayList<>();
                     ArrayList<ParameterNode> parameterNodes = new ArrayList<>();
                     Interpreter.InterpretFunction(new FunctionCallNode("start", parameterNodes), dataTypes);
-                    System.out.println(Interpreter.VariableHashMap);
+                    // System.out.println(Interpreter.VariableHashMap);
                 }
             }
 

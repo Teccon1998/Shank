@@ -51,8 +51,51 @@ public abstract class CallableNode extends Node {
     @Override
     public String toString()
     {
-        //TODO
-        return null;
+        StringBuilder sb = new StringBuilder();
+        sb.append("FunctionNode(\nNAME:");
+        sb.append(this.FunctionName);
+        sb.append(" \nPARAMS:");
+        if (this.parameterVariableNodes != null)
+        {
+            for (Node node : parameterVariableNodes) {
+                sb.append("\n");
+                sb.append(node);
+            }
+
+        }
+        else
+        {
+            sb.append("NULL");
+        }
+        sb.append(" \nLOCALS:");
+        if (this.LocalVariablesList != null)
+        {
+            for (Node node : LocalVariablesList) {
+                sb.append("\n");
+                sb.append(node);
+            }
+
+        }
+        else
+        {
+            sb.append("NULL");
+        }
+        sb.append(" \nSTATEMENTS:");
+        if (this.StatementList != null)
+        {
+            
+            for (Node node : StatementList) {
+                sb.append("\n");
+                sb.append(node);
+            }
+        }
+        else
+        {
+            sb.append("NULL");
+        }
+        sb.append("\n)");
+        return sb.toString();
+    
     }
 
 

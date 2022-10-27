@@ -49,7 +49,7 @@ public class Interpreter {
 
         }
         /*
-         * Adds local variables to the Hashmap
+         * Adds local variables to the Hashmap so they can be called.
          */
         for(VariableNode variableNode : functionsHashmap.get(functionCallNode.getFunctionName()).getLocalVariablesList())
         {
@@ -61,10 +61,13 @@ public class Interpreter {
             {
                 VariableHashMap.put(variableNode.getVariableName(),new FloatDataType(((FloatNode) variableNode.getNode()).getNumber()));
             }
+            else
+            {
+                throw new Exception("Invalid variable type pass");
+            }
         }
 
 
-        //Works perfectly ^
         int i=0;
         for(ParameterNode parameterNode : functionCallNode.getParameterNodes())
         {
@@ -72,8 +75,9 @@ public class Interpreter {
             i++;
         }
         /*
-         * When a variable is returned from a function
-         * it overwrites the local variables in the parent function.
+         * When a variable is mutable in a function
+         * it overwrites the local variables in the parent function, so long as the parent function's
+         * definition allows that variable to be overriden.
          */
         
         Interpreter.InterpretBlock(functionsHashmap.get(functionCallNode.getFunctionName()).getStatementList(), VariableHashMap);
@@ -81,6 +85,7 @@ public class Interpreter {
     
     
     public static void InterpretBlock(ArrayList<StatementNode> StatementList, HashMap<String, InterpreterDataType> VariableHashMap) throws Exception {
+        //interprets every statement.
         for (int i = 0; i < StatementList.size(); i++) 
         {
             StatementNode statementNode = StatementList.get(i);
@@ -89,24 +94,35 @@ public class Interpreter {
              * to change behavior. Builtin's need different code run
              * compared to User Defined functions.
              */
+            //This checks if its a function call and if not its an assignment.
             if (statementNode.getStatement() instanceof FunctionCallNode)
             {
                 FunctionCallNode calledNode = (FunctionCallNode) statementNode.getStatement();
+                
+                /*
+                 * Checks if its a built in or a 
+                 * user defined function node.
+                 * Built in function nodes go directly to interpretblock 
+                 * and user defined functions need to check the function definition
+                 * to have their statements checked for either a function call, or an assignment or a boolean check.
+                 */
                 if(functionsHashmap.get(calledNode.getFunctionName())instanceof BuiltInFunctionNode)
                 {
-                    BuiltInFunctionNode builtin = (BuiltInFunctionNode) functionsHashmap
-                            .get(calledNode.getFunctionName());
+                    BuiltInFunctionNode builtin = (BuiltInFunctionNode) functionsHashmap.get(calledNode.getFunctionName());
+                    
                     for (ParameterNode parameterNode : calledNode.getParameterNodes()) 
                     {
-                        if (parameterNode.getValueNode() instanceof IntegerNode) {
-                            VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),
-                                    new IntDataType(((IntegerNode) parameterNode.getValueNode()).getNumber()));
-                        } else if (parameterNode.getValueNode() instanceof FloatNode) {
-                            VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),
-                                    new FloatDataType(((FloatNode) parameterNode.getValueNode()).getNumber()));
+                        if (parameterNode.getValueNode() instanceof IntegerNode) 
+                        {
+                            VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),new IntDataType(((IntegerNode) parameterNode.getValueNode()).getNumber()));
                         }
+                        else if (parameterNode.getValueNode() instanceof FloatNode) 
+                        {
+                            VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),new FloatDataType(((FloatNode) parameterNode.getValueNode()).getNumber()));
+                        }
+                        
                     }
-
+                    ArrayList<InterpreterDataType> datainputOrOutput = new ArrayList<>();
                     for(int j = 0; j < calledNode.getParameterNodes().size();j++)
                     {
                         VariableReferenceNode ParamNodeVarNode = calledNode.getParameterNodes().get(j).getVarRefNode();
@@ -124,10 +140,11 @@ public class Interpreter {
                                 FloatDataType floatDataType = (FloatDataType) VariableHashMap.get(calledNode.getParameterNodes().get(j).getVarRefNode().getVariableName());
                                 parameterNode.setValueNode(new FloatNode(floatDataType.getFloatValue()));
                             }   
+                            else
+                            {
+                                throw new Exception("Incorrect variable type pass");
+                            } 
                         }
-                        ArrayList<InterpreterDataType> datainputOrOutput = new ArrayList<>();
-                        // FloatDataType floatDataType = new FloatDataType(0);
-                        // IntDataType intDataType = new IntDataType(0);
                         if(parameterNode.getValueNode()!=null)
                         {
                             if(parameterNode.getValueNode()instanceof FloatNode)
@@ -143,11 +160,21 @@ public class Interpreter {
                                 datainputOrOutput.add(intDataType);
 
                             }
+                            else
+                            {
+                                throw new Exception("Incorrect variable type pass");
+                            } 
                         }
-                        builtin.Execute(datainputOrOutput);
                         VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),datainputOrOutput.get(0));
                     }
-                    
+                    builtin.Execute(datainputOrOutput);
+
+                    for(int j = 0; j < calledNode.getParameterNodes().size();j++)
+                    {
+                        ParameterNode parameterNode = calledNode.getParameterNodes().get(j);
+                        VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),datainputOrOutput.get(j));
+                    }
+
                 }
                 else
                 {
@@ -174,6 +201,7 @@ public class Interpreter {
                     }
                 }
             }
+            //interprets statements
             else
             {
                 //Do nothing
