@@ -20,7 +20,7 @@ public abstract class BuiltInFunctionNode extends CallableNode {
         this.isVariadic = isVariadic;
     }
 
-    public abstract ArrayList<InterpreterDataType> Execute(ArrayList<InterpreterDataType> interpreterDataTypes) throws Exception;
+    public abstract void Execute(ArrayList<InterpreterDataType> interpreterDataTypes) throws Exception;
 
     @Override
     public String toString() {

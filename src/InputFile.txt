@@ -2,19 +2,13 @@ define start()
 constants
 pi = 3.14
 variables
-firstNumber : integer ; s,t,v,q : real
+firstNumber : integer ; s,t,v,n : real
 begin
-
-read var s
-
-s := 0.1
-t := 0.2
-v := 0.3
-q := 0.4
-second firstNumber,  pi, s,t,v, var q
+second firstNumber,  pi, s,t,v, var n
+write n, s, pi, firstNumber
 end
 
-define second(firstNumber : integer; pi,s,t,v, var q : real)
+define second(firstNumber : integer; pi,s,t,v, var n : real)
 begin
-    read 5
+    read var n, var s, var firstNumber
 end

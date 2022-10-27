@@ -11,7 +11,7 @@ public class realToInteger extends BuiltInFunctionNode {
     }
 
     @Override
-    public ArrayList<InterpreterDataType> Execute(ArrayList<InterpreterDataType> interpreterDataTypes) throws Exception {
+    public void Execute(ArrayList<InterpreterDataType> interpreterDataTypes) throws Exception {
         if(!(interpreterDataTypes.get(0) instanceof FloatDataType))
         {
             throw new Exception("First value not a Float Data Type");
@@ -22,7 +22,6 @@ public class realToInteger extends BuiltInFunctionNode {
         }
         Integer FloatToRealValue = Integer.parseInt(interpreterDataTypes.get(0).toString());
         interpreterDataTypes.set(1, new IntDataType(FloatToRealValue));
-        return interpreterDataTypes;
     }
     
     

@@ -12,16 +12,11 @@ public class Read extends BuiltInFunctionNode {
     }
 
     @Override
-    public ArrayList<InterpreterDataType> Execute(ArrayList<InterpreterDataType> interpreterDataTypes) {
+    public void Execute(ArrayList<InterpreterDataType> interpreterDataTypes) {
         
         Scanner sc = new Scanner(System.in);
-        
-        for(int i = 0; i< interpreterDataTypes.size(); i++)
-        {
-            interpreterDataTypes.get(i).fromString(sc.nextLine());
-        }
-        sc.close();
-        return interpreterDataTypes;
+        String str = sc.next();
+        interpreterDataTypes.get(0).fromString(str);
     }
     
 }

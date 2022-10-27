@@ -11,7 +11,7 @@ public class squareRoot extends BuiltInFunctionNode {
     }
 
     @Override
-    public ArrayList<InterpreterDataType> Execute(ArrayList<InterpreterDataType> interpreterDataTypes) throws Exception {
+    public void Execute(ArrayList<InterpreterDataType> interpreterDataTypes) throws Exception {
         if(!(interpreterDataTypes.get(0) instanceof FloatDataType))
         {
             throw new Exception("Not a float data type");
@@ -19,7 +19,6 @@ public class squareRoot extends BuiltInFunctionNode {
         FloatDataType fdt =  ((FloatDataType) interpreterDataTypes.get(0));
         Float floatValue = (float) Math.sqrt(fdt.getFloatValue());
         interpreterDataTypes.set(1, new FloatDataType(floatValue));
-        return interpreterDataTypes;
     }
     
 }
