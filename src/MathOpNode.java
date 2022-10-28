@@ -14,32 +14,6 @@ public class MathOpNode extends Node {
         this.operator = operator;
     }
 
-    public FloatNode Operate(MathOpNode math)
-    {
-        Interpreter interpreter = new Interpreter();
-        float Num1 = interpreter.Resolve(math.getNodeOne()).getNumber();
-        float Num2 = interpreter.Resolve(math.getNodeTwo()).getNumber();
-        float Result;
-        switch (math.getOperator()) {
-            case ADD:
-                Result = Num1 + Num2;
-                return new FloatNode(Result);
-            case SUBTRACT:
-                Result = Num1 - Num2;
-                return new FloatNode(Result);
-            case DIVIDE:
-                Result = Num1 / Num2;
-                return new FloatNode(Result);
-            case TIMES:
-                Result = Num1 * Num2;
-                return new FloatNode(Result);
-            case MODULO:
-                Result = Num1 % Num2;
-                return new FloatNode(Result);
-        }
-        return null;
-    }
-
     public Node getNodeOne()
     {
         return this.Operand1;

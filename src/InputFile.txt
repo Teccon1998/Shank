@@ -6,11 +6,32 @@ firstNumber : integer ; s,t,v,n : real
 begin
     second var firstNumber,  pi, var s,t,v, var n
     write n, s, pi, firstNumber
+    firstNumber := pi + 23
+    write firstNumber
 end
 
 define second(var firstNumber : integer; pi, var s,t,v, var n : real)
 variables
 constants
 begin
+    if(1 > 0)
+    begin
+        t := 999
+        if(0 <> 1)
+        begin
+            t := 123
+        end
+    end
+    
+    if(0 > 2)
+    begin
+    end
+    else if(2 > 0)
+    begin
+        t := 456
+    end
+
+
+    if()
     read var n, var s, var firstNumber
 end

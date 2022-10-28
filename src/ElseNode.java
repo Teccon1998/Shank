@@ -9,7 +9,7 @@ public class ElseNode extends Node{
     }
     
 
-    public ArrayList<StatementNode> getStatementNode()
+    public ArrayList<StatementNode> getStatements()
     {
         return this.StatementNodes;
     }

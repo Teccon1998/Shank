@@ -19,14 +19,108 @@ public class Interpreter {
         return Interpreter.functionsHashmap;
     }
 
-    public FloatNode Resolve(Node node) {
-        if (node instanceof IntegerNode) {
+    public static boolean EvaluateBooleanExpression(BooleanNode booleanNode) throws Exception
+    {
+
+        FloatNode floatNode1 = Interpreter.Resolve(booleanNode.getLeftNode());
+        FloatNode floatNode2 = Interpreter.Resolve(booleanNode.getRightNode());
+        Token Condition = booleanNode.getCondition();
+
+        Float float1 = floatNode1.getNumber();
+        Float float2 = floatNode2.getNumber();
+
+        switch(Condition.getTokenType())
+        {
+            case EQUALS:
+                if (float1 == float2)
+                {
+                    return true;
+                }
+                break;
+            case GREATER:
+                if (float1 > float2)
+                {
+                    return true;
+                }
+                break;
+            case GREATEREQUAL:
+                if (float1 >= float2)
+                {
+                    return true;
+                }
+                break;
+            case LESS:
+                if (float1 < float2)
+                {
+                    return true;
+                }
+                break;
+            case LESSEQUAL:
+                if (float1 <= float2)
+                {
+                    return true;
+                }
+                break;
+            case NOTEQUAL:
+                if (float1 != float2)
+                {
+                    return true;
+                }
+                break;
+            default:
+                throw new Exception("Not a valid condition");  
+        }
+        return false;
+    }
+
+    public static FloatNode Resolve(Node node) throws Exception {
+        if (node instanceof IntegerNode) 
+        {
             float floatCastHolder = ((IntegerNode) node).getNumber();
             return new FloatNode(floatCastHolder);
-        } else if (node instanceof FloatNode) {
+        } 
+        else if (node instanceof FloatNode) 
+        {
             return ((FloatNode) node);
         }
-        return null;
+        else if (node instanceof MathOpNode)
+        {
+            MathOpNode mathOpNode = (MathOpNode) node;
+            FloatNode node1;
+            FloatNode node2;
+            MathOpNode.Operator operatorHolder = mathOpNode.getOperator();
+            
+
+            //Recursive search for value
+            node1 = Interpreter.Resolve(mathOpNode.getNodeOne());
+            node2 = Interpreter.Resolve(mathOpNode.getNodeTwo());
+
+            if (operatorHolder.equals(MathOpNode.Operator.ADD)) {
+                return new FloatNode(node1.getNumber() + node2.getNumber());
+            } else if (operatorHolder.equals(MathOpNode.Operator.SUBTRACT)) {
+                return new FloatNode(node1.getNumber() - node2.getNumber());
+            } else if (operatorHolder.equals(MathOpNode.Operator.DIVIDE)) {
+                return new FloatNode(node1.getNumber() / node2.getNumber());
+            } else if (operatorHolder.equals(MathOpNode.Operator.TIMES)) {
+                return new FloatNode(node1.getNumber() * node2.getNumber());
+            } else if (operatorHolder.equals(MathOpNode.Operator.MODULO)) {
+                return new FloatNode(node1.getNumber() % node2.getNumber());
+            }
+
+        }
+        else if (node instanceof VariableNode)
+        {
+            VariableNode varNode = (VariableNode) node;
+            return (FloatNode) varNode.getNode();
+        }
+        else if (node instanceof VariableReferenceNode)
+        {
+            VariableReferenceNode varRefNode = (VariableReferenceNode) node;
+            InterpreterDataType interpretDataType = VariableHashMap.get(varRefNode.getVariableName());
+            FloatNode floatNode = new FloatNode(((FloatDataType) interpretDataType).getFloatValue());
+            return floatNode;
+        }
+        throw new Exception("Cannot find reference to value");
     }
 
     public static void InterpretFunction(FunctionCallNode functionCallNode, ArrayList<InterpreterDataType> dataTypes) throws Exception
@@ -49,7 +143,7 @@ public class Interpreter {
 
         }
         /*
-         * Adds local variables to the Hashmap so they can be called.
+         * Adds local variables to the Hashmap so they can be called.5
          */
         for(VariableNode variableNode : functionsHashmap.get(functionCallNode.getFunctionName()).getLocalVariablesList())
         {
@@ -178,8 +272,17 @@ public class Interpreter {
                 }
                 else
                 {
+                    /*
+                     * If not a built in that must mean its a user defined function
+                     * First it gets the function and then if the function is not defined it throws an error.
+                     * This is done to ensure that there's an actual function defined and its parameternodes match.
+                     */
                     FunctionDefinitionNode functionDefinitionNode = (FunctionDefinitionNode) functionsHashmap
                             .get(calledNode.getFunctionName());
+                    if(functionDefinitionNode == null)
+                    {
+                        throw new Exception("Function not found.");
+                    }
                     int calledNodeSize = 0;
                     if(calledNode.getParameterNodes()!= null)
                     {
@@ -193,18 +296,183 @@ public class Interpreter {
                             if (VariableHashMap.containsKey(parameterNode.getVarRefNode().getVariableName())) 
                             {
                                 dataTypes.add(VariableHashMap.get(parameterNode.getVarRefNode().getVariableName()));
-                                
-                            } 
-                            
+
+                            }
                         }
                         Interpreter.InterpretFunction(calledNode, dataTypes);
                     }
                 }
             }
-            //interprets statements
-            else
+            //interprets assignments
+            else if(statementNode.getStatement() instanceof AssignmentNode)
             {
-                //Do nothing
+                AssignmentNode assignmentNode = (AssignmentNode) statementNode.getStatement();
+                VariableReferenceNode refNodeOfAssignNode = assignmentNode.getVariableReferenceNode();
+                String stringOfRefNode = refNodeOfAssignNode.getVariableName();
+
+                if (VariableHashMap.containsKey(stringOfRefNode)) {
+                    InterpreterDataType refNodDataType = VariableHashMap.get(stringOfRefNode);
+                    if (refNodDataType instanceof IntDataType) {
+                        IntDataType intRefNodeDataType = (IntDataType) refNodDataType;
+                        Node node = assignmentNode.getASTNODE();
+                        FloatNode floatNode = Interpreter.Resolve(node);
+                        FloatDataType newFloatDataType = new FloatDataType(floatNode.getNumber());
+                        VariableHashMap.replace(stringOfRefNode, intRefNodeDataType, newFloatDataType);
+                    } else if (refNodDataType instanceof FloatDataType) {
+                        FloatDataType floatRefNodeDataType = (FloatDataType) refNodDataType;
+                        Node node = assignmentNode.getASTNODE();
+                        FloatNode floatNode = Interpreter.Resolve(node);
+                        FloatDataType newFloatDataType = new FloatDataType(floatNode.getNumber());
+                        VariableHashMap.replace(stringOfRefNode, floatRefNodeDataType, newFloatDataType);
+                    }
+                } else {
+                    throw new Exception("This variable does not exist in this scope.");
+                }
+
+            }
+            else if(statementNode.getStatement() instanceof IfNode)
+            {
+                IfNode ifNode = (IfNode) statementNode.getStatement();
+                if(ifNode.getBoolNode()!= null)
+                {
+                    BooleanNode booleanNode = ifNode.getBoolNode();
+                    if (EvaluateBooleanExpression(booleanNode)) {
+                        InterpretBlock(ifNode.getStatements(), VariableHashMap);
+                    } else {
+                        if (ifNode.getElseNode() != null) {
+
+                            if (ifNode.getElseNode() instanceof IfNode) {
+                                IfNode elseifNode = (IfNode) ifNode.getElseNode();
+                                InterpretBlock(elseifNode.getStatements(), VariableHashMap);
+                            } else if (ifNode.getElseNode() instanceof ElseNode) {
+                                ElseNode elseNode = (ElseNode) ifNode.getElseNode();
+                                InterpretBlock(elseNode.getStatements(), VariableHashMap);
+                            }
+                        } else {
+                            continue;
+                        }
+                    }
+                }
+                else
+                {
+                    throw new Exception("Not a valid boolean.");
+                }
+                
+            }
+            else if(statementNode.getStatement() instanceof ElseNode)
+            {
+                ElseNode elseNode = (ElseNode) statementNode.getStatement();
+                InterpretBlock(elseNode.getStatements(), VariableHashMap);
+            }
+            else if(statementNode.getStatement() instanceof WhileNode)
+            {
+                WhileNode whileNode = (WhileNode) statementNode.getStatement();
+                if(whileNode.getBoolNode() != null)
+                {
+                    BooleanNode booleanNode = whileNode.getBoolNode();
+                    if (EvaluateBooleanExpression(booleanNode)) {
+                        InterpretBlock(whileNode.getStatements(), VariableHashMap);
+                    } else {
+                        continue;
+                    }
+                }
+                else
+                {
+                    throw new Exception("Not a valid boolean.");
+                }
+            }
+            else if(statementNode.getStatement() instanceof RepeatNode)
+            {
+                RepeatNode repeatNode = (RepeatNode) statementNode.getStatement();
+                if(repeatNode.getBooleanNode() != null)
+                {
+                    BooleanNode booleanNode = repeatNode.getBooleanNode();
+                    if (EvaluateBooleanExpression(booleanNode)) {
+                        InterpretBlock(repeatNode.getStatements(), VariableHashMap);
+                    } else {
+                        continue;
+                    }
+                }
+                else
+                {
+                    throw new Exception("Not a valid boolean.");
+                }
+                
+                
+            }
+            else if(statementNode.getStatement() instanceof ForNode)
+            {
+                ForNode forNode = (ForNode) statementNode.getStatement();
+                if(forNode.getStartNode() != null && forNode.getEndNode() != null && forNode.getVariableReference() != null)
+                {
+                    //Checking if the startnode which is naturally a floatNode is divisible by 1, making it an "intNode"
+                    if(((FloatNode) forNode.getStartNode()).getNumber() % 1 == 0)
+                    {
+                        /*
+                         * TODO: Implement for node. This block is for if the start node 
+                         * is an actual float, or if the float is divisible by 1 and remainder is 0.
+                         * 
+                         * TODO: Outside this if statement do the same for end node. Only if these two conditions are true
+                         * then check if the variable reference node already exists in the variablehashmap. If it does check 
+                         * that value and make sure its divisible by 1 as well. 
+                         * 
+                         *          If it does exist check its value in the hashmap and make sure that its not greater than
+                         *          the end node. If the value of the variable in the hashmap is less than endNode then run
+                         *          that shank for loop in a java for loop as many times as it is needed with interpret block.
+                         *          At the end of the loop DONT delete the key value pair from the variablehashmap.
+                         *          If the value of the variable in the hashmap is greater than the endNode then break out of this
+                         *          instanceof by calling java "continue;"
+                         *         
+                         *          If it doesnt exist create that String and InterpreterDataType in the hashmap
+                         *          and get the startNode number and the endNode number, store then both in int variables and
+                         *          run a for loop executing its statements with interpretBlock. At the end of the loop delete the
+                         *          key value pair of the variable reference node in the hashmap.
+                         *          
+                         */
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
+                    
+                }
+                else
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("ERROR IN FOR NODE: ");
+                    //Checks var ref
+                    if(forNode.getVariableReference()== null)
+                    {
+                        sb.append("Var Ref Node is null");
+                    }
+                    else
+                    {
+                        sb.append("Var Ref Node is: "+((VariableReferenceNode)forNode.getVariableReference()).getVariableName());
+                    }
+                    sb.append(", ");
+                    //Checks Start Node
+                    if(forNode.getStartNode()== null)
+                    {
+                        sb.append("Start Node is null");
+                    }
+                    else
+                    {
+                        sb.append("Start Node is: "+((FloatNode)forNode.getStartNode()).getNumber());
+                    }
+                    sb.append(", ");
+                    //Check end Node
+                    if(forNode.getEndNode()== null)
+                    {
+                        sb.append("End Node is null");
+                    }
+                    else
+                    {
+                        sb.append("End Node is: "+((FloatNode)forNode.getEndNode()).getNumber());
+                    }
+                    
+                    sb.append("\n");
+                    throw new Exception(sb.toString());
+                }
             }
             
         }
