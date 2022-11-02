@@ -4,9 +4,8 @@ pi = 3.14
 variables
 firstNumber : integer ; s,t,v,n : real
 begin
-    second var firstNumber,  pi, var s,t,v, var n
+    second firstNumber,  pi, var s,t,v, var n
     write n, s, pi, firstNumber
-    firstNumber := pi + 23
     write firstNumber
 end
 
@@ -26,12 +25,16 @@ begin
     if(0 > 2)
     begin
     end
-    else if(2 > 0)
+    elsif(2 > 0)
     begin
         t := 456
     end
 
 
-    if()
-    read var n, var s, var firstNumber
+    for(i from 1 to 10)
+    begin
+        write i
+    end
+
+    read var n, var s, firstNumber
 end

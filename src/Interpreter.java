@@ -405,9 +405,43 @@ public class Interpreter {
                 ForNode forNode = (ForNode) statementNode.getStatement();
                 if(forNode.getStartNode() != null && forNode.getEndNode() != null && forNode.getVariableReference() != null)
                 {
-                    //Checking if the startnode which is naturally a floatNode is divisible by 1, making it an "intNode"
-                    if(((FloatNode) forNode.getStartNode()).getNumber() % 1 == 0)
+                    if((forNode.getStartNode())instanceof IntegerNode)
                     {
+                        if(forNode.getEndNode() instanceof IntegerNode)
+                        {
+                            //Checking for the variable's pre existance in the variable hashmap.
+                            InterpreterDataType variable = VariableHashMap.get(forNode.getVariableReference().getVariableName());
+                            //If it exists make sure its value isnt a float. If it is a float throw an exception because we cant iterate over a float.
+                            if(variable!= null)
+                            {
+                                // Float variableValueHolder = ((FloatDataType) variable).getFloatValue();
+
+                                // if(variableValueHolder % 1 == 0)
+                                // {
+
+                                // }
+                                // else
+                                // {
+                                //     throw new Exception("The variable you are referencing is a float and cannot be iterated over.");
+                                // }
+                                throw new Exception("This value already exists and cannot be used in a for loop.");
+                            }
+                            else
+                            {
+                                IntDataType startInt = new IntDataType(((IntegerNode) forNode.getStartNode()).getNumber());
+                                VariableHashMap.put(forNode.getVariableReference().getVariableName(), startInt);
+                                //TODO: Ask phipps if for loops run from "1 to 10" where they write that variable should print 1 through 9 or 1 through 10
+                                for(int startVal = ((IntegerNode) forNode.getStartNode()).getNumber(); startVal <= ((IntegerNode) forNode.getEndNode()).getNumber(); startVal++)
+                                {
+                                    VariableHashMap.replace(forNode.getVariableReference().getVariableName(),new IntDataType(startVal));
+                                    Interpreter.InterpretBlock(forNode.getStatements(), VariableHashMap);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception("EndNode is not a valid integer.");
+                        }
                         /*
                          * TODO: Implement for node. This block is for if the start node 
                          * is an actual float, or if the float is divisible by 1 and remainder is 0.
@@ -432,7 +466,7 @@ public class Interpreter {
                     }
                     else
                     {
-                        throw new Exception();
+                        throw new Exception("StartNode is not a valid integer.");
                     }
                     
                 }

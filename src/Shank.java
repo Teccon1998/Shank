@@ -8,7 +8,7 @@ public class Shank {
     
     public static void main(String[] args) throws Exception
     {
-        String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\GitBlame\\311\\Shank\\src\\InputFile.txt";
+        String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\311\\Shank\\src\\InputFile.txt";
         Path path = Paths.get(arg);
         // if(args.length != 1)
         // {
@@ -74,8 +74,13 @@ public class Shank {
                     ArrayList<InterpreterDataType> dataTypes = new ArrayList<>();
                     ArrayList<ParameterNode> parameterNodes = new ArrayList<>();
                     Interpreter.InterpretFunction(new FunctionCallNode("start", parameterNodes), dataTypes);
-                    // System.out.println(Interpreter.VariableHashMap);
+                    
                 }
+            }
+            for (String name: Interpreter.VariableHashMap.keySet()) {
+                String key = name.toString();
+                String value = Interpreter.VariableHashMap.get(name).toString();
+                System.out.println(key + ": " + value);
             }
 
 

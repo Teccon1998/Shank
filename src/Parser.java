@@ -240,25 +240,29 @@ public class Parser {
                     if(MatchAndRemove(Token.Type.CONSTS)!= null)
                     {
                         MatchAndRemove(Token.Type.EndOfLine);
-                        do {
-                            Token IdentifierToken = MatchAndRemove(Token.Type.IDENTIFIER);
-                            MatchAndRemove(Token.Type.COMMA);
-                            if (IdentifierToken != null) {
-                                if (MatchAndRemove(Token.Type.EQUALS) != null) {
-                                    Token ValueToken;
-                                    if ((ValueToken = MatchAndRemove(Token.Type.NUMBER)) != null) {
-                                        IntegerNode intNode = new IntegerNode(Integer.parseInt(ValueToken.getValue()));
-                                        variableList.add(new VariableNode(VariableNode.Type.INTEGER, true,
-                                                IdentifierToken.getValue(), intNode));
-                                    } else if ((ValueToken = MatchAndRemove(Token.Type.DECIMAL)) != null) {
-                                        FloatNode floatNode = new FloatNode(Float.parseFloat(ValueToken.getValue()));
-                                        variableList.add(new VariableNode(VariableNode.Type.REAL, true,
-                                                IdentifierToken.getValue(), floatNode));
+                        if (MatchAndRemove(Token.Type.BEGIN) != null)
+                        {
+                            tokenList.add(0, new Token(Token.Type.BEGIN));
+                            continue;
+                        }
+                            do {
+                                Token IdentifierToken = MatchAndRemove(Token.Type.IDENTIFIER);
+                                MatchAndRemove(Token.Type.COMMA);
+                                if (IdentifierToken != null) {
+                                    if (MatchAndRemove(Token.Type.EQUALS) != null) {
+                                        Token ValueToken;
+                                        if ((ValueToken = MatchAndRemove(Token.Type.NUMBER)) != null) {
+                                            IntegerNode intNode = new IntegerNode(Integer.parseInt(ValueToken.getValue()));
+                                            variableList.add(new VariableNode(VariableNode.Type.INTEGER, true,
+                                                    IdentifierToken.getValue(), intNode));
+                                        } else if ((ValueToken = MatchAndRemove(Token.Type.DECIMAL)) != null) {
+                                            FloatNode floatNode = new FloatNode(Float.parseFloat(ValueToken.getValue()));
+                                            variableList.add(new VariableNode(VariableNode.Type.REAL, true,
+                                                    IdentifierToken.getValue(), floatNode));
+                                        }
                                     }
                                 }
-                            }
-                        } while (MatchAndRemove(Token.Type.EndOfLine) != null);
-
+                            } while (MatchAndRemove(Token.Type.EndOfLine) != null);
                     }
                     if(MatchAndRemove(Token.Type.VARIABLES)!= null)
                     {
@@ -326,12 +330,8 @@ public class Parser {
             MatchAndRemove(Token.Type.BEGIN);
             MatchAndRemove(Token.Type.EndOfLine);
             StatementNode tempNode = statement();
-            if (tempNode.getStatement() != null) {
+            if (tempNode != null) {
                 StatementList.add(tempNode);
-            }
-            else if(tempNode.getStatement()== null)
-            {
-                //Do nothing part of normal flow
             }
         }
         return StatementList;
@@ -354,7 +354,6 @@ public class Parser {
                 statementNode.setStatement(assignment());
                 return statementNode;
             }
-            // if()
             if(MatchAndRemove(Token.Type.EndOfLine)!= null)
             {
                 FunctionCallNode functionCallNode = new FunctionCallNode(leftToken.getValue(), null);
@@ -478,12 +477,7 @@ public class Parser {
             statementNode.setStatement(ifNode);
             return statementNode;
         }
-        if(tokenList.get(0).getTokenType().equals(Token.Type.END))
-        {
-            statementNode.setStatement(null);
-            return statementNode;
-        }
-        throw new Exception("Not a valid Statement");
+        return null;
     }
     private AssignmentNode assignment() throws Exception
     {
