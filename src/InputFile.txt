@@ -11,6 +11,7 @@ end
 
 define second(var firstNumber : integer; pi, var s,t,v, var n : real)
 variables
+i:integer
 constants
 begin
     if(1 > 0)
@@ -29,8 +30,7 @@ begin
     begin
         t := 456
     end
-
-
+    
     for(i from 1 to 10)
     begin
         write i

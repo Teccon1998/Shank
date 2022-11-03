@@ -291,15 +291,32 @@ public class Interpreter {
                     
                     if (calledNodeSize == functionDefinitionNode.getParameterVariableNodes().size())
                     {
+
                         ArrayList<InterpreterDataType> dataTypes = new ArrayList<>();
-                        for (ParameterNode parameterNode : calledNode.getParameterNodes()) {
+                        for (ParameterNode parameterNode : calledNode.getParameterNodes()) 
+                        {
+                            /*
+                             * TODO:This is where the "var" check for the actual function definition contains "vars" in the function def and must match the "vars" in the function call.
+                             * 
+                             * TODO: Is there a check by checking the functiondefinitionnode and seeing if the variable node for that parameter is not const?
+                             * Do I check the the variable node and if its const then when its called there cannot be a var for that variable, and if there is a var
+                             * in the function definition and not a var in the call for that parameter it throws an exeception?
+                             */
                             if (VariableHashMap.containsKey(parameterNode.getVarRefNode().getVariableName())) 
                             {
                                 dataTypes.add(VariableHashMap.get(parameterNode.getVarRefNode().getVariableName()));
 
                             }
+                            else
+                            {
+                                throw new Exception("Variable does not exist!");
+                            }
                         }
                         Interpreter.InterpretFunction(calledNode, dataTypes);
+                    }
+                    else
+                    {
+                        throw new Exception("Function Call does not match parameters.");
                     }
                 }
             }
@@ -414,28 +431,17 @@ public class Interpreter {
                             //If it exists make sure its value isnt a float. If it is a float throw an exception because we cant iterate over a float.
                             if(variable!= null)
                             {
-                                // Float variableValueHolder = ((FloatDataType) variable).getFloatValue();
-
-                                // if(variableValueHolder % 1 == 0)
-                                // {
-
-                                // }
-                                // else
-                                // {
-                                //     throw new Exception("The variable you are referencing is a float and cannot be iterated over.");
-                                // }
-                                throw new Exception("This value already exists and cannot be used in a for loop.");
-                            }
-                            else
-                            {
                                 IntDataType startInt = new IntDataType(((IntegerNode) forNode.getStartNode()).getNumber());
                                 VariableHashMap.put(forNode.getVariableReference().getVariableName(), startInt);
-                                //TODO: Ask phipps if for loops run from "1 to 10" where they write that variable should print 1 through 9 or 1 through 10
                                 for(int startVal = ((IntegerNode) forNode.getStartNode()).getNumber(); startVal <= ((IntegerNode) forNode.getEndNode()).getNumber(); startVal++)
                                 {
                                     VariableHashMap.replace(forNode.getVariableReference().getVariableName(),new IntDataType(startVal));
                                     Interpreter.InterpretBlock(forNode.getStatements(), VariableHashMap);
                                 }
+                            }
+                            else if(variable == null)
+                            {
+                                throw new Exception("Variables must be predeclared. Variable:" + forNode.getVariableReference().getVariableName().toString() + " does not exist.");
                             }
                         }
                         else
@@ -443,10 +449,10 @@ public class Interpreter {
                             throw new Exception("EndNode is not a valid integer.");
                         }
                         /*
-                         * TODO: Implement for node. This block is for if the start node 
+                         * Implement for node. This block is for if the start node 
                          * is an actual float, or if the float is divisible by 1 and remainder is 0.
                          * 
-                         * TODO: Outside this if statement do the same for end node. Only if these two conditions are true
+                         * Outside this if statement do the same for end node. Only if these two conditions are true
                          * then check if the variable reference node already exists in the variablehashmap. If it does check 
                          * that value and make sure its divisible by 1 as well. 
                          * 

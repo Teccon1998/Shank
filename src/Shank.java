@@ -77,6 +77,7 @@ public class Shank {
                     
                 }
             }
+            //Prints all variables in the hashmap
             for (String name: Interpreter.VariableHashMap.keySet()) {
                 String key = name.toString();
                 String value = Interpreter.VariableHashMap.get(name).toString();
@@ -84,59 +85,6 @@ public class Shank {
             }
 
 
-            // for(FunctionDefinitionNode functionDefinitionNode : FunctionNodes)
-            // {
-            //     for(int i = 0; i <functionDefinitionNode.getStatementList().size(); i++)
-            //     {
-            //         if(functionDefinitionNode.getStatementList().get(i).getStatement() instanceof FunctionCallNode)
-            //         {
-            //             FunctionCallNode functionCallNode = (FunctionCallNode) functionDefinitionNode.getStatementList().get(i).getStatement();
-                        
-            //             if(functionCallNode == null)
-            //             {
-            //                 throw new Exception("Undefined function");
-            //             }
-            //             CallableNode variaticNode = functionHashMap.get(functionCallNode.getFunctionName());
-            //             if(variaticNode.getFunctionName().equals("read") || variaticNode.getFunctionName().equals("write"))
-            //             {
-                            
-            //             }
-            //             else if(functionCallNode.getParameterNodes().size() == functionHashMap.get(functionCallNode.getFunctionName()).getParameterVariableNodes().size())
-            //             {
-            //                 ArrayList<InterpreterDataType> dataTypes = new ArrayList<>();
-            //                 for (int j = 0; j < functionCallNode.getParameterNodes().size();j++)
-            //                 {
-            //                     for (int k = 0; k < functionDefinitionNode.getLocalVariablesList().size(); k++) {
-            //                         if (functionCallNode.getParameterNodes() == null) {
-            //                             break;
-            //                         }
-            //                         if (functionCallNode.getParameterNodes().get(j).getVarRefNode().getVariableName()
-            //                                 .equals(functionDefinitionNode.getLocalVariablesList().get(k)
-            //                                         .getVariableName())) {
-            //                             if (functionDefinitionNode.getLocalVariablesList().get(k).getType()
-            //                                     .equals(VariableNode.Type.INTEGER)) {
-            //                                 int value = ((IntegerNode) functionDefinitionNode.getLocalVariablesList()
-            //                                         .get(k).getNode()).getNumber();
-            //                                 dataTypes.add(new IntDataType(value));
-            //                                 break;
-            //                             } else if (functionDefinitionNode.getLocalVariablesList().get(k).getType()
-            //                                     .equals(VariableNode.Type.REAL)) {
-            //                                 float value = ((FloatNode) functionDefinitionNode.getLocalVariablesList()
-            //                                         .get(k).getNode()).getNumber();
-            //                                 dataTypes.add(new FloatDataType(value));
-            //                                 break;
-            //                             }
-            //                         }
-            //                     }
-            //                 }
-                            
-                        
-                        
-                        
-            //         }
-            //     }
-            // }
-            
         }    
         catch(IOException e)
         {
