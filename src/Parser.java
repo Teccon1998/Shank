@@ -113,6 +113,7 @@ public class Parser {
                 || (booleanCondition = MatchAndRemove(Token.Type.EQUALS)) != null) {
             booleanNode.setCondition(booleanCondition);
             booleanNode.setRightNode(Expression());
+            MatchAndRemove(Token.Type.THEN);
             MatchAndRemove(Token.Type.RPAREN);
             MatchAndRemove(Token.Type.EndOfLine);
             return booleanNode;
@@ -236,7 +237,10 @@ public class Parser {
                 }
                 while(!tokenList.isEmpty())
                 {
-                    MatchAndRemove(Token.Type.EndOfLine);
+                    while(tokenList.get(0).getTokenType() == Token.Type.EndOfLine)
+                    {
+                        MatchAndRemove(Token.Type.EndOfLine);
+                    }
                     if(MatchAndRemove(Token.Type.CONSTS)!= null)
                     {
                         MatchAndRemove(Token.Type.EndOfLine);
@@ -257,6 +261,15 @@ public class Parser {
                                     }
                                 }
                             }
+                            while(tokenList.get(0).getTokenType() == Token.Type.EndOfLine)
+                            {
+                                MatchAndRemove(Token.Type.EndOfLine);
+                            }
+                            // if (tokenList.get(1).getTokenType().equals(Token.Type.IDENTIFIER))
+                            // {
+                            //     MatchAndRemove(Token.Type.EndOfLine);
+                            //     tokenList.add(0,new Token(Token.Type.SEMICOLON));
+                            // }
                         } while (MatchAndRemove(Token.Type.EndOfLine) != null);
 
                     }
@@ -269,7 +282,7 @@ public class Parser {
                             continue;
                         }
 
-
+                        ArrayList<Token> TotalvariableTokens = new ArrayList<>();
                         do {
                             ArrayList<Token> variableTokens = new ArrayList<>();
                             variableTokens.add(MatchAndRemove(Token.Type.IDENTIFIER));
@@ -291,12 +304,22 @@ public class Parser {
                                     }
                                 }
                             }
+                            //checking if variables are on another line.
+                            if (tokenList.get(1).getTokenType().equals(Token.Type.IDENTIFIER))
+                            {
+                                MatchAndRemove(Token.Type.EndOfLine);
+                                tokenList.add(0, new Token(Token.Type.SEMICOLON));
+                            }
+                            TotalvariableTokens.addAll(variableTokens);
                         } while (MatchAndRemove(Token.Type.SEMICOLON) != null);
+                        while(tokenList.get(0).getTokenType() == Token.Type.EndOfLine)
+                        {
+                            MatchAndRemove(Token.Type.EndOfLine);
+                        }
                     }
                     
                     if(MatchAndRemove(Token.Type.BEGIN)!= null)
                     {
-                        MatchAndRemove(Token.Type.EndOfLine);
                         statementsList.addAll(Statements());
                     }
                     Token DefineToken;
@@ -324,16 +347,21 @@ public class Parser {
         while(MatchAndRemove(Token.Type.END)== null)
         {
             MatchAndRemove(Token.Type.BEGIN);
-            MatchAndRemove(Token.Type.EndOfLine);
             StatementNode tempNode = statement();
             if (tempNode.getStatement() != null) {
                 StatementList.add(tempNode);
-            }
-            else if(tempNode.getStatement()== null)
-            {
+            } else if (tempNode.getStatement() == null) {
                 //Do nothing part of normal flow
             }
         }
+
+        while(tokenList.get(0).getTokenType() == Token.Type.EndOfLine)
+        {
+            MatchAndRemove(Token.Type.EndOfLine);
+            if(tokenList.isEmpty())
+                break;
+        }
+
         return StatementList;
     }
 
@@ -343,6 +371,10 @@ public class Parser {
     private StatementNode statement() throws Exception
     {
         StatementNode statementNode = new StatementNode();
+        while(tokenList.get(0).getTokenType() == Token.Type.EndOfLine)
+        {
+            MatchAndRemove(Token.Type.EndOfLine);
+        }
         Token leftToken;
         if((leftToken = MatchAndRemove(Token.Type.IDENTIFIER))!= null)
         {
@@ -424,9 +456,10 @@ public class Parser {
         }
         if(MatchAndRemove(Token.Type.FOR)!= null)
         {
-            if(MatchAndRemove(Token.Type.LPAREN)!= null)
+            MatchAndRemove(Token.Type.LPAREN);
+            Token IdentifierVariableReference;
+            if((IdentifierVariableReference = MatchAndRemove(Token.Type.IDENTIFIER))!= null)
             {
-                Token IdentifierVariableReference = MatchAndRemove(Token.Type.IDENTIFIER);
                 if(IdentifierVariableReference != null)
                 {
                     VariableReferenceNode varRefNode = new VariableReferenceNode(IdentifierVariableReference.getValue());
@@ -440,12 +473,11 @@ public class Parser {
                                 Node EndNode = Expression();
                                 if(EndNode != null)
                                 {
-                                    if(MatchAndRemove(Token.Type.RPAREN)!= null)
-                                    {
-                                        ForNode forNode = new ForNode(varRefNode,StartNode, EndNode, Statements());
-                                        statementNode.setStatement(forNode);
-                                        return statementNode;
-                                    }
+                                    MatchAndRemove(Token.Type.RPAREN);
+                                    MatchAndRemove(Token.Type.EndOfLine);
+                                    ForNode forNode = new ForNode(varRefNode,StartNode, EndNode, Statements());
+                                    statementNode.setStatement(forNode);
+                                    return statementNode;
                                 }
                             }
                         }
@@ -461,17 +493,22 @@ public class Parser {
             MatchAndRemove(Token.Type.LPAREN);
             IfNode ifNode = new IfNode(BooleanExpression(), Statements());
             MatchAndRemove(Token.Type.RPAREN);
-            MatchAndRemove(Token.Type.EndOfLine);
+            while(tokenList.get(0).getTokenType() == Token.Type.EndOfLine)
+            {
+                MatchAndRemove(Token.Type.EndOfLine);
+            }
             if (MatchAndRemove(Token.Type.ELSIF) != null) {
                 MatchAndRemove(Token.Type.LPAREN);
                 ifNode.setElseNode(new IfNode(BooleanExpression(), Statements()));
                 MatchAndRemove(Token.Type.RPAREN);
-                MatchAndRemove(Token.Type.EndOfLine);
+                while(tokenList.get(0).getTokenType() == Token.Type.EndOfLine)
+                {
+                    MatchAndRemove(Token.Type.EndOfLine);
+                }
             }
             if (MatchAndRemove(Token.Type.ELSE) != null) {
-                MatchAndRemove(Token.Type.LPAREN);
+                MatchAndRemove(Token.Type.EndOfLine);
                 ifNode.setElseNode(new ElseNode(Statements()));
-                MatchAndRemove(Token.Type.RPAREN);
                 MatchAndRemove(Token.Type.EndOfLine);
 
             }

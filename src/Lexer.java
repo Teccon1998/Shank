@@ -1,3 +1,4 @@
+import java.lang.Thread.State;
 import java.util.*;
 
 public class Lexer {
@@ -560,22 +561,25 @@ public class Lexer {
                     }
                     else if(Character.isSpaceChar(CurrentCharacter))
                     {
-                        if(reservedWords.containsKey(valueHolderForToken.toUpperCase()))
-                        {
+                        if (reservedWords.containsKey(valueHolderForToken.toUpperCase())) {
                             Token.Type tokenTypeRetrival = reservedWords.get(valueHolderForToken.toUpperCase());
-                            reservedWords.put(valueHolderForToken.toUpperCase(),tokenTypeRetrival);
+                            reservedWords.put(valueHolderForToken.toUpperCase(), tokenTypeRetrival);
                             tokenList.add(new Token(tokenTypeRetrival));
-                            valueHolderForToken ="";
+                            valueHolderForToken = "";
                             State = 1;
                         }
 
-                        else
-                        {
-                            tokenList.add(new Token(Token.Type.IDENTIFIER,valueHolderForToken));
+                        else {
+                            tokenList.add(new Token(Token.Type.IDENTIFIER, valueHolderForToken));
                             valueHolderForToken = "";
                             State = 3;
                         }
                         break;
+                    }
+                    else if(Character.isDigit(CurrentCharacter))
+                    {
+                        valueHolderForToken += CurrentCharacter;
+                        State = 7;
                     }
                     else if(CurrentCharacter == ';' || CurrentCharacter == ':' || CurrentCharacter == ',' || CurrentCharacter == '=' || CurrentCharacter == ')')
                     {
