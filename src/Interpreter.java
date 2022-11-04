@@ -22,8 +22,30 @@ public class Interpreter {
     public static boolean EvaluateBooleanExpression(BooleanNode booleanNode) throws Exception
     {
 // TODO Resolve fix.
-        FloatNode floatNode1 = Interpreter.Resolve(booleanNode.getLeftNode());
-        FloatNode floatNode2 = Interpreter.Resolve(booleanNode.getRightNode());
+
+
+
+        Node node1 = Interpreter.Resolve(booleanNode.getLeftNode());
+        Node node2 = Interpreter.Resolve(booleanNode.getRightNode());  
+        FloatNode floatNode1 = new FloatNode(0);
+        FloatNode floatNode2 = new FloatNode(0);
+        if(node1 instanceof IntegerNode)
+        {
+            floatNode1 = new FloatNode((float)((IntegerNode)node1).getNumber());
+        }
+        else if(node1 instanceof FloatNode)
+        {
+            floatNode1 = new FloatNode(((FloatNode)node1).getNumber());
+        }
+        if(node2 instanceof IntegerNode)
+        {
+            floatNode2 = new FloatNode((float)((IntegerNode)node2).getNumber());
+        }
+        else if(node2 instanceof FloatNode)
+        {
+            floatNode2 = new FloatNode(((FloatNode)node2).getNumber());
+        }
+        
         Token Condition = booleanNode.getCondition();
 
         float float1 = floatNode1.getNumber();
@@ -73,11 +95,10 @@ public class Interpreter {
         return false;
     }
 
-    public static FloatNode Resolve(Node node) throws Exception {
+    public static Node Resolve(Node node) throws Exception {
         if (node instanceof IntegerNode) 
         {
-            int floatCastHolder = ((IntegerNode) node).getNumber();
-            return new FloatNode(floatCastHolder);
+            return (IntegerNode) node;
         } 
         else if (node instanceof FloatNode) 
         {
@@ -86,32 +107,78 @@ public class Interpreter {
         else if (node instanceof MathOpNode)
         {
             MathOpNode mathOpNode = (MathOpNode) node;
-            FloatNode node1;
-            FloatNode node2;
+            Node node1;
+            Node node2;
             MathOpNode.Operator operatorHolder = mathOpNode.getOperator();
             
-
+            float value1 = 0;
+            float value2 = 0;
             //Recursive search for value
             node1 = Interpreter.Resolve(mathOpNode.getNodeOne());
             node2 = Interpreter.Resolve(mathOpNode.getNodeTwo());
-
+            if(node1 instanceof FloatNode)
+            {
+                value1 = ((FloatNode) node1).getNumber();
+            }
+            else if(node1 instanceof IntegerNode)
+            {
+                int tempVal = ((IntegerNode)node1).getNumber();
+                value1 = (float) tempVal;
+            }
+            if(node2 instanceof FloatNode)
+            {
+                value2 = ((FloatNode) node2).getNumber();
+            }
+            else if(node2 instanceof IntegerNode)
+            {
+                int tempVal = ((IntegerNode)node2).getNumber();
+                value2 = (float) tempVal;
+            }
             if (operatorHolder.equals(MathOpNode.Operator.ADD)) {
-                return new FloatNode(node1.getNumber() + node2.getNumber());
+                float floatnum = value1 + value2;
+                if(floatnum % 1 ==0)
+                {
+                    return new IntegerNode((int)floatnum);
+                }
+                return new FloatNode(floatnum);
             } else if (operatorHolder.equals(MathOpNode.Operator.SUBTRACT)) {
-                return new FloatNode(node1.getNumber() - node2.getNumber());
+                float floatnum = value1 - value2;
+                if(floatnum % 1 ==0)
+                {
+                    return new IntegerNode((int)floatnum);
+                }
+                return new FloatNode(floatnum);
             } else if (operatorHolder.equals(MathOpNode.Operator.DIVIDE)) {
-                return new FloatNode(node1.getNumber() / node2.getNumber());
+                float floatnum = value1 / value2;
+                if(floatnum % 1 ==0)
+                {
+                    return new IntegerNode((int)floatnum);
+                }
+                return new FloatNode(floatnum);
             } else if (operatorHolder.equals(MathOpNode.Operator.TIMES)) {
-                return new FloatNode(node1.getNumber() * node2.getNumber());
+                float floatnum = value1 * value2;
+                if(floatnum % 1 ==0)
+                {
+                    return new IntegerNode((int)floatnum);
+                }
+                return new FloatNode(floatnum);
             } else if (operatorHolder.equals(MathOpNode.Operator.MODULO)) {
-                return new FloatNode(node1.getNumber() % node2.getNumber());
+                float floatnum = value1 % value2;
+                return new IntegerNode((int)floatnum);   
             }
 
         }
         else if (node instanceof VariableNode)
         {
             VariableNode varNode = (VariableNode) node;
-            return (FloatNode) varNode.getNode();
+            if(varNode.getNode() instanceof IntegerNode)
+            {
+                return (IntegerNode) varNode.getNode();
+            }
+            else
+            {
+                return (FloatNode) varNode.getNode();
+            }
         }
         else if (node instanceof VariableReferenceNode)
         {
@@ -119,7 +186,7 @@ public class Interpreter {
             InterpreterDataType interpretDataType = VariableHashMap.get(varRefNode.getVariableName());
             if(interpretDataType instanceof IntDataType)
             {
-                return new FloatNode((float)((IntDataType) interpretDataType).getIntValue());
+                return new IntegerNode((int)((IntDataType) interpretDataType).getIntValue());
             }
             else if(interpretDataType instanceof FloatDataType)
             {
@@ -168,19 +235,8 @@ public class Interpreter {
                 throw new Exception("ERROR");
             }
         }
-        for (ParameterNode parameterNode : functionCallNode.getParameterNodes()) {
-            //TODO marked for deletion
-            if (parameterNode.getValueNode() instanceof IntegerNode) {
-                VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),
-                        new IntDataType(((IntegerNode) parameterNode.getValueNode()).getNumber()));
-            } else if (parameterNode.getValueNode() instanceof FloatNode) {
-                VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),
-                        new FloatDataType(((FloatNode) parameterNode.getValueNode()).getNumber()));
-            }
-
-        }
         /*
-         * Adds local variables to the Hashmap so they can be called.5
+         * Adds local variables to the Hashmap so they can be called.
          */
         for(VariableNode variableNode : functionsHashmap.get(functionCallNode.getFunctionName()).getLocalVariablesList())
         {
@@ -198,13 +254,14 @@ public class Interpreter {
             }
         }
 
-
-        int i=0;
+        
+         int i=0;
         for(ParameterNode parameterNode : functionCallNode.getParameterNodes())
         {
             VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),dataTypes.get(i));
             i++;
         }
+        HashMap<String,InterpreterDataType> vmap = VariableHashMap;
         /*
          * When a variable is mutable in a function
          * it overwrites the local variables in the parent function, so long as the parent function's
@@ -212,44 +269,6 @@ public class Interpreter {
          */
         
         Interpreter.InterpretBlock(functionsHashmap.get(functionCallNode.getFunctionName()).getStatementList(),VariableHashMap);
-        // for (int k = 0; k < dataTypes.size(); k++) 
-        // {
-        //     if (VariableHashMap.get(functionCallNode.getParameterNodes().get(k).getVarRefNode().getVariableName()) instanceof IntDataType) {
-        //         if (dataTypes.get(k) instanceof IntDataType) {
-        //             VariableHashMap.replace(
-        //                     functionCallNode.getParameterNodes().get(k).getVarRefNode().getVariableName(),
-        //                     VariableHashMap.get(functionCallNode.getParameterNodes().get(k).getVarRefNode()
-        //                             .getVariableName()),
-        //                     (IntDataType) dataTypes.get(k));
-        //         } else {
-        //             throw new Exception("Non matching update for local data type.");
-        //         }
-        //     } else if (VariableHashMap.get(functionCallNode.getParameterNodes().get(k).getVarRefNode()
-        //             .getVariableName()) instanceof FloatDataType) {
-        //         if (dataTypes.get(k) instanceof FloatDataType) {
-        //             VariableHashMap.replace(
-        //                     functionCallNode.getParameterNodes().get(k).getVarRefNode().getVariableName(),
-        //                     VariableHashMap.get(functionCallNode.getParameterNodes().get(k).getVarRefNode()
-        //                             .getVariableName()),
-        //                     (FloatDataType) dataTypes.get(k));
-        //         } else {
-        //             throw new Exception("Non matching update for local data type.");
-        //         }
-        //     } else {
-        //         throw new Exception("UNKNOWN ERROR");
-        //     }
-        // }
-        // for (int k = 0; k < functionCallNode.getParameterNodes().size(); k++) {
-        //     VariableHashMap.remove(functionsHashmap.get(functionCallNode.getFunctionName())
-        //             .getParameterVariableNodes().get(k).getVariableName());
-        // }
-        // for (int k = 0; k < functionsHashmap.get(functionCallNode.getFunctionName()).getLocalVariablesList()
-        //         .size(); k++) {
-        //     VariableHashMap.remove(
-        //             functionsHashmap.get(functionCallNode.getFunctionName()).getLocalVariablesList().get(k)
-        //                     .getVariableName());
-        // }
-        
     }
     
     
@@ -371,9 +390,9 @@ public class Interpreter {
                             }
                         }
                         Interpreter.InterpretFunction(calledNode, dataTypes);
-                        System.out.println("bp");
                         for(int k = 0; k < functionsHashmap.get(calledNode.getFunctionName()).getParameterVariableNodes().size(); k++)
                         {
+
                             InterpreterDataType dataType = VariableHashMap
                                     .get(functionsHashmap.get(calledNode.getFunctionName())
                                             .getParameterVariableNodes().get(k).getVariableName());
@@ -423,15 +442,36 @@ public class Interpreter {
                     if (refNodDataType instanceof IntDataType) {
                         IntDataType intRefNodeDataType = (IntDataType) refNodDataType;
                         Node node = assignmentNode.getASTNODE();
-                        FloatNode floatNode = Interpreter.Resolve(node);
-                        FloatDataType newFloatDataType = new FloatDataType(floatNode.getNumber());
-                        VariableHashMap.replace(stringOfRefNode, intRefNodeDataType, newFloatDataType);
+                        Node resolvedNode = Interpreter.Resolve(node);
+                        if(resolvedNode instanceof IntegerNode)
+                        {
+                            IntegerNode integerNode = (IntegerNode) resolvedNode;
+                            IntDataType newIntDataType = new IntDataType(integerNode.getNumber());
+                            VariableHashMap.replace(stringOfRefNode, intRefNodeDataType, newIntDataType);
+                        }
+                        else if(resolvedNode instanceof FloatNode)
+                        {   
+                            FloatNode floatNode = (FloatNode) resolvedNode;
+                            FloatDataType newFloatDataType = new FloatDataType(floatNode.getNumber());
+                            VariableHashMap.replace(stringOfRefNode, intRefNodeDataType, newFloatDataType);
+                        }
+                        
                     } else if (refNodDataType instanceof FloatDataType) {
                         FloatDataType floatRefNodeDataType = (FloatDataType) refNodDataType;
                         Node node = assignmentNode.getASTNODE();
-                        FloatNode floatNode = Interpreter.Resolve(node);
-                        FloatDataType newFloatDataType = new FloatDataType(floatNode.getNumber());
-                        VariableHashMap.replace(stringOfRefNode, floatRefNodeDataType, newFloatDataType);
+                        Node resolvedNode = Interpreter.Resolve(node);
+                        if(resolvedNode instanceof IntegerNode)
+                        {
+                            IntegerNode integerNode = (IntegerNode) resolvedNode;
+                            IntDataType newIntDataType = new IntDataType(integerNode.getNumber());
+                            VariableHashMap.replace(stringOfRefNode, floatRefNodeDataType, newIntDataType);
+                        }
+                        else if(resolvedNode instanceof FloatNode)
+                        {   
+                            FloatNode floatNode = (FloatNode) resolvedNode;
+                            FloatDataType newFloatDataType = new FloatDataType(floatNode.getNumber());
+                            VariableHashMap.replace(stringOfRefNode, floatRefNodeDataType, newFloatDataType);
+                        }
                     }
                 } else {
                     throw new Exception("This variable does not exist in this scope.");

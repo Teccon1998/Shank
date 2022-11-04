@@ -350,7 +350,7 @@ public class Parser {
             StatementNode tempNode = statement();
             if (tempNode != null) {
                 StatementList.add(tempNode);
-            } else if (tempNode.getStatement() == null) {
+            } else if (tempNode == null) {
                 //Do nothing part of normal flow
             }
         }
