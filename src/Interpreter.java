@@ -21,21 +21,18 @@ public class Interpreter {
 
     public static boolean EvaluateBooleanExpression(BooleanNode booleanNode) throws Exception
     {
-// TODO Resolve fix.
-
-
 
         Node node1 = Interpreter.Resolve(booleanNode.getLeftNode());
         Node node2 = Interpreter.Resolve(booleanNode.getRightNode());  
-        FloatNode floatNode1 = new FloatNode(0);
-        FloatNode floatNode2 = new FloatNode(0);
+        FloatNode floatNode1 = null;
+        FloatNode floatNode2 = null;
         if(node1 instanceof IntegerNode)
         {
             floatNode1 = new FloatNode((float)((IntegerNode)node1).getNumber());
         }
         else if(node1 instanceof FloatNode)
         {
-            floatNode1 = new FloatNode(((FloatNode)node1).getNumber());
+            floatNode1 = (FloatNode) node1;
         }
         if(node2 instanceof IntegerNode)
         {
@@ -43,7 +40,7 @@ public class Interpreter {
         }
         else if(node2 instanceof FloatNode)
         {
-            floatNode2 = new FloatNode(((FloatNode)node2).getNumber());
+            floatNode2 = (FloatNode) node2;
         }
         
         Token Condition = booleanNode.getCondition();
@@ -107,66 +104,48 @@ public class Interpreter {
         else if (node instanceof MathOpNode)
         {
             MathOpNode mathOpNode = (MathOpNode) node;
-            Node node1;
-            Node node2;
+            Node node1 = Interpreter.Resolve(mathOpNode.getNodeOne());
+            Node node2 = Interpreter.Resolve(mathOpNode.getNodeTwo());
             MathOpNode.Operator operatorHolder = mathOpNode.getOperator();
-            
-            float value1 = 0;
-            float value2 = 0;
             //Recursive search for value
-            node1 = Interpreter.Resolve(mathOpNode.getNodeOne());
-            node2 = Interpreter.Resolve(mathOpNode.getNodeTwo());
-            if(node1 instanceof FloatNode)
+            
+            if(node1 instanceof FloatNode && node2 instanceof FloatNode)
             {
-                value1 = ((FloatNode) node1).getNumber();
+                float val1 = ((FloatNode) node1).getNumber();
+                float val2 = ((FloatNode) node2).getNumber();
+                if (operatorHolder.equals(MathOpNode.Operator.ADD)) {
+                    return new FloatNode(val1 + val2);
+                } else if (operatorHolder.equals(MathOpNode.Operator.SUBTRACT)) {
+                    return new FloatNode(val1 - val2);
+                } else if (operatorHolder.equals(MathOpNode.Operator.DIVIDE)) {
+                    return new FloatNode(val1 / val2);
+                } else if (operatorHolder.equals(MathOpNode.Operator.TIMES)) {
+                    return new FloatNode(val1 * val2);
+                } else if (operatorHolder.equals(MathOpNode.Operator.MODULO)) {
+                    return new FloatNode(val1 % val2);
+                }
             }
-            else if(node1 instanceof IntegerNode)
+            else if(node1 instanceof IntegerNode && node2 instanceof IntegerNode)
             {
-                int tempVal = ((IntegerNode)node1).getNumber();
-                value1 = (float) tempVal;
-            }
-            if(node2 instanceof FloatNode)
-            {
-                value2 = ((FloatNode) node2).getNumber();
-            }
-            else if(node2 instanceof IntegerNode)
-            {
-                int tempVal = ((IntegerNode)node2).getNumber();
-                value2 = (float) tempVal;
-            }
-            if (operatorHolder.equals(MathOpNode.Operator.ADD)) {
-                float floatnum = value1 + value2;
-                if(floatnum % 1 ==0)
-                {
-                    return new IntegerNode((int)floatnum);
-                }
-                return new FloatNode(floatnum);
-            } else if (operatorHolder.equals(MathOpNode.Operator.SUBTRACT)) {
-                float floatnum = value1 - value2;
-                if(floatnum % 1 ==0)
-                {
-                    return new IntegerNode((int)floatnum);
-                }
-                return new FloatNode(floatnum);
-            } else if (operatorHolder.equals(MathOpNode.Operator.DIVIDE)) {
-                float floatnum = value1 / value2;
-                if(floatnum % 1 ==0)
-                {
-                    return new IntegerNode((int)floatnum);
-                }
-                return new FloatNode(floatnum);
-            } else if (operatorHolder.equals(MathOpNode.Operator.TIMES)) {
-                float floatnum = value1 * value2;
-                if(floatnum % 1 ==0)
-                {
-                    return new IntegerNode((int)floatnum);
-                }
-                return new FloatNode(floatnum);
-            } else if (operatorHolder.equals(MathOpNode.Operator.MODULO)) {
-                float floatnum = value1 % value2;
-                return new IntegerNode((int)floatnum);   
-            }
+                int val1 = ((IntegerNode) node1).getNumber();
+                int val2 = ((IntegerNode) node2).getNumber();
 
+                if (operatorHolder.equals(MathOpNode.Operator.ADD)) {
+                    return new IntegerNode(val1 + val2);
+                } else if (operatorHolder.equals(MathOpNode.Operator.SUBTRACT)) {
+                    return new IntegerNode(val1 - val2);
+                } else if (operatorHolder.equals(MathOpNode.Operator.DIVIDE)) {
+                    return new IntegerNode(val1 / val2);
+                } else if (operatorHolder.equals(MathOpNode.Operator.TIMES)) {
+                    return new IntegerNode(val1 * val2);
+                } else if (operatorHolder.equals(MathOpNode.Operator.MODULO)) {
+                    return new IntegerNode(val1 % val2);
+                }
+            }
+            else
+            {
+                throw new Exception("No implicit type casting. Both values must be of same type to resolve.");
+            }
         }
         else if (node instanceof VariableNode)
         {

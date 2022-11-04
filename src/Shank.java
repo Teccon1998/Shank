@@ -8,14 +8,14 @@ public class Shank {
     
     public static void main(String[] args) throws Exception
     {
-        String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\311\\Shank\\src\\InputFile.txt";
-        Path path = Paths.get(arg);
-        // if(args.length != 1)
-        // {
-        //     System.out.println("Incorrect # of args");
-        //     System.exit(0);
-        // }
-        // Path path = Paths.get(args[0]);
+        // String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\GitBlame\\311\\Shank\\src\\InputFile.txt";
+        // Path path = Paths.get(arg);
+        if(args.length != 1)
+        {
+            System.out.println("Incorrect # of args");
+            System.exit(0);
+        }
+        Path path = Paths.get(args[0]);
 
         try
         {
@@ -23,6 +23,9 @@ public class Shank {
             List<String> InputList = Files.readAllLines(path);
             Lexer Lexer = new Lexer(InputList);
             ArrayList<List<Token>> listOfTokenlists = new ArrayList<List<Token>>();
+            // for (String str : InputList) {
+            //     System.out.println(str);
+            // }
             for(int i = 0; i<InputList.size(); i++)
             {
                 try 
@@ -78,6 +81,7 @@ public class Shank {
                 }
             }
             //Prints all variables in the hashmap
+            System.out.println("VariableHashMap at program end.");
             for (String name: Interpreter.VariableHashMap.keySet()) {
                 String key = name.toString();
                 String value = Interpreter.VariableHashMap.get(name).toString();

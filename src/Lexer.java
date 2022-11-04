@@ -35,6 +35,8 @@ public class Lexer {
         reservedWords.put("UNTIL",Token.Type.UNTIL);
         reservedWords.put("MOD", Token.Type.MOD);
         reservedWords.put("VAR", Token.Type.VAR);
+        reservedWords.put("TRUE", Token.Type.TRUE);
+        reservedWords.put("FALSE", Token.Type.FALSE);
         List<Token> tokenList = new ArrayList<Token>();
         if(Input.isEmpty())
         {
@@ -699,6 +701,7 @@ public class Lexer {
                     {
                         throw new Exception("Incorrect formatting on Iteration " + i);
                     }
+                    break;
                 case 8:
                     if(CurrentCharacter == '*')
                     {
@@ -824,19 +827,19 @@ public class Lexer {
     
     private boolean isNumeric(String input)
     {
-        if (input == null) 
+        if (input == null || input == "") 
         {
             return false;
         }
-        try
-        {
-            Integer.parseInt(input);
-            return true;
+        char[] charArr = input.toCharArray();
+        for (char c : charArr) {
+            if (Character.isLetter(c)) {
+                return false;
+            } else if (Character.isDigit(c)) {
+                continue;
+            }
         }
-        catch(NumberFormatException nfe)
-        {
-            return false;
-        }
+        return true;
         
     }
     
