@@ -73,11 +73,11 @@ public class Interpreter {
         return false;
     }
 
-    public static Node Resolve(Node node) throws Exception {
+    public static FloatNode Resolve(Node node) throws Exception {
         if (node instanceof IntegerNode) 
         {
             int floatCastHolder = ((IntegerNode) node).getNumber();
-            return new IntegerNode(floatCastHolder);
+            return new FloatNode(floatCastHolder);
         } 
         else if (node instanceof FloatNode) 
         {
@@ -168,17 +168,7 @@ public class Interpreter {
                 throw new Exception("ERROR");
             }
         }
-        for (ParameterNode parameterNode : functionCallNode.getParameterNodes()) {
-            //TODO marked for deletion
-            if (parameterNode.getValueNode() instanceof IntegerNode) {
-                VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),
-                        new IntDataType(((IntegerNode) parameterNode.getValueNode()).getNumber()));
-            } else if (parameterNode.getValueNode() instanceof FloatNode) {
-                VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),
-                        new FloatDataType(((FloatNode) parameterNode.getValueNode()).getNumber()));
-            }
-
-        }
+        
         /*
          * Adds local variables to the Hashmap so they can be called.5
          */
@@ -365,6 +355,10 @@ public class Interpreter {
                                 dataTypes.add(VariableHashMap.get(parameterNode.getVarRefNode().getVariableName()));
 
                             }
+                            else
+                            {
+                                throw new Exception("Variable does not exist!");
+                            }
                         }
                         Interpreter.InterpretFunction(calledNode, dataTypes);
                         System.out.println("bp");
@@ -401,6 +395,11 @@ public class Interpreter {
                                             .getVariableName());
                         }
                     }
+                    else
+                    {
+                        throw new Exception("Function Call does not match parameters.");
+                    }
+
                 }
             }
             //interprets assignments
@@ -479,7 +478,7 @@ public class Interpreter {
                 } else {
                     throw new Exception("Not a valid boolean.");
                 }
-
+                //TODO: For loop in function f2() is not returning values back to start()
             } else if (statementNode.getStatement() instanceof ForNode) {
                 ForNode forNode = (ForNode) statementNode.getStatement();
                 if (forNode.getStartNode() != null && forNode.getEndNode() != null

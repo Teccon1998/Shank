@@ -57,6 +57,6 @@ begin
     write inputnum
     write result
     f2 var inputnum, var res
-    write number
+    write inputnum
     write res
 end

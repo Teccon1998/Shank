@@ -18,6 +18,7 @@ public class Read extends BuiltInFunctionNode {
         
         for(int i = 0; i< interpreterDataTypes.size(); i++)
         {
+            System.out.print("Input data for variable:");
             String str = sc.next();
             interpreterDataTypes.get(i).fromString(str);
         }

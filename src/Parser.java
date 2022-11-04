@@ -348,9 +348,9 @@ public class Parser {
         {
             MatchAndRemove(Token.Type.BEGIN);
             StatementNode tempNode = statement();
-            if (tempNode.getStatement() != null) {
+            if (tempNode != null) {
                 StatementList.add(tempNode);
-            } else if (tempNode.getStatement() == null) {
+            } else if (tempNode == null) {
                 //Do nothing part of normal flow
             }
         }
@@ -386,7 +386,6 @@ public class Parser {
                 statementNode.setStatement(assignment());
                 return statementNode;
             }
-            // if()
             if(MatchAndRemove(Token.Type.EndOfLine)!= null)
             {
                 FunctionCallNode functionCallNode = new FunctionCallNode(leftToken.getValue(), null);
@@ -515,12 +514,7 @@ public class Parser {
             statementNode.setStatement(ifNode);
             return statementNode;
         }
-        if(tokenList.get(0).getTokenType().equals(Token.Type.END))
-        {
-            statementNode.setStatement(null);
-            return statementNode;
-        }
-        throw new Exception("Not a valid Statement");
+        return null;
     }
     private AssignmentNode assignment() throws Exception
     {

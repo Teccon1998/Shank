@@ -17,7 +17,7 @@ public class Write extends BuiltInFunctionNode {
         
         for(int i = 0; i< interpreterDataTypes.size(); i++)
         {
-            System.out.println(interpreterDataTypes.get(i).toString());
+            System.out.println("Data Stored: "+interpreterDataTypes.get(i).toString());
         }
     }
     
