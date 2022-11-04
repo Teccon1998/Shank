@@ -21,13 +21,13 @@ public class Interpreter {
 
     public static boolean EvaluateBooleanExpression(BooleanNode booleanNode) throws Exception
     {
-
+// TODO Resolve fix.
         FloatNode floatNode1 = Interpreter.Resolve(booleanNode.getLeftNode());
         FloatNode floatNode2 = Interpreter.Resolve(booleanNode.getRightNode());
         Token Condition = booleanNode.getCondition();
 
-        Float float1 = floatNode1.getNumber();
-        Float float2 = floatNode2.getNumber();
+        float float1 = floatNode1.getNumber();
+        float float2 = floatNode2.getNumber();
 
         switch(Condition.getTokenType())
         {
@@ -76,7 +76,7 @@ public class Interpreter {
     public static FloatNode Resolve(Node node) throws Exception {
         if (node instanceof IntegerNode) 
         {
-            float floatCastHolder = ((IntegerNode) node).getNumber();
+            int floatCastHolder = ((IntegerNode) node).getNumber();
             return new FloatNode(floatCastHolder);
         } 
         else if (node instanceof FloatNode) 
@@ -117,8 +117,14 @@ public class Interpreter {
         {
             VariableReferenceNode varRefNode = (VariableReferenceNode) node;
             InterpreterDataType interpretDataType = VariableHashMap.get(varRefNode.getVariableName());
-            FloatNode floatNode = new FloatNode(((FloatDataType) interpretDataType).getFloatValue());
-            return floatNode;
+            if(interpretDataType instanceof IntDataType)
+            {
+                return new FloatNode((float)((IntDataType) interpretDataType).getIntValue());
+            }
+            else if(interpretDataType instanceof FloatDataType)
+            {
+                return new FloatNode((float) ((FloatDataType) interpretDataType).getFloatValue());
+            }
         }
         throw new Exception("Cannot find reference to value");
     }
@@ -130,9 +136,40 @@ public class Interpreter {
         /*
          * for loop checks the functionCall and checks to see what parameters it's given and builds
          * InterpreterDataTypes for us.
+         * 
          */
+        if (functionCallNode.getParameterNodes().size() != dataTypes.size())
+        {
+            throw new Exception("Passed variables do not match the size of definition's parameters.");
+        }
+        for (int i = 0; i < dataTypes.size(); i++)
+        {
+            InterpreterDataType datatype = dataTypes.get(i);
+            CallableNode functionVals = functionsHashmap.get(functionCallNode.getFunctionName());
+            VariableNode.Type parameterType = functionVals.getParameterVariableNodes().get(i).getType();
+            if(parameterType.equals(VariableNode.Type.REAL))
+            {
+                if (datatype instanceof FloatDataType) {
+                    VariableHashMap.put(functionVals.getParameterVariableNodes().get(i).getVariableName(), datatype);
+                } else {
+                    throw new Exception("Data type input does not match the expected value type of the function");
+                }
+            }
+            else if(parameterType.equals(VariableNode.Type.INTEGER))
+            {
+                if (datatype instanceof IntDataType) {
+                    VariableHashMap.put(functionVals.getParameterVariableNodes().get(i).getVariableName(), datatype);
+                } else {
+                    throw new Exception("Data type input does not match the expected value type of the function");
+                }
+            }
+            else
+            {
+                throw new Exception("ERROR");
+            }
+        }
         for (ParameterNode parameterNode : functionCallNode.getParameterNodes()) {
-            
+            //TODO marked for deletion
             if (parameterNode.getValueNode() instanceof IntegerNode) {
                 VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),
                         new IntDataType(((IntegerNode) parameterNode.getValueNode()).getNumber()));
@@ -174,7 +211,45 @@ public class Interpreter {
          * definition allows that variable to be overriden.
          */
         
-        Interpreter.InterpretBlock(functionsHashmap.get(functionCallNode.getFunctionName()).getStatementList(), VariableHashMap);
+        Interpreter.InterpretBlock(functionsHashmap.get(functionCallNode.getFunctionName()).getStatementList(),VariableHashMap);
+        // for (int k = 0; k < dataTypes.size(); k++) 
+        // {
+        //     if (VariableHashMap.get(functionCallNode.getParameterNodes().get(k).getVarRefNode().getVariableName()) instanceof IntDataType) {
+        //         if (dataTypes.get(k) instanceof IntDataType) {
+        //             VariableHashMap.replace(
+        //                     functionCallNode.getParameterNodes().get(k).getVarRefNode().getVariableName(),
+        //                     VariableHashMap.get(functionCallNode.getParameterNodes().get(k).getVarRefNode()
+        //                             .getVariableName()),
+        //                     (IntDataType) dataTypes.get(k));
+        //         } else {
+        //             throw new Exception("Non matching update for local data type.");
+        //         }
+        //     } else if (VariableHashMap.get(functionCallNode.getParameterNodes().get(k).getVarRefNode()
+        //             .getVariableName()) instanceof FloatDataType) {
+        //         if (dataTypes.get(k) instanceof FloatDataType) {
+        //             VariableHashMap.replace(
+        //                     functionCallNode.getParameterNodes().get(k).getVarRefNode().getVariableName(),
+        //                     VariableHashMap.get(functionCallNode.getParameterNodes().get(k).getVarRefNode()
+        //                             .getVariableName()),
+        //                     (FloatDataType) dataTypes.get(k));
+        //         } else {
+        //             throw new Exception("Non matching update for local data type.");
+        //         }
+        //     } else {
+        //         throw new Exception("UNKNOWN ERROR");
+        //     }
+        // }
+        // for (int k = 0; k < functionCallNode.getParameterNodes().size(); k++) {
+        //     VariableHashMap.remove(functionsHashmap.get(functionCallNode.getFunctionName())
+        //             .getParameterVariableNodes().get(k).getVariableName());
+        // }
+        // for (int k = 0; k < functionsHashmap.get(functionCallNode.getFunctionName()).getLocalVariablesList()
+        //         .size(); k++) {
+        //     VariableHashMap.remove(
+        //             functionsHashmap.get(functionCallNode.getFunctionName()).getLocalVariablesList().get(k)
+        //                     .getVariableName());
+        // }
+        
     }
     
     
@@ -189,10 +264,9 @@ public class Interpreter {
              * compared to User Defined functions.
              */
             //This checks if its a function call and if not its an assignment.
-            if (statementNode.getStatement() instanceof FunctionCallNode)
-            {
+            if (statementNode.getStatement() instanceof FunctionCallNode) {
                 FunctionCallNode calledNode = (FunctionCallNode) statementNode.getStatement();
-                
+
                 /*
                  * Checks if its a built in or a 
                  * user defined function node.
@@ -200,78 +274,75 @@ public class Interpreter {
                  * and user defined functions need to check the function definition
                  * to have their statements checked for either a function call, or an assignment or a boolean check.
                  */
-                if(functionsHashmap.get(calledNode.getFunctionName())instanceof BuiltInFunctionNode)
-                {
-                    BuiltInFunctionNode builtin = (BuiltInFunctionNode) functionsHashmap.get(calledNode.getFunctionName());
-                    
-                    for (ParameterNode parameterNode : calledNode.getParameterNodes()) 
-                    {
-                        if (parameterNode.getValueNode() instanceof IntegerNode) 
-                        {
-                            VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),new IntDataType(((IntegerNode) parameterNode.getValueNode()).getNumber()));
+                if (functionsHashmap.get(calledNode.getFunctionName()) instanceof BuiltInFunctionNode) {
+                    BuiltInFunctionNode builtin = (BuiltInFunctionNode) functionsHashmap
+                            .get(calledNode.getFunctionName());
+
+                    for (ParameterNode parameterNode : calledNode.getParameterNodes()) {
+                        if (VariableHashMap
+                                .get(parameterNode.getVarRefNode().getVariableName()) instanceof IntDataType) {
+                            if (parameterNode.getValueNode() == null) {
+                                continue;
+                            }
+                            VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),
+                                    new IntDataType(((IntegerNode) parameterNode.getValueNode()).getNumber()));
+                        } else if (VariableHashMap
+                                .get(parameterNode.getVarRefNode().getVariableName()) instanceof FloatDataType) {
+                            if (parameterNode.getValueNode() == null) {
+                                continue;
+                            }
+                            VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),
+                                    new FloatDataType(((FloatNode) parameterNode.getValueNode()).getNumber()));
+                        } else {
+                            throw new Exception("VARIABLE DOES NOT EXIST");
                         }
-                        else if (parameterNode.getValueNode() instanceof FloatNode) 
-                        {
-                            VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),new FloatDataType(((FloatNode) parameterNode.getValueNode()).getNumber()));
-                        }
-                        
+
                     }
                     ArrayList<InterpreterDataType> datainputOrOutput = new ArrayList<>();
-                    for(int j = 0; j < calledNode.getParameterNodes().size();j++)
-                    {
+                    for (int j = 0; j < calledNode.getParameterNodes().size(); j++) {
                         VariableReferenceNode ParamNodeVarNode = calledNode.getParameterNodes().get(j).getVarRefNode();
                         //Sets VarRefNode
                         ParameterNode parameterNode = new ParameterNode(ParamNodeVarNode);
-                        if(VariableHashMap.get(calledNode.getParameterNodes().get(j).getVarRefNode().getVariableName())!= null)
-                        {
-                            if(VariableHashMap.get(calledNode.getParameterNodes().get(j).getVarRefNode().getVariableName()) instanceof IntDataType)
-                            {
-                                IntDataType integerDataType = (IntDataType) VariableHashMap.get(calledNode.getParameterNodes().get(j).getVarRefNode().getVariableName());
+                        if (VariableHashMap
+                                .get(calledNode.getParameterNodes().get(j).getVarRefNode().getVariableName()) != null) {
+                            if (VariableHashMap.get(calledNode.getParameterNodes().get(j).getVarRefNode()
+                                    .getVariableName()) instanceof IntDataType) {
+                                IntDataType integerDataType = (IntDataType) VariableHashMap
+                                        .get(calledNode.getParameterNodes().get(j).getVarRefNode().getVariableName());
                                 parameterNode.setValueNode(new IntegerNode(integerDataType.getIntValue()));
-                            }
-                            else if(VariableHashMap.get(calledNode.getParameterNodes().get(j).getVarRefNode().getVariableName()) instanceof FloatDataType)
-                            {
-                                FloatDataType floatDataType = (FloatDataType) VariableHashMap.get(calledNode.getParameterNodes().get(j).getVarRefNode().getVariableName());
+                            } else if (VariableHashMap.get(calledNode.getParameterNodes().get(j).getVarRefNode()
+                                    .getVariableName()) instanceof FloatDataType) {
+                                FloatDataType floatDataType = (FloatDataType) VariableHashMap
+                                        .get(calledNode.getParameterNodes().get(j).getVarRefNode().getVariableName());
                                 parameterNode.setValueNode(new FloatNode(floatDataType.getFloatValue()));
-                            }   
-                            else
-                            {
+                            } else {
                                 throw new Exception("Incorrect variable type pass");
-                            } 
+                            }
                         }
-                        if(parameterNode.getValueNode()!=null)
-                        {
-                            if(parameterNode.getValueNode()instanceof FloatNode)
-                            {
+                        if (parameterNode.getValueNode() != null) {
+                            if (parameterNode.getValueNode() instanceof FloatNode) {
                                 FloatNode floatnode = (FloatNode) parameterNode.getValueNode();
                                 FloatDataType floatDataType = new FloatDataType(floatnode.getNumber());
                                 datainputOrOutput.add(floatDataType);
-                            }
-                            else if(parameterNode.getValueNode()instanceof IntegerNode)
-                            {
+                            } else if (parameterNode.getValueNode() instanceof IntegerNode) {
                                 IntegerNode intnode = (IntegerNode) parameterNode.getValueNode();
-                                IntDataType intDataType = new IntDataType(intnode .getNumber());
+                                IntDataType intDataType = new IntDataType(intnode.getNumber());
                                 datainputOrOutput.add(intDataType);
 
-                            }
-                            else
-                            {
+                            } else {
                                 throw new Exception("Incorrect variable type pass");
-                            } 
+                            }
                         }
-                        VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),datainputOrOutput.get(0));
+                        VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(), datainputOrOutput.get(0));
                     }
                     builtin.Execute(datainputOrOutput);
 
-                    for(int j = 0; j < calledNode.getParameterNodes().size();j++)
-                    {
+                    for (int j = 0; j < calledNode.getParameterNodes().size(); j++) {
                         ParameterNode parameterNode = calledNode.getParameterNodes().get(j);
-                        VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(),datainputOrOutput.get(j));
+                        VariableHashMap.put(parameterNode.getVarRefNode().getVariableName(), datainputOrOutput.get(j));
                     }
 
-                }
-                else
-                {
+                } else {
                     /*
                      * If not a built in that must mean its a user defined function
                      * First it gets the function and then if the function is not defined it throws an error.
@@ -279,31 +350,18 @@ public class Interpreter {
                      */
                     FunctionDefinitionNode functionDefinitionNode = (FunctionDefinitionNode) functionsHashmap
                             .get(calledNode.getFunctionName());
-                    if(functionDefinitionNode == null)
-                    {
+                    if (functionDefinitionNode == null) {
                         throw new Exception("Function not found.");
                     }
                     int calledNodeSize = 0;
-                    if(calledNode.getParameterNodes()!= null)
-                    {
+                    if (calledNode.getParameterNodes() != null) {
                         calledNodeSize = calledNode.getParameterNodes().size();
-                    }        
-                    
-                    if (calledNodeSize == functionDefinitionNode.getParameterVariableNodes().size())
-                    {
+                    }
 
+                    if (calledNodeSize == functionDefinitionNode.getParameterVariableNodes().size()) {
                         ArrayList<InterpreterDataType> dataTypes = new ArrayList<>();
-                        for (ParameterNode parameterNode : calledNode.getParameterNodes()) 
-                        {
-                            /*
-                             * TODO:This is where the "var" check for the actual function definition contains "vars" in the function def and must match the "vars" in the function call.
-                             * 
-                             * TODO: Is there a check by checking the functiondefinitionnode and seeing if the variable node for that parameter is not const?
-                             * Do I check the the variable node and if its const then when its called there cannot be a var for that variable, and if there is a var
-                             * in the function definition and not a var in the call for that parameter it throws an exeception?
-                             */
-                            if (VariableHashMap.containsKey(parameterNode.getVarRefNode().getVariableName())) 
-                            {
+                        for (ParameterNode parameterNode : calledNode.getParameterNodes()) {
+                            if (VariableHashMap.containsKey(parameterNode.getVarRefNode().getVariableName())) {
                                 dataTypes.add(VariableHashMap.get(parameterNode.getVarRefNode().getVariableName()));
 
                             }
@@ -313,16 +371,49 @@ public class Interpreter {
                             }
                         }
                         Interpreter.InterpretFunction(calledNode, dataTypes);
+                        System.out.println("bp");
+                        for(int k = 0; k < functionsHashmap.get(calledNode.getFunctionName()).getParameterVariableNodes().size(); k++)
+                        {
+                            InterpreterDataType dataType = VariableHashMap
+                                    .get(functionsHashmap.get(calledNode.getFunctionName())
+                                            .getParameterVariableNodes().get(k).getVariableName());
+                            if (dataType instanceof IntDataType) {
+                                if (VariableHashMap.get(calledNode.getParameterNodes().get(k).getVarRefNode()
+                                        .getVariableName()) instanceof IntDataType) {
+                                    VariableHashMap.replace(
+                                            calledNode.getParameterNodes().get(k).getVarRefNode().getVariableName(),
+                                            dataType);
+                                }
+                            } else if (dataType instanceof FloatDataType) {
+                                if (VariableHashMap.get(calledNode.getParameterNodes().get(k).getVarRefNode()
+                                        .getVariableName()) instanceof FloatDataType) {
+                                    VariableHashMap.replace(
+                                            calledNode.getParameterNodes().get(k).getVarRefNode().getVariableName(),
+                                            dataType);
+                                }
+                            }
+                        }
+                        for(int k = 0; k < functionsHashmap.get(calledNode.getFunctionName()).getParameterVariableNodes().size(); k++)
+                        {
+                            VariableHashMap.remove(functionsHashmap.get(calledNode.getFunctionName())
+                                    .getParameterVariableNodes().get(k).getVariableName());
+                        }
+                        for (int k = 0; k < functionsHashmap.get(calledNode.getFunctionName()).getLocalVariablesList()
+                                .size(); k++) {
+                            VariableHashMap.remove(
+                                    functionsHashmap.get(calledNode.getFunctionName()).getLocalVariablesList().get(k)
+                                            .getVariableName());
+                        }
                     }
                     else
                     {
                         throw new Exception("Function Call does not match parameters.");
                     }
+
                 }
             }
             //interprets assignments
-            else if(statementNode.getStatement() instanceof AssignmentNode)
-            {
+            else if (statementNode.getStatement() instanceof AssignmentNode) {
                 AssignmentNode assignmentNode = (AssignmentNode) statementNode.getStatement();
                 VariableReferenceNode refNodeOfAssignNode = assignmentNode.getVariableReferenceNode();
                 String stringOfRefNode = refNodeOfAssignNode.getVariableName();
@@ -346,12 +437,9 @@ public class Interpreter {
                     throw new Exception("This variable does not exist in this scope.");
                 }
 
-            }
-            else if(statementNode.getStatement() instanceof IfNode)
-            {
+            } else if (statementNode.getStatement() instanceof IfNode) {
                 IfNode ifNode = (IfNode) statementNode.getStatement();
-                if(ifNode.getBoolNode()!= null)
-                {
+                if (ifNode.getBoolNode() != null) {
                     BooleanNode booleanNode = ifNode.getBoolNode();
                     if (EvaluateBooleanExpression(booleanNode)) {
                         InterpretBlock(ifNode.getStatements(), VariableHashMap);
@@ -369,83 +457,79 @@ public class Interpreter {
                             continue;
                         }
                     }
-                }
-                else
-                {
+                } else {
                     throw new Exception("Not a valid boolean.");
                 }
-                
-            }
-            else if(statementNode.getStatement() instanceof ElseNode)
-            {
+
+            } else if (statementNode.getStatement() instanceof ElseNode) {
                 ElseNode elseNode = (ElseNode) statementNode.getStatement();
                 InterpretBlock(elseNode.getStatements(), VariableHashMap);
-            }
-            else if(statementNode.getStatement() instanceof WhileNode)
-            {
+            } else if (statementNode.getStatement() instanceof WhileNode) {
                 WhileNode whileNode = (WhileNode) statementNode.getStatement();
-                if(whileNode.getBoolNode() != null)
-                {
+                if (whileNode.getBoolNode() != null) {
                     BooleanNode booleanNode = whileNode.getBoolNode();
                     if (EvaluateBooleanExpression(booleanNode)) {
                         InterpretBlock(whileNode.getStatements(), VariableHashMap);
                     } else {
                         continue;
                     }
-                }
-                else
-                {
+                } else {
                     throw new Exception("Not a valid boolean.");
                 }
-            }
-            else if(statementNode.getStatement() instanceof RepeatNode)
-            {
+            } else if (statementNode.getStatement() instanceof RepeatNode) {
                 RepeatNode repeatNode = (RepeatNode) statementNode.getStatement();
-                if(repeatNode.getBooleanNode() != null)
-                {
+                if (repeatNode.getBooleanNode() != null) {
                     BooleanNode booleanNode = repeatNode.getBooleanNode();
                     if (EvaluateBooleanExpression(booleanNode)) {
                         InterpretBlock(repeatNode.getStatements(), VariableHashMap);
                     } else {
                         continue;
                     }
-                }
-                else
-                {
+                } else {
                     throw new Exception("Not a valid boolean.");
                 }
-                
-                
-            }
-            else if(statementNode.getStatement() instanceof ForNode)
-            {
+
+            } else if (statementNode.getStatement() instanceof ForNode) {
                 ForNode forNode = (ForNode) statementNode.getStatement();
-                if(forNode.getStartNode() != null && forNode.getEndNode() != null && forNode.getVariableReference() != null)
-                {
-                    if((forNode.getStartNode())instanceof IntegerNode)
-                    {
-                        if(forNode.getEndNode() instanceof IntegerNode)
-                        {
+                if (forNode.getStartNode() != null && forNode.getEndNode() != null
+                        && forNode.getVariableReference() != null) {
+                    if ((forNode.getStartNode()) instanceof IntegerNode) {
+                        if (forNode.getEndNode() instanceof IntegerNode) {
                             //Checking for the variable's pre existance in the variable hashmap.
-                            InterpreterDataType variable = VariableHashMap.get(forNode.getVariableReference().getVariableName());
+                            InterpreterDataType variable = VariableHashMap
+                                    .get(forNode.getVariableReference().getVariableName());
                             //If it exists make sure its value isnt a float. If it is a float throw an exception because we cant iterate over a float.
-                            if(variable!= null)
-                            {
-                                IntDataType startInt = new IntDataType(((IntegerNode) forNode.getStartNode()).getNumber());
+                            if (variable != null) {
+                                IntDataType startInt = new IntDataType(
+                                        ((IntegerNode) forNode.getStartNode()).getNumber());
+                                IntDataType endInt = new IntDataType(((IntegerNode) forNode.getEndNode()).getNumber());
                                 VariableHashMap.put(forNode.getVariableReference().getVariableName(), startInt);
-                                for(int startVal = ((IntegerNode) forNode.getStartNode()).getNumber(); startVal <= ((IntegerNode) forNode.getEndNode()).getNumber(); startVal++)
-                                {
-                                    VariableHashMap.replace(forNode.getVariableReference().getVariableName(),new IntDataType(startVal));
-                                    Interpreter.InterpretBlock(forNode.getStatements(), VariableHashMap);
+                                if (startInt.getIntValue() < endInt.getIntValue()) {
+                                    for (int startVal = ((IntegerNode) forNode.getStartNode())
+                                            .getNumber(); startVal <= ((IntegerNode) forNode.getEndNode())
+                                                    .getNumber(); startVal++) {
+                                        VariableHashMap.replace(forNode.getVariableReference().getVariableName(),
+                                                new IntDataType(startVal));
+                                        Interpreter.InterpretBlock(forNode.getStatements(), VariableHashMap);
+                                    }
+                                } else if (startInt.getIntValue() > endInt.getIntValue()) {
+                                    for (int startVal = ((IntegerNode) forNode.getStartNode())
+                                            .getNumber(); startVal >= ((IntegerNode) forNode.getEndNode())
+                                                    .getNumber(); startVal--) {
+                                        VariableHashMap.replace(forNode.getVariableReference().getVariableName(),
+                                                new IntDataType(startVal));
+                                        Interpreter.InterpretBlock(forNode.getStatements(), VariableHashMap);
+                                    }
+                                } else {
+                                    //TODO: If theyre equal?
                                 }
+
+                            } else if (variable == null) {
+                                throw new Exception("Variables must be predeclared. Variable:"
+                                        + forNode.getVariableReference().getVariableName().toString()
+                                        + " does not exist.");
                             }
-                            else if(variable == null)
-                            {
-                                throw new Exception("Variables must be predeclared. Variable:" + forNode.getVariableReference().getVariableName().toString() + " does not exist.");
-                            }
-                        }
-                        else
-                        {
+                        } else {
                             throw new Exception("EndNode is not a valid integer.");
                         }
                         /*
@@ -469,53 +553,42 @@ public class Interpreter {
                          *          key value pair of the variable reference node in the hashmap.
                          *          
                          */
-                    }
-                    else
-                    {
+                    } else {
                         throw new Exception("StartNode is not a valid integer.");
                     }
-                    
-                }
-                else
-                {
+
+                } else {
                     StringBuilder sb = new StringBuilder();
                     sb.append("ERROR IN FOR NODE: ");
                     //Checks var ref
-                    if(forNode.getVariableReference()== null)
-                    {
+                    if (forNode.getVariableReference() == null) {
                         sb.append("Var Ref Node is null");
-                    }
-                    else
-                    {
-                        sb.append("Var Ref Node is: "+((VariableReferenceNode)forNode.getVariableReference()).getVariableName());
+                    } else {
+                        sb.append("Var Ref Node is: "
+                                + ((VariableReferenceNode) forNode.getVariableReference()).getVariableName());
                     }
                     sb.append(", ");
                     //Checks Start Node
-                    if(forNode.getStartNode()== null)
-                    {
+                    if (forNode.getStartNode() == null) {
                         sb.append("Start Node is null");
-                    }
-                    else
-                    {
-                        sb.append("Start Node is: "+((FloatNode)forNode.getStartNode()).getNumber());
+                    } else {
+                        sb.append("Start Node is: " + ((FloatNode) forNode.getStartNode()).getNumber());
                     }
                     sb.append(", ");
                     //Check end Node
-                    if(forNode.getEndNode()== null)
-                    {
+                    if (forNode.getEndNode() == null) {
                         sb.append("End Node is null");
+                    } else {
+                        sb.append("End Node is: " + ((FloatNode) forNode.getEndNode()).getNumber());
                     }
-                    else
-                    {
-                        sb.append("End Node is: "+((FloatNode)forNode.getEndNode()).getNumber());
-                    }
-                    
+
                     sb.append("\n");
                     throw new Exception(sb.toString());
                 }
             }
-            
+
         }
+        
         
     }
 

@@ -1,40 +1,62 @@
-define start()
+define f1(var num1: real ; var num2:real)
+variables 
+i:integer
+begin
+
+    while i = 0
+    begin
+        if num1 < 10 then
+        begin
+
+            if num1 > 5 then
+            begin
+                num2 := num2 + 7
+                i:=i+1
+            end
+
+            elsif num1 < 5 then
+            begin
+                num2 := num2 + 2
+                i:=i+1
+            end
+
+        end
+
+        else
+        begin
+        num2 := num2 +20
+        i:=i+1
+        end
+
+    end
+end
+
+define f2 (var num1: real ; var num2:integer)
+variables
+q:integer
+begin
+
+    for q from 10 to 2
+    begin
+        num2 := num2 +1
+    end
+
+end
+
+
+define start ()
 constants
 pi = 3.14
 variables
-firstNumber : integer ; s,t,v,n : real
-begin
-    second firstNumber,  pi, var s,t,v, var n
-    write n, s, pi, firstNumber
-    write firstNumber
-end
+inputnum,result:real
+res:integer
 
-define second(var firstNumber : integer; pi, var s,t,v, var n : real)
-variables
-i:integer
-constants
 begin
-    if(1 > 0)
-    begin
-        t := 999
-        if(0 <> 1)
-        begin
-            t := 123
-        end
-    end
-    
-    if(0 > 2)
-    begin
-    end
-    elsif(2 > 0)
-    begin
-        t := 456
-    end
-    
-    for(i from 1 to 10)
-    begin
-        write i
-    end
-
-    read var n, var s, firstNumber
+    read var inputnum
+    f1 var inputnum, var result
+    write inputnum
+    write result
+    f2 var inputnum, var res
+    write number
+    write res
 end
