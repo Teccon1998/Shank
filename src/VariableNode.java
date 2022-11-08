@@ -7,7 +7,7 @@ public class VariableNode extends Node {
 
     public enum Type
     {
-        INTEGER, REAL
+        INTEGER, REAL, BOOLEAN, STRING, CHAR
     };
 
     public VariableNode(VariableNode.Type Type,Boolean CONST, String VariableName, Node Node)

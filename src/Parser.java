@@ -214,6 +214,69 @@ public class Parser {
                     }
                 }
             }
+            else if(MatchAndRemove(Token.Type.BOOLEAN)!= null)
+            {
+                for(int i = 0; i<parameterTokens.size(); i++)
+                {
+                    if(parameterTokens.get(i).getTokenType().equals(Token.Type.VAR))
+                    {
+                        if(i == parameterTokens.size())
+                        {
+                            break;
+                        }
+                        i++;
+                        BoolNode boolNode = new BoolNode(false);
+                        parameterNodes.add(new VariableNode(VariableNode.Type.BOOLEAN, false, parameterTokens.get(i).getValue(), boolNode));
+                    }             
+                    else
+                    {
+                        BoolNode boolNode = new BoolNode(false);
+                        parameterNodes.add(new VariableNode(VariableNode.Type.BOOLEAN, true, parameterTokens.get(i).getValue(), boolNode));
+                    }       
+                }
+            }
+            else if(MatchAndRemove(Token.Type.STRING)!=null)
+            {
+                for(int i = 0; i<parameterTokens.size(); i++)
+                {
+                    if(parameterTokens.get(i).getTokenType().equals(Token.Type.VAR))
+                    {
+                        if(i == parameterTokens.size())
+                        {
+                            break;
+                        }
+                        i++;
+                        StringNode stringNode = new StringNode("");
+                        parameterNodes.add(new VariableNode(VariableNode.Type.STRING, false,parameterTokens.get(i).getValue(), stringNode));
+                    }
+                    else
+                    {
+                        
+                        StringNode stringNode = new StringNode("");
+                        parameterNodes.add(new VariableNode(VariableNode.Type.STRING, true,parameterTokens.get(i).getValue(), stringNode));
+                    }
+                }
+            }
+            else if(MatchAndRemove(Token.Type.CHAR)!= null)
+            {
+                for(int i = 0; i<parameterTokens.size(); i++)
+                {
+                    if(parameterTokens.get(i).getTokenType().equals(Token.Type.VAR))
+                    {
+                        if(i == parameterTokens.size())
+                        {
+                            break;
+                        }
+                        CharNode charNode = new CharNode('\0');
+                        parameterNodes.add(new VariableNode(VariableNode.Type.CHAR, false, parameterTokens.get(i).getValue(), charNode));
+                    }
+                    else
+                    {
+                        CharNode charNode = new CharNode('\0');
+                        parameterNodes.add(new VariableNode(VariableNode.Type.CHAR, true, parameterTokens.get(i).getValue(), charNode));
+                    }
+                }
+            }
         }
         return parameterNodes;
         
@@ -250,14 +313,29 @@ public class Parser {
                             if (IdentifierToken != null) {
                                 if (MatchAndRemove(Token.Type.EQUALS) != null) {
                                     Token ValueToken;
-                                    if ((ValueToken = MatchAndRemove(Token.Type.NUMBER)) != null) {
+                                    if ((ValueToken = MatchAndRemove(Token.Type.NUMBER)) != null) 
+                                    {
                                         IntegerNode intNode = new IntegerNode(Integer.parseInt(ValueToken.getValue()));
-                                        variableList.add(new VariableNode(VariableNode.Type.INTEGER, true,
-                                                IdentifierToken.getValue(), intNode));
-                                    } else if ((ValueToken = MatchAndRemove(Token.Type.DECIMAL)) != null) {
+                                        variableList.add(new VariableNode(VariableNode.Type.INTEGER, true,IdentifierToken.getValue(), intNode));
+                                    } 
+                                    else if ((ValueToken = MatchAndRemove(Token.Type.DECIMAL)) != null) 
+                                    {
                                         FloatNode floatNode = new FloatNode(Float.parseFloat(ValueToken.getValue()));
-                                        variableList.add(new VariableNode(VariableNode.Type.REAL, true,
-                                                IdentifierToken.getValue(), floatNode));
+                                        variableList.add(new VariableNode(VariableNode.Type.REAL, true,IdentifierToken.getValue(), floatNode));
+                                    }
+                                    else if((ValueToken = MatchAndRemove(Token.Type.STRING))!= null)
+                                    {
+                                        StringNode stringNode = new StringNode(ValueToken.getValue());
+                                        variableList.add(new VariableNode(VariableNode.Type.STRING, true, IdentifierToken.getValue(), stringNode));
+                                    }
+                                    else if((ValueToken = MatchAndRemove(Token.Type.CHAR))!= null)
+                                    {
+                                        if(ValueToken.getValue().length() >1 )
+                                        {
+                                            throw new Exception("not a char value. Should never reach here.");
+                                        }
+                                        CharNode charNode = new CharNode(ValueToken.getValue().charAt(0));
+                                        variableList.add(new VariableNode(VariableNode.Type.CHAR, true, IdentifierToken.getValue(), charNode));
                                     }
                                 }
                             }
@@ -301,6 +379,24 @@ public class Parser {
                                         FloatNode floatNode = new FloatNode(0);
                                         variableList.add(new VariableNode(VariableNode.Type.REAL, false,
                                                 variableTokens.get(i).getValue(), floatNode));
+                                    }
+                                } else if (MatchAndRemove(Token.Type.BOOLEAN) != null) {
+                                    for (int i = 0; i < variableTokens.size(); i++) {
+                                        BoolNode boolNode = new BoolNode(false);
+                                        variableList.add(new VariableNode(VariableNode.Type.BOOLEAN, false,
+                                                variableTokens.get(i).getValue(), boolNode));
+                                    }
+                                } else if (MatchAndRemove(Token.Type.STRING) != null) {
+                                    for (int i = 0; i < variableTokens.size(); i++) {
+                                        StringNode stringNode = new StringNode("");
+                                        variableList.add(new VariableNode(VariableNode.Type.STRING, false,
+                                                variableTokens.get(i).getValue(), stringNode));
+                                    }
+                                } else if (MatchAndRemove(Token.Type.CHAR) != null) {
+                                    for (int i = 0; i < variableTokens.size(); i++){
+                                        CharNode charNode = new CharNode('\0');
+                                        variableList.add(new VariableNode(VariableNode.Type.CHAR,false,
+                                                variableTokens.get(i).getValue(), charNode));
                                     }
                                 }
                             }
