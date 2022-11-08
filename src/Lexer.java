@@ -37,6 +37,9 @@ public class Lexer {
         reservedWords.put("VAR", Token.Type.VAR);
         reservedWords.put("TRUE", Token.Type.TRUE);
         reservedWords.put("FALSE", Token.Type.FALSE);
+        reservedWords.put("STRING",Token.Type.STRING);
+        reservedWords.put("CHAR",Token.Type.CHAR);
+        reservedWords.put("BOOLEAN",Token.Type.BOOLEAN);
         List<Token> tokenList = new ArrayList<Token>();
         if(Input.isEmpty())
         {
@@ -58,7 +61,45 @@ public class Lexer {
                     {
                         valueHolderForToken += CurrentCharacter;
                         State = 3;
-                    } 
+                    }
+                    else if(CurrentCharacter == '\"')
+                    {
+                        //Send in the string to lex and its current location lexing.
+                        ArrayList<Token> localTokenList = StringContents(Input, i);
+                        //Doing this check to see how many iterations to skip.
+                        //Need to check the length of the string so we know how many iterations of our loop to skip
+                        //If StringContents properly returns the length will always be at least 2. We just need to know how long the interior string is.
+                        int StepOverLength = 2;
+                        //Checking to make sure its not just two quotes with nothing in the string.
+                        //So we have to check string length. If its 0 then there will only be a need to skip 2 iterations of the lexer loop.
+                        if(localTokenList.get(0).getValue().length()>0)
+                        {
+                            StepOverLength+= localTokenList.get(0).getValue().length();
+                        }
+                        i += StepOverLength;
+                        tokenList.addAll(localTokenList);
+                        State = 1;
+                    }
+                    else if(CurrentCharacter == '\'')
+                    {
+                        //We do the same as StringContents but we know that the size should always be at least 2.
+                        //We know because it should be ' token, the character, then the ' token again.
+
+                        //If the size of the string is greater than 0 then we know there's something in the string and can 
+                        //increment i by the constant 3 because there should only be 1 character.
+                        ArrayList<Token> localTokenList = CharContents(Input,i);
+                        if(localTokenList.get(0).getValue().length() > 0)
+                        {
+                            i+= 3;
+                        }
+                        //If we have nothing in between the '' we need to only increment by 2;
+                        else
+                        {
+                            i += 2;
+                        }
+                        tokenList.addAll(localTokenList);
+                        State = 1;
+                    }
                     else if (CurrentCharacter == '+' || CurrentCharacter == '-') 
                     {
                         valueHolderForToken += CurrentCharacter;
@@ -843,6 +884,84 @@ public class Lexer {
         
     }
     
+    private ArrayList<Token> StringContents(String input, int i) throws Exception
+    {
+        ArrayList<Token> StringTokens = new ArrayList<>();
+        String str = "";
+        for(int j = i+1; j < input.length(); j++)
+        {
+
+            if(input.charAt(j)=='\"')
+            {
+                StringTokens.add(new Token(Token.Type.STRING, str));
+                return StringTokens;
+            }
+            else if(input.charAt(j)=='\\')
+            {
+                if(j+1 < input.length())
+                {
+                    if(input.charAt(j+1) == '\'')
+                    {
+                        str += "\'";
+                        j += 1;
+                        continue;
+                    }
+                    else if(input.charAt(j+1) == '\"')
+                    {
+                        str += "\"";
+                        j+=1;
+                        continue;
+                    }
+                }
+                
+            }
+            str+= input.charAt(j);
+
+        }
+        throw new Exception("No closing quote.");
+    }
+
+    private ArrayList<Token> CharContents(String input, int i) throws Exception
+    {
+        ArrayList<Token> CharTokens = new ArrayList<>();
+        String c = "";
+        for(int j = i+1; j < input.length(); j++)
+        {
+            
+            if(input.charAt(j)=='\'')
+            {
+                CharTokens.add(new Token(Token.Type.CHAR, c));
+                return CharTokens;
+            }
+            else if(input.charAt(j)=='\\')
+            {
+                if(j+1 < input.length())
+                {
+                    if(input.charAt(j+1) == '\'')
+                    {
+                        c += "\'";
+                        j += 1;
+                        continue;
+                    }
+                    else if(input.charAt(j+1) == '\"')
+                    {
+                        c += "\"";
+                        j+=1;
+                        continue;
+                    }
+                }
+                
+            }
+            if(j == i+3)
+            {
+                throw new Exception("Multiple characters not valid for type char.");
+            }
+            c += input.charAt(j);
+
+        }
+        return null;
+
+    }
 
     public List<String> getLOT() 
     {

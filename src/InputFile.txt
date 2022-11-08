@@ -1,8 +1,16 @@
 define f1(var num1: real ; var num2:real)
 variables 
 i:integer
+name:string
+LastInitial:char
+testBool:boolean
 begin
 
+    testBool := true
+    name := "alex"
+    LastInitial := '\"'
+    true
+    false
     while i = 0
     begin
         if num1 < 10 then
@@ -10,13 +18,13 @@ begin
 
             if num1 > 5 then
             begin
-                num2 := num2 + 7
+                num2 := num2 + 7.0
                 i:=i+1
             end
 
             elsif num1 < 5 then
             begin
-                num2 := num2 + 2
+                num2 := num2 + 2.0
                 i:=i+1
             end
 
@@ -24,7 +32,7 @@ begin
 
         else
         begin
-        num2 := num2 +20
+        num2 := num2 +20.0
         i:=i+1
         end
 
@@ -36,9 +44,11 @@ variables
 q:integer
 begin
 
+    write num2
     for q from 10 to 2
     begin
         num2 := num2 +1
+        write num2
     end
 
 end
@@ -57,6 +67,6 @@ begin
     write inputnum
     write result
     f2 var inputnum, var res
-    write number
+    write inputnum
     write res
 end

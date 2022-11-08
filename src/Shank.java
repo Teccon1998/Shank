@@ -8,14 +8,14 @@ public class Shank {
     
     public static void main(String[] args) throws Exception
     {
-        // String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\GitBlame\\311\\Shank\\src\\InputFile.txt";
-        // Path path = Paths.get(arg);
-        if(args.length != 1)
-        {
-            System.out.println("Incorrect # of args");
-            System.exit(0);
-        }
-        Path path = Paths.get(args[0]);
+        String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\311\\Shank\\src\\InputFile.txt";
+        Path path = Paths.get(arg);
+        // if(args.length != 1)
+        // {
+        //     System.out.println("Incorrect # of args");
+        //     System.exit(0);
+        // }
+        // Path path = Paths.get(args[0]);
 
         try
         {
@@ -37,6 +37,8 @@ public class Shank {
                 {
                     System.out.println("Failed to Lex on InputFile line: " + i); // Iteration location for debugging
                     e.printStackTrace();
+                    System.exit(1);
+                    break;
                 }
             }
             ArrayList<Token> MasterTokenList = new ArrayList<>();
