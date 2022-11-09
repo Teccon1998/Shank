@@ -1,3 +1,4 @@
+import java.beans.Expression;
 import java.util.*;
 
 public class Parser {
@@ -39,20 +40,41 @@ public class Parser {
 
     private Node Expression() throws Exception
     {
+        BooleanNode booleanNode = new BooleanNode();
+        Token Value;
         Node FirstNode = Term();
         Node SecondNode = null;
         
-            if (MatchAndRemove(Token.Type.PLUS) != null) {
-                SecondNode = Expression();
-                return new MathOpNode(FirstNode, SecondNode, MathOpNode.Operator.ADD);
-            } else if ((MatchAndRemove(Token.Type.MINUS) != null)) {
-                SecondNode = Expression();
-                return new MathOpNode(FirstNode, SecondNode, MathOpNode.Operator.SUBTRACT);
-            } else if (FirstNode != null) {
-                return FirstNode;
-            } else {
-                throw new Exception("Not an expression");
-            }
+        if (MatchAndRemove(Token.Type.PLUS) != null) 
+        {
+            SecondNode = Expression();
+            return new MathOpNode(FirstNode, SecondNode, MathOpNode.Operator.ADD);
+        } 
+        else if ((MatchAndRemove(Token.Type.MINUS) != null)) 
+        {
+            SecondNode = Expression();
+            return new MathOpNode(FirstNode, SecondNode, MathOpNode.Operator.SUBTRACT);
+        } 
+        else if ((Value = MatchAndRemove(Token.Type.LESS)) != null
+            || (Value = MatchAndRemove(Token.Type.GREATER)) != null
+            || (Value = MatchAndRemove(Token.Type.LESSEQUAL)) != null
+            || (Value = MatchAndRemove(Token.Type.GREATEREQUAL)) != null
+            || (Value = MatchAndRemove(Token.Type.NOTEQUAL)) != null
+                || (Value = MatchAndRemove(Token.Type.EQUALS)) != null) 
+        {
+            booleanNode.setLeftNode(FirstNode);
+            booleanNode.setCondition(Value);
+            booleanNode.setRightNode(Expression());
+            return booleanNode;
+        }
+        else if (FirstNode != null) 
+        {
+            return FirstNode;
+        } 
+        else 
+        {
+            throw new Exception("Not an expression");
+        }
     }
     private Node Term() throws Exception
     {
@@ -80,7 +102,6 @@ public class Parser {
     }
     private Node Factor() throws Exception
     {
-
         Token Value;
         Node Factor;
         if ((Value = MatchAndRemove(Token.Type.NUMBER)) != null) {
@@ -97,29 +118,42 @@ public class Parser {
                 return Factor;
             }
         }
-        return null;
+        else if(MatchAndRemove(Token.Type.TRUE)!=null)
+        {
+            return new BoolNode(true);
+        }
+        else if(MatchAndRemove(Token.Type.FALSE)!=null)
+        {
+            return new BoolNode(false);
+        }
+        else if(tokenList.get(0).getTokenType().equals(Token.Type.STRING))
+        {
+            return new StringNode(MatchAndRemove(Token.Type.STRING).getValue());
+        }
+        else if(tokenList.get(0).getTokenType().equals(Token.Type.CHAR))
+        {
+            String c = MatchAndRemove(Token.Type.CHAR).getValue();
+            if(c.length() > 1)
+            {
+                throw new Exception("Character is longer than 1. Should never reach this exception.");
+            }
+            return new CharNode(c.charAt(0));
+        }
+        else
+        {
+            throw new Exception("NonValidDataType Exception");
+        }
+        
     }
 /*---------------------- */
     private BooleanNode BooleanExpression() throws Exception
     {
-        BooleanNode booleanNode = new BooleanNode();
-        Token booleanCondition;
-        booleanNode.setLeftNode(Expression());
-        if ((booleanCondition = MatchAndRemove(Token.Type.LESS)) != null
-                || (booleanCondition = MatchAndRemove(Token.Type.GREATER)) != null
-                || (booleanCondition = MatchAndRemove(Token.Type.LESSEQUAL)) != null
-                || (booleanCondition = MatchAndRemove(Token.Type.GREATEREQUAL)) != null
-                || (booleanCondition = MatchAndRemove(Token.Type.NOTEQUAL)) != null
-                || (booleanCondition = MatchAndRemove(Token.Type.EQUALS)) != null) {
-            booleanNode.setCondition(booleanCondition);
-            booleanNode.setRightNode(Expression());
-            MatchAndRemove(Token.Type.THEN);
-            MatchAndRemove(Token.Type.RPAREN);
-            MatchAndRemove(Token.Type.EndOfLine);
-            return booleanNode;
-        } else {
-            throw new Exception("Boolean Exception");
+        Node node = Expression();
+        if(node instanceof BooleanNode)
+        {
+            return (BooleanNode) node;
         }
+        throw new Exception("Boolean Exception");
     }
     
 
@@ -537,21 +571,18 @@ public class Parser {
         }
         if(MatchAndRemove(Token.Type.WHILE)!= null)
         {
-            MatchAndRemove(Token.Type.LPAREN);
             WhileNode whileNode = new WhileNode(BooleanExpression(), Statements());
             statementNode.setStatement(whileNode);
             return statementNode;
         }
         if(MatchAndRemove(Token.Type.REPEAT)!= null)
         {
-            MatchAndRemove(Token.Type.LPAREN);
             RepeatNode repeatNode = new RepeatNode(BooleanExpression(), Statements());
             statementNode.setStatement(repeatNode);
             return statementNode;
         }
         if(MatchAndRemove(Token.Type.FOR)!= null)
         {
-            MatchAndRemove(Token.Type.LPAREN);
             Token IdentifierVariableReference;
             if((IdentifierVariableReference = MatchAndRemove(Token.Type.IDENTIFIER))!= null)
             {
@@ -568,7 +599,6 @@ public class Parser {
                                 Node EndNode = Expression();
                                 if(EndNode != null)
                                 {
-                                    MatchAndRemove(Token.Type.RPAREN);
                                     MatchAndRemove(Token.Type.EndOfLine);
                                     ForNode forNode = new ForNode(varRefNode,StartNode, EndNode, Statements());
                                     statementNode.setStatement(forNode);
@@ -585,23 +615,28 @@ public class Parser {
         }
         if( MatchAndRemove(Token.Type.IF)!= null)
         {
-            MatchAndRemove(Token.Type.LPAREN);
-            IfNode ifNode = new IfNode(BooleanExpression(), Statements());
-            MatchAndRemove(Token.Type.RPAREN);
+            IfNode ifNode = new IfNode(BooleanExpression(), null);
+            MatchAndRemove(Token.Type.THEN);
+            MatchAndRemove(Token.Type.EndOfLine);
+            ifNode.setStatements(Statements());
             while(tokenList.get(0).getTokenType() == Token.Type.EndOfLine)
             {
                 MatchAndRemove(Token.Type.EndOfLine);
             }
-            if (MatchAndRemove(Token.Type.ELSIF) != null) {
-                MatchAndRemove(Token.Type.LPAREN);
-                ifNode.setElseNode(new IfNode(BooleanExpression(), Statements()));
-                MatchAndRemove(Token.Type.RPAREN);
+            if (MatchAndRemove(Token.Type.ELSIF) != null) 
+            {
+                IfNode elsifNode = new IfNode((BooleanNode) Expression(), null);
+                MatchAndRemove(Token.Type.THEN);
+                MatchAndRemove(Token.Type.EndOfLine);
+                elsifNode.setStatements(Statements());
+                ifNode.setElseNode(elsifNode);
                 while(tokenList.get(0).getTokenType() == Token.Type.EndOfLine)
                 {
                     MatchAndRemove(Token.Type.EndOfLine);
                 }
             }
-            if (MatchAndRemove(Token.Type.ELSE) != null) {
+            if (MatchAndRemove(Token.Type.ELSE) != null) 
+            {
                 MatchAndRemove(Token.Type.EndOfLine);
                 ifNode.setElseNode(new ElseNode(Statements()));
                 MatchAndRemove(Token.Type.EndOfLine);
@@ -622,7 +657,14 @@ public class Parser {
                 Token ValueFindToken;
                 VariableReferenceNode variableReferenceNode = new VariableReferenceNode(AssignToken.getValue());
 
-                if ((ValueFindToken = MatchAndRemove(Token.Type.LPAREN))!= null || (ValueFindToken = MatchAndRemove(Token.Type.NUMBER)) != null || (ValueFindToken = MatchAndRemove(Token.Type.DECIMAL)) != null || (ValueFindToken = MatchAndRemove(Token.Type.IDENTIFIER)) != null  ) 
+                if ((ValueFindToken = MatchAndRemove(Token.Type.LPAREN))!= null 
+                        ||(ValueFindToken = MatchAndRemove(Token.Type.NUMBER)) != null 
+                        ||(ValueFindToken = MatchAndRemove(Token.Type.DECIMAL)) != null 
+                        ||(ValueFindToken = MatchAndRemove(Token.Type.IDENTIFIER)) != null
+                        ||(ValueFindToken = MatchAndRemove(Token.Type.TRUE)) != null
+                        ||(ValueFindToken = MatchAndRemove(Token.Type.FALSE)) != null
+                        ||(ValueFindToken = MatchAndRemove(Token.Type.STRING)) != null
+                        ||(ValueFindToken = MatchAndRemove(Token.Type.CHAR))!= null) 
                 {
                     tokenList.add(0, ValueFindToken);
                     AssignmentNode AssignmentNode = new AssignmentNode(variableReferenceNode, Expression());

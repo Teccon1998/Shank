@@ -8,7 +8,7 @@ public class Shank {
     
     public static void main(String[] args) throws Exception
     {
-        String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\311\\Shank\\src\\InputFile.txt";
+        String arg = "C:\\Users\\alexa\\OneDrive\\Desktop\\GitBlame\\311\\Shank\\src\\InputFile.txt";
         Path path = Paths.get(arg);
         // if(args.length != 1)
         // {
@@ -72,6 +72,15 @@ public class Shank {
                 System.out.println("\n\n " + functionDefinitionNode + "\n");
             }
             Interpreter.functionsHashmap = functionHashMap;
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis();
+            semanticAnalysis.CheckFunctions(FunctionNodes);
+            if (semanticAnalysis.getErrorStack().size() > 0)
+            {
+                for(String str : semanticAnalysis.getErrorStack())
+                {
+                    System.out.println(str);
+                }
+            }
             //Will check every function parsed to find start functionNode
             for (FunctionDefinitionNode functionDefinitionNode : FunctionNodes) {
                 if(functionDefinitionNode.getFunctionName().equals("start"))

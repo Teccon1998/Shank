@@ -1,16 +1,13 @@
 define f1(var num1: real ; var num2:real)
 variables 
-i:integer
+i,mathFunction:integer
 name:string
 LastInitial:char
 testBool:boolean
 begin
-
     testBool := true
-    name := "alex"
+    name := "alex" + 'c'
     LastInitial := '\"'
-    true
-    false
     while i = 0
     begin
         if num1 < 10 then

@@ -163,12 +163,9 @@ public class Interpreter {
         {
             VariableReferenceNode varRefNode = (VariableReferenceNode) node;
             InterpreterDataType interpretDataType = VariableHashMap.get(varRefNode.getVariableName());
-            if(interpretDataType instanceof IntDataType)
-            {
-                return new IntegerNode((int)((IntDataType) interpretDataType).getIntValue());
-            }
-            else if(interpretDataType instanceof FloatDataType)
-            {
+            if (interpretDataType instanceof IntDataType) {
+                return new IntegerNode((int) ((IntDataType) interpretDataType).getIntValue());
+            } else if (interpretDataType instanceof FloatDataType) {
                 return new FloatNode((float) ((FloatDataType) interpretDataType).getFloatValue());
             }
         }

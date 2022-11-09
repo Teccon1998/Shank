@@ -102,8 +102,19 @@ public class Lexer {
                     }
                     else if (CurrentCharacter == '+' || CurrentCharacter == '-') 
                     {
-                        valueHolderForToken += CurrentCharacter;
-                        State = 2;
+                        if (i + 1 < Input.length())
+                        {
+                            if(Character.isDigit(Input.charAt(i+1)) || Input.charAt(i+1) == '(')
+                            {
+                                valueHolderForToken += CurrentCharacter;
+                                State = 2;
+                            }
+                        }
+                        if (CurrentCharacter == '+')
+                        {
+                            tokenList.add(new Token(Token.Type.PLUS));
+                        }
+                        State = 1;
                     }
                     else if(CurrentCharacter == '=')
                     {
@@ -193,26 +204,48 @@ public class Lexer {
                         valueHolderForToken += CurrentCharacter;
                         State = 3;
                     }
-                    else if(CurrentCharacter == ' ')
+                    else if (CurrentCharacter == ' ' && valueHolderForToken != null)
                     {
 
                     }
                     else if(CurrentCharacter == '(')
                     {
-                        if (!valueHolderForToken.isEmpty())
-                        {
-                            if (valueHolderForToken.contains("+")) 
-                            {
+                        if (!valueHolderForToken.isEmpty()) {
+                            if (valueHolderForToken.contains("+")) {
                                 tokenList.add(new Token(Token.Type.PLUS));
                                 valueHolderForToken = "";
-                            }
-                            else if(valueHolderForToken.contains("-"))
-                            {
+                            } else if (valueHolderForToken.contains("-")) {
                                 tokenList.add(new Token(Token.Type.MINUS));
                                 valueHolderForToken = "";
                             }
                         }
                         tokenList.add(new Token(Token.Type.LPAREN));
+                    }
+                    else if(CurrentCharacter == '\"')
+                    {
+                        ArrayList<Token> localTokenList = StringContents(Input, i);
+                        int StepOverLength = 2;
+                        if(localTokenList.get(0).getValue().length()>0)
+                        {
+                            StepOverLength+= localTokenList.get(0).getValue().length();
+                        }
+                        i += StepOverLength;
+                        tokenList.addAll(localTokenList);
+                        State = 1;
+                    }
+                    else if(CurrentCharacter == '\'')
+                    {
+                        ArrayList<Token> localTokenList = CharContents(Input,i);
+                        if(localTokenList.get(0).getValue().length() > 0)
+                        {
+                            i+= 3;
+                        }
+                        else
+                        {
+                            i += 2;
+                        }
+                        tokenList.addAll(localTokenList);
+                        State = 1;
                     }
                     else 
                     {
@@ -850,8 +883,11 @@ public class Lexer {
         {
             for (int i = 0; i <tokenList.size(); i++) 
             {
-                
-                if(tokenList.get(i).getTokenType().equals(Token.Type.EQUALS)&& tokenList.get(i-1).getTokenType().equals(Token.Type.COLON))
+                if (i == 0)
+                {
+                    continue;
+                }
+                if(tokenList.get(i).getTokenType().equals(Token.Type.EQUALS) && tokenList.get(i-1).getTokenType().equals(Token.Type.COLON))
                 {
                     tokenList.remove(i);
                     tokenList.add(i, new Token(Token.Type.ASSIGN));
