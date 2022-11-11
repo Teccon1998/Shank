@@ -6,10 +6,14 @@ public class RepeatNode extends Node{
     private BooleanNode BoolNode;
     private ArrayList<StatementNode> Statements;
     
-    public RepeatNode(BooleanNode BoolNode, ArrayList<StatementNode> Statements)
+    public RepeatNode(ArrayList<StatementNode> Statements)
+    {
+        this.Statements = Statements;
+    }
+
+    public void setBoolNode(BooleanNode BoolNode)
     {
         this.BoolNode = BoolNode;
-        this.Statements = Statements;
     }
 
     public BooleanNode getBooleanNode()

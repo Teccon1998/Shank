@@ -1,4 +1,3 @@
-import java.beans.Expression;
 import java.util.*;
 
 public class Parser {
@@ -152,6 +151,10 @@ public class Parser {
         if(node instanceof BooleanNode)
         {
             return (BooleanNode) node;
+        }
+        else if (node instanceof BoolNode)
+        {
+            return new BooleanNode(new IntegerNode(0), new Token(Token.Type.EQUALS), new IntegerNode(0));
         }
         throw new Exception("Boolean Exception");
     }
@@ -577,7 +580,15 @@ public class Parser {
         }
         if(MatchAndRemove(Token.Type.REPEAT)!= null)
         {
-            RepeatNode repeatNode = new RepeatNode(BooleanExpression(), Statements());
+            RepeatNode repeatNode = new RepeatNode(Statements());
+            if (MatchAndRemove(Token.Type.UNTIL) != null)
+            {
+                repeatNode.setBoolNode(BooleanExpression());
+            }
+            else
+            {
+                throw new Exception("No exit condition.");
+            }
             statementNode.setStatement(repeatNode);
             return statementNode;
         }

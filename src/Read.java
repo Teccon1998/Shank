@@ -12,7 +12,7 @@ public class Read extends BuiltInFunctionNode {
     }
 
     @Override
-    public void Execute(ArrayList<InterpreterDataType> interpreterDataTypes) {
+    public void Execute(ArrayList<InterpreterDataType> interpreterDataTypes) throws Exception {
         
         Scanner sc = new Scanner(System.in);
         
